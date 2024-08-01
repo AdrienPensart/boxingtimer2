@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+pub mod bell;
 pub mod boxing_timer;
 pub mod difficulty;
 pub mod duration;
@@ -12,12 +13,19 @@ pub mod tag;
 use dioxus::prelude::*;
 use dioxus_logger::tracing::Level;
 // use gloo::console::log;
-use lenient_bool::LenientBool;
+use crate::bell::Bell;
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
-    #[route("/")]
-    Home {},
+    #[route("/?:muted&:start&:rounds&:fight&:rest&:prepare")]
+    BoxingTimer {
+        muted: bool,
+        start: bool,
+        rounds: u64,
+        fight: u64,
+        rest: u64,
+        prepare: u64,
+    },
 }
 
 fn main() {
@@ -33,13 +41,36 @@ fn App() -> Element {
 }
 
 #[component]
-fn BoxingTimer() -> Element {
-    let muted = helpers::get_param_or::<LenientBool>("muted", LenientBool(false));
-    if muted.into() {
-        helpers::BoxingBell::mute()
+fn BoxingTimer(
+    muted: bool,
+    start: bool,
+    rounds: u64,
+    fight: u64,
+    rest: u64,
+    prepare: u64,
+) -> Element {
+    if rounds == 0 {
+        rounds = 12;
+    }
+    if fight == 0 {
+        fight = 180;
+    }
+    if rest == 0 {
+        rest = 60;
+    }
+    if prepare == 0 {
+        prepare = 5;
     }
 
-    let boxing_timer = match boxing_timer::BoxingTimer::new() {
+    let mut bell = use_signal(bell::Bell::new);
+
+    use_effect(move || {
+        if muted {
+            bell.read().toggle();
+        }
+    });
+
+    let boxing_timer = match boxing_timer::BoxingTimer::new(prepare, fight, rest, rounds as usize) {
         Ok(boxing_timer) => boxing_timer,
         Err(e) => return rsx! { "{e}" },
     };
@@ -50,6 +81,12 @@ fn BoxingTimer() -> Element {
         loop {
             gloo::timers::future::TimeoutFuture::new(boxing_timer::DEFAULT_INTERVAL as u32).await;
             timer.write().tick();
+        }
+    });
+
+    use_effect(move || {
+        if start {
+            timer.write().toggle()
         }
     });
 
@@ -66,16 +103,11 @@ fn BoxingTimer() -> Element {
         }
         button { onclick: move |_| timer.with_mut(|bt| bt.reset_beginning()), "Reset beginning" }
         button { onclick: move |_| timer.with_mut(|bt| bt.reset_current()), "Reset current" }
+        button { onclick: move |_| timer.with_mut(|bt| bt.goto_previous()), "Previous" }
         button { onclick: move |_| timer.with_mut(|bt| bt.goto_next()), "Next" }
 
-        button { onclick: move |_| helpers::BoxingBell::toggle(),
-            if helpers::BoxingBell::muted() {
-                "Unmute"
-            } else {
-                "Mute"
-            }
-        }
-        button { onclick: move |_| helpers::BoxingBell::play(), "BELL" }
+        button { onclick: move |_| bell.with_mut(|bell| bell.toggle()), { bell.read().next_label() } }
+        button { onclick: move |_| Bell::ring(), "BELL" }
 
         div {
             for (index , item) in timer.read().sequence().iter().enumerate() {
@@ -114,12 +146,5 @@ fn BoxingTimer() -> Element {
                 { timer.read().status().to_string() }
             }
         }
-    }
-}
-
-#[component]
-fn Home() -> Element {
-    rsx! {
-        BoxingTimer {}
     }
 }

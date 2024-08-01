@@ -1,12 +1,9 @@
+use crate::bell::Bell;
 use crate::duration::Duration;
 use crate::errors::BoxingTimerErrorKind;
-use crate::helpers;
-use crate::status::Status;
-// use crate::rounds::Rounds;
 use crate::sequence::Sequence;
+use crate::status::Status;
 use crate::stopwatch::Stopwatch;
-use lenient_bool::LenientBool;
-
 pub const DEFAULT_INTERVAL: u64 = 1000;
 
 #[derive(Debug, Default)]
@@ -24,26 +21,20 @@ pub struct BoxingTimer {
 }
 
 impl BoxingTimer {
-    pub fn new() -> Result<Self, BoxingTimerErrorKind> {
-        let rounds_param = helpers::get_param_or("rounds", 12);
-        let prepare_param = helpers::get_param_or("prepare", 5);
-        let fight_param = helpers::get_param_or("fight", 180);
-        let rest_param = helpers::get_param_or("rest", 60);
-        let start_param = helpers::get_param_or::<LenientBool>("start", LenientBool(false));
-        let status = if start_param.into() {
-            Status::Running
-        } else {
-            Status::Paused
-        };
-
-        let prepare = Duration::from_secs(prepare_param);
-        let rest = Duration::from_secs(rest_param);
-        let fight = Duration::from_secs(fight_param);
-        let rounds = rounds_param as usize;
-        let sequence = Sequence::boxing_sequence(rounds as usize, prepare, fight, rest)?;
+    pub fn new(
+        prepare: u64,
+        fight: u64,
+        rest: u64,
+        rounds: usize,
+    ) -> Result<Self, BoxingTimerErrorKind> {
+        let sequence = Sequence::boxing_sequence(
+            rounds,
+            Duration::from_secs(prepare),
+            Duration::from_secs(fight),
+            Duration::from_secs(rest),
+        )?;
         let stopwatch = Stopwatch::new(Duration::default());
         Ok(Self {
-            status,
             stopwatch,
             sequence,
             ..Self::default()
@@ -81,6 +72,7 @@ impl BoxingTimer {
         if self.stopwatch.decrement() {
             return;
         }
+        Bell::ring();
         if current_item == self.sequence.len() - 1 {
             self.status = Status::Paused;
             self.current_item = None;
@@ -90,15 +82,30 @@ impl BoxingTimer {
         self.stopwatch
             .set(*self.sequence[current_item + 1].duration())
     }
+    pub fn goto_previous(&mut self) {
+        log::info!("goto previous");
+        if let Some(current_item) = self.current_item {
+            let next_item = if current_item > 0 {
+                current_item - 1
+            } else {
+                0
+            };
+            self.current_item = Some(next_item);
+            self.stopwatch.set(*self.sequence[next_item].duration());
+        } else if self.current_item.is_none() && !self.sequence.is_empty() {
+            self.current_item = Some(0);
+            self.stopwatch.set(*self.sequence[0].duration())
+        }
+    }
     pub fn goto_next(&mut self) {
         log::info!("goto next");
         if let Some(current_item) = self.current_item {
-            self.current_item = Some(current_item + 1);
-            self.stopwatch
-                .set(*self.sequence[current_item + 1].duration());
-            return;
-        }
-        if self.current_item.is_none() && !self.sequence.is_empty() {
+            if current_item < self.sequence.len() - 1 {
+                self.current_item = Some(current_item + 1);
+                self.stopwatch
+                    .set(*self.sequence[current_item + 1].duration());
+            }
+        } else if self.current_item.is_none() && !self.sequence.is_empty() {
             self.current_item = Some(0);
             self.stopwatch.set(*self.sequence[0].duration())
         }
