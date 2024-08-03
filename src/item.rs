@@ -1,6 +1,6 @@
 use crate::difficulty::Difficulty;
 use crate::duration::Duration;
-use crate::errors::BoxingTimerErrorKind;
+use crate::errors::TimerErrorKind;
 use crate::tag::Tag;
 use derive_builder::Builder;
 use derive_new::new;
@@ -76,7 +76,7 @@ impl Item {
     }
 }
 
-pub fn Boxing(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
+pub fn Boxing(duration: Duration) -> Result<Item, TimerErrorKind> {
     Ok(ItemBuilder::default()
         .difficulty(Difficulty::Medium)
         .duration(duration)
@@ -84,7 +84,7 @@ pub fn Boxing(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
         .build()?)
 }
 
-pub fn Prepare(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
+pub fn Prepare(duration: Duration) -> Result<Item, TimerErrorKind> {
     Ok(ItemBuilder::default()
         .waiting(true)
         .tags([Tag::Prepare])
@@ -92,7 +92,14 @@ pub fn Prepare(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
         .build()?)
 }
 
-pub fn Maintain(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
+pub fn Workout(duration: Duration) -> Result<Item, TimerErrorKind> {
+    Ok(ItemBuilder::default()
+        .name("Workout")
+        .duration(duration)
+        .build()?)
+}
+
+pub fn Maintain(duration: Duration) -> Result<Item, TimerErrorKind> {
     Ok(ItemBuilder::default()
         .name("Maintain")
         .difficulty(Difficulty::Hard)
@@ -101,7 +108,7 @@ pub fn Maintain(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
         .build()?)
 }
 
-pub fn Contract(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
+pub fn Contract(duration: Duration) -> Result<Item, TimerErrorKind> {
     Ok(ItemBuilder::default()
         .name("Contract")
         .difficulty(Difficulty::Hard)
@@ -110,7 +117,7 @@ pub fn Contract(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
         .build()?)
 }
 
-pub fn Rest(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
+pub fn Rest(duration: Duration) -> Result<Item, TimerErrorKind> {
     Ok(ItemBuilder::default()
         .name("Rest")
         .waiting(true)
@@ -118,7 +125,7 @@ pub fn Rest(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
         .build()?)
 }
 
-pub fn TheEnd(duration: Duration) -> Result<Item, BoxingTimerErrorKind> {
+pub fn TheEnd(duration: Duration) -> Result<Item, TimerErrorKind> {
     Ok(ItemBuilder::default()
         .name("The End")
         .waiting(true)

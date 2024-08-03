@@ -1,6 +1,6 @@
 use derive_more::Display;
 
-#[derive(Display, Debug, Default, PartialEq, Eq)]
+#[derive(Display, Debug, Default, PartialEq, Eq, Clone)]
 pub enum Status {
     #[default]
     #[display(fmt = "Pause")]

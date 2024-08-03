@@ -1,44 +1,56 @@
-use js_sys::Error;
+use crate::bell::BELL_ID;
+use crate::errors::TimerErrorKind;
+use gloo::console::log;
 use wasm_bindgen::JsCast;
-use wasm_bindgen_futures::spawn_local;
 
-pub fn muted() -> Result<bool, Error> {
+pub fn muted() -> Result<bool, TimerErrorKind> {
     Ok(audio()?.muted())
 }
 
-pub fn mute() -> Result<(), Error> {
+pub fn mute() -> Result<(), TimerErrorKind> {
     audio()?.set_muted(true);
     Ok(())
 }
 
-pub fn unmute() -> Result<(), Error> {
+pub fn unmute() -> Result<(), TimerErrorKind> {
     audio()?.set_muted(false);
     Ok(())
 }
 
-fn audio() -> Result<web_sys::HtmlAudioElement, Error> {
-    let window = web_sys::window().ok_or_else(|| Error::new("cannot get window"))?;
+fn audio() -> Result<web_sys::HtmlAudioElement, TimerErrorKind> {
+    let window = web_sys::window().ok_or_else(|| TimerErrorKind::WindowError)?;
     let document = window
         .document()
-        .ok_or_else(|| Error::new("cannot get document"))?;
+        .ok_or_else(|| TimerErrorKind::DocumentError)?;
     let bell = document
-        .get_element_by_id("bell")
-        .ok_or_else(|| Error::new("cannot get bell element"))?;
+        .get_element_by_id(BELL_ID)
+        .ok_or_else(|| TimerErrorKind::BellError)?;
     bell.dyn_into::<web_sys::HtmlAudioElement>()
-        .map_err(|_| Error::new("cannot convert to audio element"))
+        .map_err(TimerErrorKind::AudioError)
 }
 
-pub fn play() -> Result<(), Error> {
-    if !muted()? {
-        let promise = audio()?.play()?;
-        let future = wasm_bindgen_futures::JsFuture::from(promise);
-        spawn_local(async move {
-            let _ = future.await.map_err(|e| {
-                if !e.as_string().unwrap().contains("NotAllowedError") {
-                    log::info!("failed to await future {e:?}")
-                }
-            });
-        });
+pub fn play(always: bool) -> Result<(), TimerErrorKind> {
+    let was_muted = muted()?;
+    if always {
+        unmute()?;
     }
+    let promise = audio()?.play()?;
+    wasm_bindgen_futures::spawn_local(async move {
+        let future = wasm_bindgen_futures::JsFuture::from(promise);
+        let result = future.await;
+        match result {
+            Ok(_) => {
+                if always && was_muted {
+                    log!("re-mute");
+                    if let Err(error) = mute() {
+                        log!("failed to re-mute", error.to_string())
+                    }
+                }
+            }
+            Err(error) => {
+                log!("failed to await future", error)
+            }
+        }
+    });
     Ok(())
 }

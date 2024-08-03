@@ -1,13 +1,13 @@
 use crate::bell::Bell;
 use crate::duration::Duration;
-use crate::errors::BoxingTimerErrorKind;
 use crate::sequence::Sequence;
 use crate::status::Status;
 use crate::stopwatch::Stopwatch;
+use gloo::console::log;
 pub const DEFAULT_INTERVAL: u64 = 1000;
 
-#[derive(Debug, Default)]
-pub struct BoxingTimer {
+#[derive(Debug, Default, Clone)]
+pub struct Timer {
     /// Is the timer running ?
     status: Status,
     /// Current state of training
@@ -20,25 +20,14 @@ pub struct BoxingTimer {
     sequence: Sequence,
 }
 
-impl BoxingTimer {
-    pub fn new(
-        prepare: u64,
-        fight: u64,
-        rest: u64,
-        rounds: usize,
-    ) -> Result<Self, BoxingTimerErrorKind> {
-        let sequence = Sequence::boxing_sequence(
-            rounds,
-            Duration::from_secs(prepare),
-            Duration::from_secs(fight),
-            Duration::from_secs(rest),
-        )?;
+impl Timer {
+    pub fn new(sequence: Sequence) -> Self {
         let stopwatch = Stopwatch::new(Duration::default());
-        Ok(Self {
+        Self {
             stopwatch,
             sequence,
             ..Self::default()
-        })
+        }
     }
     pub fn current_item(&self) -> Option<usize> {
         self.current_item
@@ -49,20 +38,27 @@ impl BoxingTimer {
     pub fn stopwatch(&self) -> Stopwatch {
         self.stopwatch
     }
+    pub fn set_sequence(&mut self, sequence: &Sequence) {
+        log!("set new sequence");
+        self.sequence = sequence.clone();
+        self.reset_beginning()
+    }
     pub fn reset_beginning(&mut self) {
-        log::info!("reseting beginning");
+        log!("reseting beginning");
         if !self.sequence.is_empty() {
             self.current_item = Some(0);
             self.stopwatch.set(*self.sequence[0].duration());
+        } else {
+            self.current_item = None;
         }
     }
     pub fn reset_current(&mut self) {
-        log::info!("reseting current");
+        log!("reseting current");
         if let Some(current_item) = self.current_item {
             self.stopwatch.set(*self.sequence[current_item].duration());
         }
     }
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self, bell: &Bell) {
         let Some(current_item) = self.current_item else {
             return;
         };
@@ -72,18 +68,23 @@ impl BoxingTimer {
         if self.stopwatch.decrement() {
             return;
         }
-        Bell::ring();
+        bell.ring();
         if current_item == self.sequence.len() - 1 {
-            self.status = Status::Paused;
-            self.current_item = None;
-            return;
+            if self.sequence.restart() {
+                self.current_item = Some(0);
+                self.stopwatch.set(*self.sequence[0].duration());
+            } else {
+                self.status = Status::Paused;
+                self.current_item = None;
+            }
+        } else {
+            self.current_item = Some(current_item + 1);
+            self.stopwatch
+                .set(*self.sequence[current_item + 1].duration())
         }
-        self.current_item = Some(current_item + 1);
-        self.stopwatch
-            .set(*self.sequence[current_item + 1].duration())
     }
     pub fn goto_previous(&mut self) {
-        log::info!("goto previous");
+        log!("goto previous");
         if let Some(current_item) = self.current_item {
             let next_item = if current_item > 0 {
                 current_item - 1
@@ -98,12 +99,15 @@ impl BoxingTimer {
         }
     }
     pub fn goto_next(&mut self) {
-        log::info!("goto next");
+        log!("goto next");
         if let Some(current_item) = self.current_item {
             if current_item < self.sequence.len() - 1 {
                 self.current_item = Some(current_item + 1);
                 self.stopwatch
                     .set(*self.sequence[current_item + 1].duration());
+            } else if self.sequence().restart() {
+                self.current_item = Some(0);
+                self.stopwatch.set(*self.sequence[0].duration());
             }
         } else if self.current_item.is_none() && !self.sequence.is_empty() {
             self.current_item = Some(0);
