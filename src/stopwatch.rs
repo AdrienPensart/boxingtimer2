@@ -1,14 +1,14 @@
-use crate::duration::Duration;
+use crate::duration::DurationExt;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Hash)]
 pub struct Stopwatch {
-    duration: Duration,
-    left: Duration,
-    elapsed: Duration,
+    duration: std::time::Duration,
+    left: std::time::Duration,
+    elapsed: std::time::Duration,
 }
 
 impl Stopwatch {
-    pub fn set(&mut self, duration: &Duration) {
+    pub fn set(&mut self, duration: &std::time::Duration) {
         self.duration = *duration;
         self.left = *duration;
     }
@@ -22,19 +22,19 @@ impl Stopwatch {
         }
         success
     }
-    pub fn duration(&self) -> &Duration {
+    pub fn duration(&self) -> &std::time::Duration {
         &self.duration
     }
-    pub fn left(&self) -> &Duration {
+    pub fn left(&self) -> &std::time::Duration {
         &self.left
     }
-    pub fn elapsed(&self) -> &Duration {
+    pub fn elapsed(&self) -> &std::time::Duration {
         &self.elapsed
     }
 }
 
-impl From<&Duration> for Stopwatch {
-    fn from(duration: &Duration) -> Self {
+impl From<&std::time::Duration> for Stopwatch {
+    fn from(duration: &std::time::Duration) -> Self {
         Self {
             duration: *duration,
             left: *duration,
@@ -43,8 +43,33 @@ impl From<&Duration> for Stopwatch {
     }
 }
 
+// impl From<&u64> for Stopwatch {
+//     fn from(seconds: &u64) -> Self {
+//         Self {
+//             duration: Duration::from_secs(*seconds),
+//             left: Duration::from_secs(*seconds),
+//             ..Self::default()
+//         }
+//     }
+// }
+
+// impl From<u64> for Stopwatch {
+//     fn from(seconds: u64) -> Self {
+//         Self {
+//             duration: Duration::from_secs(seconds),
+//             left: Duration::from_secs(seconds),
+//             ..Self::default()
+//         }
+//     }
+// }
+
 impl std::fmt::Display for Stopwatch {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{} / {}", self.left, self.duration)
+        write!(
+            f,
+            "{} / {}",
+            self.left.to_string(),
+            self.duration.to_string()
+        )
     }
 }

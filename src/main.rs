@@ -11,8 +11,8 @@ pub mod stopwatch;
 pub mod tag;
 pub mod timer;
 use crate::bell::{Bell, BELL_ID};
-use crate::duration::Duration;
-use crate::item::Workout;
+use crate::duration::DurationExt;
+use crate::item::{Prepare, WarmUp};
 use crate::sequence::Sequence;
 use crate::tag::Tag;
 use crate::timer::Timer;
@@ -47,56 +47,133 @@ fn App() -> Element {
 
 #[component]
 fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
-    let prepare = &Duration::from_secs(prepare);
+    let prepare = &std::time::Duration::from_secs(prepare);
 
-    let one_hour = Sequence::new(
-        "One hour non-stop".into(),
-        0,
-        vec![Workout(&Duration::from_secs(3600), &[])],
-        false,
+    // let test = Sequence::simple(
+    //     "Test",
+    //     &[
+    //         Prepare(prepare),
+    //         // 1 minute
+    //         WarmUp("test", &std::time::Duration::from_secs(3)),
+    //     ],
+    // );
+    // let test_cycle = Sequence::cycle(
+    //     "Test",
+    //     &[
+    //         Prepare(prepare),
+    //         // 1 minute
+    //         WarmUp("test", &std::time::Duration::from_secs(3)),
+    //     ],
+    // );
+
+    let warmup_boxing = Sequence::simple(
+        "Warm Up",
+        &[
+            Prepare(prepare),
+            // 1 minute
+            WarmUp("Head rotation", &std::time::Duration::from_secs(20)),
+            WarmUp("Shoulders rotation", &std::time::Duration::from_secs(20)),
+            WarmUp("Arms rotation", &std::time::Duration::from_secs(20)),
+            // 1 minute
+            WarmUp("Elbows rotation", &std::time::Duration::from_secs(20)),
+            WarmUp("Wrists rotation", &std::time::Duration::from_secs(20)),
+            WarmUp("Hips rotation", &std::time::Duration::from_secs(20)),
+            // 1 minute
+            WarmUp("Knees rotation", &std::time::Duration::from_secs(20)),
+            WarmUp("Feet rotation", &std::time::Duration::from_secs(20)),
+            WarmUp("Heel drop", &std::time::Duration::from_secs(20)),
+            // 1 minute
+            WarmUp("Leg swings", &std::time::Duration::from_secs(20)),
+            WarmUp("Side leg swings", &std::time::Duration::from_secs(20)),
+            WarmUp("Single leg touch toes", &std::time::Duration::from_secs(20)),
+            // 1 minute
+            WarmUp("Butt kicks", &std::time::Duration::from_secs(30)),
+            WarmUp("High knees", &std::time::Duration::from_secs(30)),
+            // 1 minute
+            WarmUp("Jumping jacks", &std::time::Duration::from_secs(30)),
+            WarmUp("Mountain climbers", &std::time::Duration::from_secs(30)),
+            // 1 minute
+            WarmUp("Jump squats", &std::time::Duration::from_secs(30)),
+            WarmUp("Push ups", &std::time::Duration::from_secs(30)),
+            // 1 minute
+            WarmUp("Alternate lunges", &std::time::Duration::from_secs(30)),
+            WarmUp("Burpees", &std::time::Duration::from_secs(30)),
+        ],
+    );
+
+    let shadow_boxing = Sequence::boxing(
+        "Shadow boxing: 3x2m + 30s",
+        3,
+        prepare,
+        &std::time::Duration::from_secs(120),
+        &std::time::Duration::from_secs(30),
+    );
+
+    let heavy_bag = Sequence::boxing(
+        "Heavy bag: 3x2m + 30s",
+        3,
+        prepare,
+        &std::time::Duration::from_secs(120),
+        &std::time::Duration::from_secs(30),
     );
 
     let pro_boxing = Sequence::boxing(
         "Pro: 12x3m + 1m",
         12,
         prepare,
-        &Duration::from_secs(180),
-        &Duration::from_secs(60),
+        &std::time::Duration::from_secs(180),
+        &std::time::Duration::from_secs(60),
     );
 
     let olympic_boxing = Sequence::boxing(
         "Olympic: 12x2m + 1m",
         12,
         prepare,
-        &Duration::from_secs(120),
-        &Duration::from_secs(60),
+        &std::time::Duration::from_secs(120),
+        &std::time::Duration::from_secs(60),
     );
 
     let stamina_boxing = Sequence::stamina(
-        "J/C/JC/JCH",
+        "Jab/Cross/Jab-Cross/Jab-Cross-Hook",
         vec!["Jab", "Cross", "Jab/Cross", "Jab/Cross/Hook"],
         prepare,
-        &Duration::from_secs(30),
-        &Duration::from_secs(60),
+        &std::time::Duration::from_secs(30),
+        &std::time::Duration::from_secs(60),
         4,
     );
 
-    let hiit = Sequence::hiit(prepare, &Duration::from_secs(5), &Duration::from_secs(5));
+    let hiit = Sequence::hiit(
+        prepare,
+        &std::time::Duration::from_secs(20),
+        &std::time::Duration::from_secs(10),
+    );
 
-    let jump_role = Sequence::workout(
+    let jump_role_5mn = Sequence::workout(
         "Jump Rope",
         prepare,
-        &Duration::from_secs(10 * 60),
+        &std::time::Duration::from_secs(5 * 60),
         &[Tag::Boxing],
     );
 
-    let sequences = vec![
-        one_hour.clone(),
-        pro_boxing.clone(),
-        olympic_boxing.clone(),
-        stamina_boxing.clone(),
-        hiit.clone(),
-        jump_role.clone(),
+    let jump_role_10mn = Sequence::workout(
+        "Jump Rope",
+        prepare,
+        &std::time::Duration::from_secs(10 * 60),
+        &[Tag::Boxing],
+    );
+
+    let sequences = [
+        // test.clone(),
+        // test_cycle.clone(),
+        warmup_boxing,
+        shadow_boxing,
+        heavy_bag,
+        pro_boxing,
+        olympic_boxing,
+        stamina_boxing,
+        hiit,
+        jump_role_5mn,
+        jump_role_10mn,
     ];
 
     let mut bell = use_signal(Bell::default);
@@ -106,7 +183,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         }
     });
 
-    let mut timer = use_signal(|| Timer::new(&hiit));
+    let mut timer = use_signal(Timer::default);
     let _tick = use_resource(move || async move {
         loop {
             gloo::timers::future::TimeoutFuture::new(timer::DEFAULT_INTERVAL as u32).await;
@@ -172,11 +249,12 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                         .with_mut(|t| {
                             for sequence in sequences.iter() {
                                 if sequence.name() == ev.data.value() {
-                                    t.set_sequence(sequence);
+                                    t.set_sequence(sequence.clone());
                                 }
                             }
                         })
                 },
+                option { disabled: true, selected: true, value: true, "Select a workout" }
                 for sequence in sequences.iter() {
                     option {
                         value: sequence.name(),
@@ -206,8 +284,8 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                 class: "bg-blue-600 flex w-full items-center justify-center h-screen rounded-xl",
                 div { class: "items-center justify-center",
                     div { class: "flex flex-col",
-                        div { id: "counter", class: "text-9xl",
-                            { timer.read().stopwatch().left().to_string() }
+                        if let Some(stopwatch) = timer.read().stopwatch() {
+                            div { id: "counter", class: "text-9xl", { stopwatch.left().to_string() } }
                         }
                         div { class: "items-center justify-center display-grid grid p-12",
                             div { id: "status",

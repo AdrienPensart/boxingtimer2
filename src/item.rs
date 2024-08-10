@@ -1,7 +1,6 @@
-use crate::difficulty::Difficulty;
-use crate::duration::Duration;
 use crate::stopwatch::Stopwatch;
 use crate::tag::Tag;
+use crate::{difficulty::Difficulty, duration::DurationExt};
 use derive_builder::Builder;
 use derive_more::{Deref, DerefMut};
 use derive_new::new;
@@ -38,9 +37,14 @@ impl std::fmt::Display for Item {
             "".to_string()
         };
         if let Some(difficulty) = self.difficulty {
-            write!(f, " - {} : {}", difficulty, self.stopwatch.duration())?;
+            write!(
+                f,
+                " - {} : {}",
+                difficulty,
+                self.stopwatch.duration().to_string()
+            )?;
         } else {
-            write!(f, " : {}", self.stopwatch.duration())?;
+            write!(f, " : {}", self.stopwatch.duration().to_string())?;
         }
 
         if !self.tags.is_empty() {
@@ -79,7 +83,17 @@ impl Item {
     }
 }
 
-pub fn Boxing(duration: &Duration) -> Item {
+pub fn WarmUp(name: &str, duration: &std::time::Duration) -> Item {
+    ItemBuilder::default()
+        .name(name)
+        .difficulty(Difficulty::Easy)
+        .stopwatch(duration)
+        .tags([Tag::WarmUp])
+        .build()
+        .unwrap()
+}
+
+pub fn Boxing(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .difficulty(Difficulty::Medium)
         .stopwatch(duration)
@@ -88,7 +102,7 @@ pub fn Boxing(duration: &Duration) -> Item {
         .unwrap()
 }
 
-pub fn Punch(name: &str, duration: &Duration) -> Item {
+pub fn Punch(name: &str, duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name(name)
         .tags([Tag::Boxing])
@@ -98,7 +112,7 @@ pub fn Punch(name: &str, duration: &Duration) -> Item {
         .unwrap()
 }
 
-pub fn Workout(duration: &Duration, tags: &[Tag]) -> Item {
+pub fn Workout(duration: &std::time::Duration, tags: &[Tag]) -> Item {
     ItemBuilder::default()
         .name("Workout")
         .tags(tags)
@@ -107,7 +121,7 @@ pub fn Workout(duration: &Duration, tags: &[Tag]) -> Item {
         .unwrap()
 }
 
-pub fn Prepare(duration: &Duration) -> Item {
+pub fn Prepare(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .waiting(true)
         .tags([Tag::Prepare])
@@ -116,7 +130,7 @@ pub fn Prepare(duration: &Duration) -> Item {
         .unwrap()
 }
 
-pub fn Maintain(duration: &Duration) -> Item {
+pub fn Maintain(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Maintain")
         .difficulty(Difficulty::Hard)
@@ -126,7 +140,7 @@ pub fn Maintain(duration: &Duration) -> Item {
         .unwrap()
 }
 
-pub fn Contract(duration: &Duration) -> Item {
+pub fn Contract(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Contract")
         .difficulty(Difficulty::Hard)
@@ -136,7 +150,7 @@ pub fn Contract(duration: &Duration) -> Item {
         .unwrap()
 }
 
-pub fn Rest(duration: &Duration) -> Item {
+pub fn Rest(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Rest")
         .stopwatch(duration)
