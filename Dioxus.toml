@@ -17,6 +17,8 @@ asset_dir = "assets"
 
 # HTML title tag content
 title = "boxingtimer2"
+# base_path = "AdrienPensart.github.io"
+index_on_404 = true
 
 [web.watcher]
 

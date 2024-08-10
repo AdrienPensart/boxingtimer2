@@ -1,9 +1,9 @@
 use derive_more::Display;
 
-#[derive(Display, Clone, Copy, Default, Debug, Eq, PartialEq)]
+#[derive(Display, Clone, Copy, Default, Debug, Eq, PartialEq, Hash)]
 pub enum Difficulty {
     #[default]
-    Unknown,
+    None,
     Easy,
     Medium,
     Hard,

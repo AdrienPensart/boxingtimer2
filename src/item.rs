@@ -1,20 +1,23 @@
 use crate::difficulty::Difficulty;
 use crate::duration::Duration;
-use crate::errors::TimerErrorKind;
+use crate::stopwatch::Stopwatch;
 use crate::tag::Tag;
 use derive_builder::Builder;
+use derive_more::{Deref, DerefMut};
 use derive_new::new;
 
-#[derive(new, Default, Builder, Clone, Debug, Eq, PartialEq)]
+#[derive(new, Default, Builder, Clone, Debug, Eq, PartialEq, Hash, Deref, DerefMut)]
 #[builder(setter(into))]
 pub struct Item {
     #[new(value = "None")]
     #[builder(setter(strip_option), default)]
     name: Option<String>,
-    #[new(value = "Difficulty::Unknown")]
+    #[new(value = "None")]
     #[builder(default)]
-    difficulty: Difficulty,
-    duration: Duration,
+    difficulty: Option<Difficulty>,
+    #[deref]
+    #[deref_mut]
+    stopwatch: Stopwatch,
     #[new(value = "vec![]")]
     #[builder(default)]
     tags: Vec<Tag>,
@@ -34,10 +37,10 @@ impl std::fmt::Display for Item {
         } else {
             "".to_string()
         };
-        if self.difficulty == Difficulty::Unknown {
-            write!(f, " : {}", self.duration)?;
+        if let Some(difficulty) = self.difficulty {
+            write!(f, " - {} : {}", difficulty, self.stopwatch.duration())?;
         } else {
-            write!(f, " - {} : {}", self.difficulty, self.duration)?;
+            write!(f, " : {}", self.stopwatch.duration())?;
         }
 
         if !self.tags.is_empty() {
@@ -59,76 +62,85 @@ impl Item {
     pub fn name(&self) -> &Option<String> {
         &self.name
     }
-    pub fn duration(&self) -> &Duration {
-        &self.duration
+    pub fn stopwatch(&self) -> &Stopwatch {
+        &self.stopwatch
     }
-    pub fn difficulty(&self) -> Difficulty {
+    pub fn stopwatch_mut(&mut self) -> &mut Stopwatch {
+        &mut self.stopwatch
+    }
+    pub fn difficulty(&self) -> Option<Difficulty> {
         self.difficulty
     }
-    pub fn tags(&self) -> &[Tag] {
+    pub fn tags(&self) -> &Vec<Tag> {
         &self.tags
     }
     pub fn waiting(&self) -> bool {
         self.waiting
     }
-    pub fn prepare(&self) -> bool {
-        self.tags.contains(&Tag::Prepare)
-    }
 }
 
-pub fn Boxing(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
+pub fn Boxing(duration: &Duration) -> Item {
+    ItemBuilder::default()
         .difficulty(Difficulty::Medium)
-        .duration(duration)
+        .stopwatch(duration)
         .tags([Tag::Boxing])
-        .build()?)
+        .build()
+        .unwrap()
 }
 
-pub fn Prepare(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
+pub fn Punch(name: &str, duration: &Duration) -> Item {
+    ItemBuilder::default()
+        .name(name)
+        .tags([Tag::Boxing])
+        .stopwatch(duration)
+        .difficulty(Difficulty::Medium)
+        .build()
+        .unwrap()
+}
+
+pub fn Workout(duration: &Duration, tags: &[Tag]) -> Item {
+    ItemBuilder::default()
+        .name("Workout")
+        .tags(tags)
+        .stopwatch(duration)
+        .build()
+        .unwrap()
+}
+
+pub fn Prepare(duration: &Duration) -> Item {
+    ItemBuilder::default()
         .waiting(true)
         .tags([Tag::Prepare])
-        .duration(duration)
-        .build()?)
+        .stopwatch(duration)
+        .build()
+        .unwrap()
 }
 
-pub fn Workout(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
-        .name("Workout")
-        .duration(duration)
-        .build()?)
-}
-
-pub fn Maintain(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
+pub fn Maintain(duration: &Duration) -> Item {
+    ItemBuilder::default()
         .name("Maintain")
         .difficulty(Difficulty::Hard)
         .waiting(true)
-        .duration(duration)
-        .build()?)
+        .stopwatch(duration)
+        .build()
+        .unwrap()
 }
 
-pub fn Contract(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
+pub fn Contract(duration: &Duration) -> Item {
+    ItemBuilder::default()
         .name("Contract")
         .difficulty(Difficulty::Hard)
         .waiting(true)
-        .duration(duration)
-        .build()?)
+        .stopwatch(duration)
+        .build()
+        .unwrap()
 }
 
-pub fn Rest(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
+pub fn Rest(duration: &Duration) -> Item {
+    ItemBuilder::default()
         .name("Rest")
+        .stopwatch(duration)
         .waiting(true)
-        .duration(duration)
-        .build()?)
-}
-
-pub fn TheEnd(duration: Duration) -> Result<Item, TimerErrorKind> {
-    Ok(ItemBuilder::default()
-        .name("The End")
-        .waiting(true)
-        .duration(duration)
-        .build()?)
+        .build()
+        .unwrap()
 }

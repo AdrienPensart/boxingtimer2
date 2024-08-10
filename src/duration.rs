@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Default, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Default, Debug, Eq, PartialEq, Hash)]
 pub struct Duration(std::time::Duration);
 
 impl Duration {

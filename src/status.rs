@@ -1,22 +1,34 @@
 use derive_more::Display;
 
-#[derive(Display, Debug, Default, PartialEq, Eq, Clone)]
+#[derive(Display, Debug, PartialEq, Eq, Clone)]
 pub enum Status {
-    #[default]
-    #[display(fmt = "Pause")]
+    #[display("Pause")]
     Paused,
-    #[display(fmt = "Start")]
+    #[display("Start")]
     Running,
 }
 
-impl Status {
-    pub fn toggle(&mut self) {
-        *self = self.next()
+impl Default for Status {
+    fn default() -> Self {
+        Self::Paused
     }
-    pub fn next(&self) -> Self {
+}
+
+impl Status {
+    pub fn toggle(&mut self) -> &mut Self {
+        *self = self.next().clone();
+        self
+    }
+    pub fn next(&self) -> &Self {
         match self {
-            Self::Paused => Self::Running,
-            Self::Running => Self::Paused,
+            Self::Paused => &Self::Running,
+            Self::Running => &Self::Paused,
         }
+    }
+    pub fn paused(&self) -> bool {
+        matches!(self, Self::Paused)
+    }
+    pub fn running(&self) -> bool {
+        matches!(self, Self::Running)
     }
 }

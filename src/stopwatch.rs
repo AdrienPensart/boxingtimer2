@@ -1,6 +1,6 @@
 use crate::duration::Duration;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Hash)]
 pub struct Stopwatch {
     duration: Duration,
     left: Duration,
@@ -8,16 +8,12 @@ pub struct Stopwatch {
 }
 
 impl Stopwatch {
-    pub fn new(duration: Duration) -> Self {
-        Self {
-            duration,
-            left: duration,
-            elapsed: Duration::default(),
-        }
+    pub fn set(&mut self, duration: &Duration) {
+        self.duration = *duration;
+        self.left = *duration;
     }
-    pub fn set(&mut self, duration: Duration) {
-        self.duration = duration;
-        self.left = duration;
+    pub fn reset(&mut self) {
+        self.left = self.duration;
     }
     pub fn decrement(&mut self) -> bool {
         let success = self.left.decrement();
@@ -34,6 +30,16 @@ impl Stopwatch {
     }
     pub fn elapsed(&self) -> &Duration {
         &self.elapsed
+    }
+}
+
+impl From<&Duration> for Stopwatch {
+    fn from(duration: &Duration) -> Self {
+        Self {
+            duration: *duration,
+            left: *duration,
+            ..Self::default()
+        }
     }
 }
 
