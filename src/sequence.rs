@@ -2,19 +2,16 @@ use crate::duration::DurationExt;
 use crate::item::{Boxing, Item, Prepare, Punch, Rest, Workout};
 use crate::stopwatch::Stopwatch;
 use crate::tag::Tag;
-use derive_more::{Deref, DerefMut, Index, IntoIterator};
+use derive_more::{Deref, IntoIterator};
 use gloo::console::log;
 use itertools::Itertools;
 
-#[derive(Default, PartialEq, Eq, Clone, Debug, IntoIterator, Index, Deref, DerefMut, Hash)]
+#[derive(Default, PartialEq, Eq, Clone, Debug, Deref, Hash)]
 
 pub struct Sequence {
     name: String,
     position: usize,
     #[deref]
-    #[deref_mut]
-    #[index]
-    #[into_iterator]
     items: Vec<Item>,
     cycle: bool,
 }
@@ -54,6 +51,9 @@ impl Sequence {
         &self.position
     }
     pub fn goto_previous(&mut self) {
+        if self.items.is_empty() {
+            return;
+        }
         log!("goto previous");
         if let Some(position) = self.position.checked_sub(1) {
             self.position = position
@@ -63,6 +63,9 @@ impl Sequence {
         self.reset_current()
     }
     pub fn goto_next(&mut self, manual: bool) {
+        if self.items.is_empty() {
+            return;
+        }
         log!("goto next");
         if self.position < self.items.len() - 1 {
             self.position += 1;
@@ -93,8 +96,10 @@ impl Sequence {
     }
     pub fn reset_beginning(&mut self, manual: bool) {
         self.position = 0;
-        if !manual && self.cycle {
-            self.position = 1;
+        if let Some(item) = self.items.get(self.position) {
+            if item.is_prepare() && !manual && self.cycle {
+                self.position = 1;
+            }
         }
         self.reset_current()
     }
@@ -130,7 +135,7 @@ impl Sequence {
         workout: &std::time::Duration,
         rest: &std::time::Duration,
     ) -> Box<Self> {
-        let mut items = vec![Rest(rest), Workout(workout, &[Tag::HiiT])];
+        let mut items = vec![Workout(workout, &[Tag::HiiT]), Rest(rest)];
         if !prepare.is_zero() {
             items.insert(0, Prepare(prepare));
         }
@@ -182,7 +187,7 @@ impl Sequence {
     pub fn workout_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .filter(|i| !i.waiting())
+                .filter(|i| !i.is_wait())
                 .map(|i| i.stopwatch().duration().as_secs())
                 .sum(),
         )
@@ -190,24 +195,25 @@ impl Sequence {
     pub fn waiting_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .filter(|i| i.waiting())
+                .filter(|i| i.is_wait())
                 .map(|i| i.stopwatch().duration().as_secs())
                 .sum(),
         )
     }
-    pub fn tags_str(&self) -> String {
+    pub fn tags(&self) -> Vec<Tag> {
         self.items
             .iter()
             .flat_map(|i| i.tags())
             .filter(|t| **t != Tag::Prepare)
             .unique()
-            .join(", ")
+            .cloned()
+            .collect_vec()
     }
 }
 
 impl std::fmt::Display for Sequence {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let tags = self.tags_str();
+        let tags = self.tags().into_iter().join(",");
         let name = self.name();
         if name.contains(&tags) {
             write!(f, "{name}")

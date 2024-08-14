@@ -4,6 +4,7 @@ pub mod difficulty;
 pub mod duration;
 pub mod errors;
 pub mod helpers;
+pub mod indexedvec;
 pub mod item;
 pub mod sequence;
 pub mod status;
@@ -81,7 +82,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             // 1 minute
             WarmUp("Knees rotation", &std::time::Duration::from_secs(20)),
             WarmUp("Feet rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Heel drop", &std::time::Duration::from_secs(20)),
+            WarmUp("Heel raises", &std::time::Duration::from_secs(20)),
             // 1 minute
             WarmUp("Leg swings", &std::time::Duration::from_secs(20)),
             WarmUp("Side leg swings", &std::time::Duration::from_secs(20)),
@@ -95,6 +96,9 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             // 1 minute
             WarmUp("Jump squats", &std::time::Duration::from_secs(30)),
             WarmUp("Push ups", &std::time::Duration::from_secs(30)),
+            // 1 minute
+            WarmUp("Speed steps", &std::time::Duration::from_secs(30)),
+            WarmUp("Left/right jumps", &std::time::Duration::from_secs(30)),
             // 1 minute
             WarmUp("Alternate lunges", &std::time::Duration::from_secs(30)),
             WarmUp("Burpees", &std::time::Duration::from_secs(30)),
@@ -133,9 +137,18 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         &std::time::Duration::from_secs(60),
     );
 
-    let stamina_boxing = Sequence::stamina(
+    let stamina_jab_cross_hook = Sequence::stamina(
         "Jab/Cross/Jab-Cross/Jab-Cross-Hook",
         vec!["Jab", "Cross", "Jab/Cross", "Jab/Cross/Hook"],
+        prepare,
+        &std::time::Duration::from_secs(30),
+        &std::time::Duration::from_secs(60),
+        4,
+    );
+
+    let stamina_jab_cross_hook_cross = Sequence::stamina(
+        "Jab/Jab-Cross/Jab-Cross-Hook/Jab-Cross-Hook-Cross",
+        vec!["Jab", "Jab/Cross", "Jab/Cross/Hook", "Jab/Cross/Hook/Cross"],
         prepare,
         &std::time::Duration::from_secs(30),
         &std::time::Duration::from_secs(60),
@@ -156,7 +169,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
     );
 
     let jump_role_10mn = Sequence::workout(
-        "Jump Rope",
+        "Jump Rope, miss = 1 burpee",
         prepare,
         &std::time::Duration::from_secs(10 * 60),
         &[Tag::Boxing],
@@ -170,7 +183,8 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         heavy_bag,
         pro_boxing,
         olympic_boxing,
-        stamina_boxing,
+        stamina_jab_cross_hook,
+        stamina_jab_cross_hook_cross,
         hiit,
         jump_role_5mn,
         jump_role_10mn,
@@ -265,17 +279,19 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             }
         }
         div { class: "flex flex-row space-x-1 m-1 ",
-            ul {
-                id: "sequence",
-                class: "info flex-none p-2 bg-primary-600 rounded-xl bg-sky-900",
-                li { class: "text-center",
-                    b { { timer.read().name() } }
-                }
-                for (index , item) in timer.read().iter().enumerate() {
-                    li {
-                        class: "text-nowrap",
-                        class: if timer.read().position() == &index { "text-red-600" } else { "" },
-                        span { class: "text-sm", "{item}" }
+            if !timer.read().sequence().is_empty() {
+                ul {
+                    id: "sequence",
+                    class: "info flex-none p-2 bg-primary-600 rounded-xl bg-sky-900",
+                    li { class: "text-center",
+                        b { { timer.read().name() } }
+                    }
+                    for (index , item) in timer.read().iter().enumerate() {
+                        li {
+                            class: "text-nowrap",
+                            class: if timer.read().position() == &index { "text-red-600" } else { "" },
+                            span { class: "text-sm", "{item}" }
+                        }
                     }
                 }
             }

@@ -1,14 +1,10 @@
 pub trait DurationExt {
-    fn from(seconds: &u64) -> Self;
     fn increment(&mut self);
     fn decrement(&mut self) -> bool;
     fn to_string(&self) -> String;
 }
 
 impl DurationExt for std::time::Duration {
-    fn from(seconds: &u64) -> Self {
-        Self::from_secs(*seconds)
-    }
     fn increment(&mut self) {
         if let Some(duration) = self.checked_add(std::time::Duration::from_secs(1)) {
             *self = duration

@@ -43,26 +43,6 @@ impl From<&std::time::Duration> for Stopwatch {
     }
 }
 
-// impl From<&u64> for Stopwatch {
-//     fn from(seconds: &u64) -> Self {
-//         Self {
-//             duration: Duration::from_secs(*seconds),
-//             left: Duration::from_secs(*seconds),
-//             ..Self::default()
-//         }
-//     }
-// }
-
-// impl From<u64> for Stopwatch {
-//     fn from(seconds: u64) -> Self {
-//         Self {
-//             duration: Duration::from_secs(seconds),
-//             left: Duration::from_secs(seconds),
-//             ..Self::default()
-//         }
-//     }
-// }
-
 impl std::fmt::Display for Stopwatch {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(

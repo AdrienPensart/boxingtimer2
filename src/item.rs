@@ -20,9 +20,6 @@ pub struct Item {
     #[new(value = "vec![]")]
     #[builder(default)]
     tags: Vec<Tag>,
-    #[new(value = "false")]
-    #[builder(default)]
-    waiting: bool,
 }
 
 impl std::fmt::Display for Item {
@@ -78,8 +75,14 @@ impl Item {
     pub fn tags(&self) -> &Vec<Tag> {
         &self.tags
     }
-    pub fn waiting(&self) -> bool {
-        self.waiting
+    pub fn is_prepare(&self) -> bool {
+        self.tags.contains(&Tag::Prepare)
+    }
+    pub fn is_rest(&self) -> bool {
+        self.tags.contains(&Tag::Rest)
+    }
+    pub fn is_wait(&self) -> bool {
+        self.is_prepare() || self.is_rest()
     }
 }
 
@@ -123,7 +126,6 @@ pub fn Workout(duration: &std::time::Duration, tags: &[Tag]) -> Item {
 
 pub fn Prepare(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
-        .waiting(true)
         .tags([Tag::Prepare])
         .stopwatch(duration)
         .build()
@@ -134,7 +136,6 @@ pub fn Maintain(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Maintain")
         .difficulty(Difficulty::Hard)
-        .waiting(true)
         .stopwatch(duration)
         .build()
         .unwrap()
@@ -144,7 +145,6 @@ pub fn Contract(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Contract")
         .difficulty(Difficulty::Hard)
-        .waiting(true)
         .stopwatch(duration)
         .build()
         .unwrap()
@@ -154,7 +154,6 @@ pub fn Rest(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Rest")
         .stopwatch(duration)
-        .waiting(true)
         .build()
         .unwrap()
 }
