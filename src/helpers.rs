@@ -1,7 +1,8 @@
 use crate::bell::BELL_ID;
 use crate::errors::TimerErrorKind;
 use gloo::console::log;
-use wasm_bindgen::JsCast;
+// use wasm_bindgen::JsCast;
+use web_sys::wasm_bindgen::JsCast;
 
 pub fn muted() -> Result<bool, TimerErrorKind> {
     Ok(audio()?.muted())

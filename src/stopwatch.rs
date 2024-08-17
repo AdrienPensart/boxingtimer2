@@ -15,6 +15,9 @@ impl Stopwatch {
     pub fn reset(&mut self) {
         self.left = self.duration;
     }
+    pub fn increment(&mut self) {
+        self.left.increment();
+    }
     pub fn decrement(&mut self) -> bool {
         let success = self.left.decrement();
         if success {

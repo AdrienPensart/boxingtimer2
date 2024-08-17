@@ -9,7 +9,7 @@ pub enum TimerErrorKind {
     #[error("Cannot get audio element: {0:?}")]
     AudioError(web_sys::Element),
     #[error("Cannot ring bell: {0:?}")]
-    PlayError(wasm_bindgen::JsValue),
+    PlayError(web_sys::wasm_bindgen::JsValue),
     #[error("Cannot get window")]
     WindowError,
     #[error("Cannot get document")]
@@ -24,8 +24,8 @@ impl From<js_sys::Error> for TimerErrorKind {
     }
 }
 
-impl From<wasm_bindgen::JsValue> for TimerErrorKind {
-    fn from(value: wasm_bindgen::JsValue) -> Self {
+impl From<web_sys::wasm_bindgen::JsValue> for TimerErrorKind {
+    fn from(value: web_sys::wasm_bindgen::JsValue) -> Self {
         TimerErrorKind::PlayError(value)
     }
 }

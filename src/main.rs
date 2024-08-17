@@ -16,13 +16,13 @@ use crate::duration::DurationExt;
 use crate::item::{Prepare, WarmUp};
 use crate::sequence::Sequence;
 use crate::tag::Tag;
-use crate::timer::Timer;
+use crate::timer::{Timer, DEFAULT_INTERVAL};
 use dioxus::prelude::*;
 use dioxus_logger::tracing::Level;
 // use gloo::console::log;
-// use manganis::mg;
+use manganis::mg;
 
-// const _: &str = mg!(file("assets/tailwind.css"));
+const _: &str = mg!(file("assets/tailwind.css"));
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
@@ -49,24 +49,6 @@ fn App() -> Element {
 #[component]
 fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
     let prepare = &std::time::Duration::from_secs(prepare);
-
-    // let test = Sequence::simple(
-    //     "Test",
-    //     &[
-    //         Prepare(prepare),
-    //         // 1 minute
-    //         WarmUp("test", &std::time::Duration::from_secs(3)),
-    //     ],
-    // );
-    // let test_cycle = Sequence::cycle(
-    //     "Test",
-    //     &[
-    //         Prepare(prepare),
-    //         // 1 minute
-    //         WarmUp("test", &std::time::Duration::from_secs(3)),
-    //     ],
-    // );
-
     let warmup_boxing = Sequence::simple(
         "Warm Up",
         &[
@@ -175,21 +157,6 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         &[Tag::Boxing],
     );
 
-    let sequences = [
-        // test.clone(),
-        // test_cycle.clone(),
-        warmup_boxing,
-        shadow_boxing,
-        heavy_bag,
-        pro_boxing,
-        olympic_boxing,
-        stamina_jab_cross_hook,
-        stamina_jab_cross_hook_cross,
-        hiit,
-        jump_role_5mn,
-        jump_role_10mn,
-    ];
-
     let mut bell = use_signal(Bell::default);
     let _mute_bell = use_resource(move || async move {
         if muted {
@@ -197,11 +164,28 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         }
     });
 
-    let mut timer = use_signal(Timer::default);
+    let mut timer = use_signal(|| {
+        Timer::new(&[
+            // test.clone(),
+            // test_cycle.clone(),
+            warmup_boxing,
+            shadow_boxing,
+            heavy_bag,
+            pro_boxing,
+            olympic_boxing,
+            stamina_jab_cross_hook,
+            stamina_jab_cross_hook_cross,
+            hiit,
+            jump_role_5mn,
+            jump_role_10mn,
+        ])
+    });
     let _tick = use_resource(move || async move {
         loop {
-            gloo::timers::future::TimeoutFuture::new(timer::DEFAULT_INTERVAL as u32).await;
-            timer.write().tick(&bell.read());
+            gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
+            if timer.write().tick(&bell.read()) {
+                gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
+            }
         }
     });
 
@@ -226,22 +210,22 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             }
             button {
                 class: "btn btn-primary rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.reset_beginning(true)),
+                onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
                 "Restart sequence"
             }
             button {
                 class: "btn btn-primary rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.reset_current()),
+                onclick: move |_| timer.with_mut(|t| t.restart_item()),
                 "Restart current"
             }
             button {
                 class: "btn btn-accent rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.goto_previous()),
+                onclick: move |_| timer.with_mut(|t| t.manual_previous()),
                 "Previous"
             }
             button {
                 class: "btn btn-accent rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.goto_next(true)),
+                onclick: move |_| timer.with_mut(|t| t.manual_next()),
                 "Next"
             }
             button {
@@ -259,38 +243,35 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                 name: "Sequence",
                 class: "select select-success",
                 oninput: move |ev| {
-                    timer
-                        .with_mut(|t| {
-                            for sequence in sequences.iter() {
-                                if sequence.name() == ev.data.value() {
-                                    t.set_sequence(sequence.clone());
-                                }
-                            }
-                        })
+                    if let Ok(index) = ev.data.value().parse::<usize>() {
+                        timer.with_mut(|t| t.set_sequence(index));
+                    }
                 },
-                option { disabled: true, selected: true, value: true, "Select a workout" }
-                for sequence in sequences.iter() {
+                option { disabled: true, selected: true, "Select a workout" }
+                for (index , sequence) in timer.read().sequences().iter().enumerate() {
                     option {
-                        value: sequence.name(),
-                        selected: timer.read().name() == sequence.name(),
+                        value: index.to_string(),
+                        selected: timer.read().sequences().get().map(|s| s.name() == sequence.name()),
                         { sequence.to_string() }
                     }
                 }
             }
         }
         div { class: "flex flex-row space-x-1 m-1 ",
-            if !timer.read().sequence().is_empty() {
-                ul {
-                    id: "sequence",
-                    class: "info flex-none p-2 bg-primary-600 rounded-xl bg-sky-900",
-                    li { class: "text-center",
-                        b { { timer.read().name() } }
-                    }
-                    for (index , item) in timer.read().iter().enumerate() {
-                        li {
-                            class: "text-nowrap",
-                            class: if timer.read().position() == &index { "text-red-600" } else { "" },
-                            span { class: "text-sm", "{item}" }
+            if let Some(sequence) = timer.read().sequences().get() {
+                if !sequence.is_empty() {
+                    ul {
+                        id: "sequence",
+                        class: "info flex-none p-2 bg-primary-600 rounded-xl bg-sky-900",
+                        li { class: "text-center",
+                            b { { sequence.name() } }
+                        }
+                        for (index , item) in sequence.iter().enumerate() {
+                            li {
+                                class: "text-nowrap",
+                                class: if sequence.index() == Some(index) { "text-red-600" } else { "" },
+                                span { class: "text-sm", "{item}" }
+                            }
                         }
                     }
                 }
@@ -300,33 +281,38 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                 class: "bg-blue-600 flex w-full items-center justify-center h-screen rounded-xl",
                 div { class: "items-center justify-center",
                     div { class: "flex flex-col",
-                        if let Some(stopwatch) = timer.read().stopwatch() {
-                            div { id: "counter", class: "text-9xl", { stopwatch.left().to_string() } }
-                        }
-                        div { class: "items-center justify-center display-grid grid p-12",
-                            div { id: "status",
-                                "Status: "
-                                { timer.read().status().to_string() }
-                            }
-                            div { id: "elapsed",
-                                "Elapsed: "
-                                { timer.read().elapsed().to_string() }
-                            }
-                            div { id: "workout",
-                                "Total Workout: "
-                                { timer.read().workout_total().to_string() }
-                            }
-                            div { id: "rest",
-                                "Total rest: "
-                                { timer.read().waiting_total().to_string() }
-                            }
-                            div { id: "left",
-                                "Total left: "
-                                { timer.read().left_total().to_string() }
-                            }
-                            div { id: "total",
-                                "Total: "
-                                { timer.read().total().to_string() }
+                        if let Some(sequence) = timer.read().sequences().get() {
+                            div { class: "items-center justify-center display-grid grid p-12",
+                                if let Some(item) = sequence.get() {
+                                    div { id: "counter", class: "text-9xl",
+                                        { item.left().to_string() }
+                                    }
+                                }
+
+                                div { id: "status", class: "text-3xl",
+                                    "Status: "
+                                    { timer.read().status().to_string() }
+                                }
+                                div { id: "elapsed", class: "text-3xl",
+                                    "Elapsed: "
+                                    { timer.read().elapsed().to_string() }
+                                }
+                                div { id: "workout", class: "text-3xl",
+                                    "Total Workout: "
+                                    { sequence.workout_total().to_string() }
+                                }
+                                div { id: "rest", class: "text-3xl",
+                                    "Total rest: "
+                                    { sequence.rest_total().to_string() }
+                                }
+                                div { id: "left", class: "text-3xl",
+                                    "Total left: "
+                                    { sequence.left_total().to_string() }
+                                }
+                                div { id: "total", class: "text-3xl",
+                                    "Total: "
+                                    { sequence.total().to_string() }
+                                }
                             }
                         }
                     }
