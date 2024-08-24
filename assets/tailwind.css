@@ -1638,6 +1638,10 @@ html {
   margin-inline-start: calc(var(--border-btn) * -1);
 }
 
+.static {
+  position: static;
+}
+
 .m-1 {
   margin: 0.25rem;
 }

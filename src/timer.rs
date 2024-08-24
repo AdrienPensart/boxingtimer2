@@ -134,8 +134,8 @@ fn timer_tests() {
     use crate::item::{Easy, Prepare};
     use crate::signal::Signal;
     let none = Signal::none();
-    let prepare = Prepare(&std::time::Duration::from_secs(5));
-    let warm_up = Easy("test", &std::time::Duration::from_secs(3));
+    let prepare = Prepare(std::time::Duration::from_secs(5));
+    let warm_up = Easy("test", std::time::Duration::from_secs(3));
     let first_sequence = Sequence::simple(
         "first sequence",
         &[prepare.clone(), warm_up.clone()],

@@ -6,7 +6,7 @@ use derive_more::{Deref, DerefMut};
 use derive_new::new;
 
 pub enum GenericItem {
-    Duration(u64),
+    Duration(std::time::Duration),
     Item(Item),
 }
 
@@ -14,16 +14,12 @@ impl GenericItem {
     pub fn item(&self) -> Item {
         match self {
             Self::Item(item) => item.clone(),
-            Self::Duration(seconds) => {
-                Workout("Workout", &std::time::Duration::from_secs(*seconds), &[])
-            }
+            Self::Duration(duration) => Workout("Workout", *duration, &[]),
         }
     }
     pub fn builder(&self) -> ItemBuilder {
         match self {
-            Self::Duration(seconds) => ItemBuilder::default()
-                .stopwatch(&std::time::Duration::from_secs(*seconds))
-                .clone(),
+            Self::Duration(duration) => ItemBuilder::default().stopwatch(duration).clone(),
             Self::Item(item) => {
                 let name = item.name().clone().unwrap_or("Workout".into());
                 let description = item.description().clone().unwrap_or_default();
@@ -123,36 +119,36 @@ impl Item {
     }
 }
 
-pub fn Easy(name: &str, duration: &std::time::Duration) -> Item {
+pub fn Easy(name: &str, duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .name(name)
         .difficulty(Difficulty::Easy)
-        .stopwatch(duration)
+        .stopwatch(&duration)
         .build()
         .unwrap()
 }
 
-pub fn Workout(name: &str, duration: &std::time::Duration, tags: &[Tag]) -> Item {
+pub fn Workout(name: &str, duration: std::time::Duration, tags: &[Tag]) -> Item {
     ItemBuilder::default()
         .name(name)
         .tags(tags)
-        .stopwatch(duration)
+        .stopwatch(&duration)
         .build()
         .unwrap()
 }
 
-pub fn Prepare(duration: &std::time::Duration) -> Item {
+pub fn Prepare(duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .tags([Tag::Prepare])
-        .stopwatch(duration)
+        .stopwatch(&duration)
         .build()
         .unwrap()
 }
 
-pub fn Rest(duration: &std::time::Duration) -> Item {
+pub fn Rest(duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Rest")
-        .stopwatch(duration)
+        .stopwatch(&duration)
         .build()
         .unwrap()
 }

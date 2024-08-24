@@ -26,3 +26,6 @@ impl DurationExt for std::time::Duration {
         format!("{minutes}:{seconds_left:02}")
     }
 }
+
+pub static SECOND: std::time::Duration = std::time::Duration::from_secs(1);
+pub static MINUTE: std::time::Duration = std::time::Duration::from_secs(60);

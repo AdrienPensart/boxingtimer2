@@ -13,6 +13,7 @@ pub mod stopwatch;
 pub mod tag;
 pub mod timer;
 use crate::duration::DurationExt;
+use crate::duration::{MINUTE, SECOND};
 use crate::item::GenericItem;
 use crate::item::{Easy, Prepare};
 use crate::sequence::Sequence;
@@ -61,42 +62,43 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
     let bell = Signal::new(Sound::Bell, state.clone());
     let beep = Signal::new(Sound::Beep, state.clone());
 
-    let prepare = &std::time::Duration::from_secs(prepare);
+    let prepare = std::time::Duration::from_secs(prepare);
+
     let warmup_boxing = Sequence::simple(
         "Warm Up",
         &[
             Prepare(prepare),
             // 1 minute
-            Easy("Head rotation", &std::time::Duration::from_secs(20)),
-            Easy("Shoulders rotation", &std::time::Duration::from_secs(20)),
-            Easy("Arms rotation", &std::time::Duration::from_secs(20)),
+            Easy("Head rotation", 20 * SECOND),
+            Easy("Shoulders rotation", 20 * SECOND),
+            Easy("Arms rotation", 20 * SECOND),
             // 1 minute
-            Easy("Elbows rotation", &std::time::Duration::from_secs(20)),
-            Easy("Wrists rotation", &std::time::Duration::from_secs(20)),
-            Easy("Hips rotation", &std::time::Duration::from_secs(20)),
+            Easy("Elbows rotation", 20 * SECOND),
+            Easy("Wrists rotation", 20 * SECOND),
+            Easy("Hips rotation", 20 * SECOND),
             // 1 minute
-            Easy("Knees rotation", &std::time::Duration::from_secs(20)),
-            Easy("Feet rotation", &std::time::Duration::from_secs(20)),
-            Easy("Heel raises", &std::time::Duration::from_secs(20)),
+            Easy("Knees rotation", 20 * SECOND),
+            Easy("Feet rotation", 20 * SECOND),
+            Easy("Heel raises", 20 * SECOND),
             // 1 minute
-            Easy("Leg swings", &std::time::Duration::from_secs(20)),
-            Easy("Side leg swings", &std::time::Duration::from_secs(20)),
-            Easy("Single leg touch toes", &std::time::Duration::from_secs(20)),
+            Easy("Leg swings", 20 * SECOND),
+            Easy("Side leg swings", 20 * SECOND),
+            Easy("Single leg touch toes", 20 * SECOND),
             // 1 minute
-            Easy("Butt kicks", &std::time::Duration::from_secs(30)),
-            Easy("High knees", &std::time::Duration::from_secs(30)),
+            Easy("Butt kicks", 30 * SECOND),
+            Easy("High knees", 30 * SECOND),
             // 1 minute
-            Easy("Jumping jacks", &std::time::Duration::from_secs(30)),
-            Easy("Mountain climbers", &std::time::Duration::from_secs(30)),
+            Easy("Jumping jacks", 30 * SECOND),
+            Easy("Mountain climbers", 30 * SECOND),
             // 1 minute
-            Easy("Jump squats", &std::time::Duration::from_secs(30)),
-            Easy("Push ups", &std::time::Duration::from_secs(30)),
+            Easy("Jump squats", 30 * SECOND),
+            Easy("Push ups", 30 * SECOND),
             // 1 minute
-            Easy("Speed steps", &std::time::Duration::from_secs(30)),
-            Easy("Left/right jumps", &std::time::Duration::from_secs(30)),
+            Easy("Speed steps", 30 * SECOND),
+            Easy("Left/right jumps", 30 * SECOND),
             // 1 minute
-            Easy("Alternate lunges", &std::time::Duration::from_secs(30)),
-            Easy("Burpees", &std::time::Duration::from_secs(30)),
+            Easy("Alternate lunges", 30 * SECOND),
+            Easy("Burpees", 30 * SECOND),
         ],
         &[tag::Tag::WarmUp],
         &silent,
@@ -106,8 +108,8 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         "3x2m (30s rest)",
         3,
         prepare,
-        &GenericItem::Duration(120),
-        &std::time::Duration::from_secs(30),
+        GenericItem::Duration(2 * MINUTE),
+        30 * SECOND,
         &[tag::Tag::Boxing],
         &bell,
     );
@@ -116,8 +118,8 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         "6x2m (30s rest)",
         6,
         prepare,
-        &GenericItem::Duration(120),
-        &std::time::Duration::from_secs(30),
+        GenericItem::Duration(2 * MINUTE),
+        30 * SECOND,
         &[tag::Tag::Boxing],
         &bell,
     );
@@ -131,9 +133,9 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             "Jab | Cross | Hook (1-2-3)",
         ],
         prepare,
-        &std::time::Duration::from_secs(30),
+        30 * SECOND,
         4,
-        &std::time::Duration::from_secs(60),
+        1 * MINUTE,
         &[tag::Tag::Boxing, tag::Tag::Stamina],
         &bell,
     );
@@ -147,23 +149,35 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             "Jab | Cross | Hook | Cross (1-2-3-2)",
         ],
         prepare,
-        &std::time::Duration::from_secs(30),
+        30 * SECOND,
         4,
-        &std::time::Duration::from_secs(60),
+        1 * MINUTE,
         &[tag::Tag::Boxing, tag::Tag::Stamina],
         &bell,
     );
 
     let hiit = Sequence::infinite(
         prepare,
-        &GenericItem::Duration(20),
-        &std::time::Duration::from_secs(10),
+        GenericItem::Duration(20 * SECOND),
+        10 * SECOND,
         &[tag::Tag::HiiT],
         &beep,
     );
 
-    let _5mn = Sequence::workout("5mn", prepare, &GenericItem::Duration(5 * 60), &[], &bell);
-    let _10mn = Sequence::workout("10mn", prepare, &GenericItem::Duration(10 * 60), &[], &bell);
+    let _5mn = Sequence::workout(
+        "5mn",
+        prepare,
+        &GenericItem::Duration(5 * MINUTE),
+        &[],
+        &bell,
+    );
+    let _10mn = Sequence::workout(
+        "10mn",
+        prepare,
+        &GenericItem::Duration(10 * MINUTE),
+        &[],
+        &bell,
+    );
 
     let mut state_signal = use_signal(|| state.clone());
 

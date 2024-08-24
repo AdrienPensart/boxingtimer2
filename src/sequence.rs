@@ -39,7 +39,7 @@ impl Sequence {
     }
     pub fn workout(
         name: &str,
-        prepare: &std::time::Duration,
+        prepare: std::time::Duration,
         workout: &GenericItem,
         tags: &[Tag],
         signal: &Signal,
@@ -56,10 +56,10 @@ impl Sequence {
     pub fn repeat(
         name: &str,
         names: Vec<&str>,
-        prepare: &std::time::Duration,
-        workout: &std::time::Duration,
+        prepare: std::time::Duration,
+        workout: std::time::Duration,
         times: u64,
-        rest: &std::time::Duration,
+        rest: std::time::Duration,
         tags: &[Tag],
         signal: &Signal,
     ) -> Self {
@@ -78,9 +78,9 @@ impl Sequence {
         }
     }
     pub fn infinite(
-        prepare: &std::time::Duration,
-        workout: &GenericItem,
-        rest: &std::time::Duration,
+        prepare: std::time::Duration,
+        workout: GenericItem,
+        rest: std::time::Duration,
         tags: &[Tag],
         signal: &Signal,
     ) -> Self {
@@ -100,9 +100,9 @@ impl Sequence {
     pub fn rounds(
         name: &str,
         rounds: usize,
-        prepare: &std::time::Duration,
-        workout: &GenericItem,
-        rest: &std::time::Duration,
+        prepare: std::time::Duration,
+        workout: GenericItem,
+        rest: std::time::Duration,
         tags: &[Tag],
         signal: &Signal,
     ) -> Self {
@@ -252,11 +252,12 @@ impl std::fmt::Display for Sequence {
 
 #[test]
 fn sequence_simple_tests() {
+    use crate::duration::SECOND;
     use crate::item::{Easy, Prepare};
     use crate::signal::Signal;
     let none = Signal::none();
-    let prepare = Prepare(&std::time::Duration::from_secs(5));
-    let warm_up = Easy("test", &std::time::Duration::from_secs(3));
+    let prepare = Prepare(5 * SECOND);
+    let warm_up = Easy("test", 3 * SECOND);
     let mut simple = Sequence::simple(
         "simple sequence",
         &[prepare.clone(), warm_up.clone()],
@@ -291,11 +292,12 @@ fn sequence_simple_tests() {
 
 #[test]
 fn sequence_cycle_tests() {
+    use crate::duration::SECOND;
     use crate::item::{Easy, Prepare};
     use crate::signal::Signal;
     let none = Signal::none();
-    let prepare = Prepare(&std::time::Duration::from_secs(5));
-    let warm_up = Easy("test", &std::time::Duration::from_secs(3));
+    let prepare = Prepare(5 * SECOND);
+    let warm_up = Easy("test", 3 * SECOND);
     let mut cycle = Sequence::cycle(
         "simple sequence",
         &[prepare.clone(), warm_up.clone()],

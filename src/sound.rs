@@ -12,11 +12,14 @@ pub enum Sound {
 }
 
 impl Sound {
+    pub fn is_silent(&self) -> bool {
+        matches!(self, Self::Silent)
+    }
     pub fn is_bell(&self) -> bool {
-        self == &Self::Bell
+        matches!(self, Self::Bell)
     }
     pub fn is_beep(&self) -> bool {
-        self == &Self::Beep
+        matches!(self, Self::Beep)
     }
     pub fn asset(&self) -> String {
         format!("{self}.mp3")

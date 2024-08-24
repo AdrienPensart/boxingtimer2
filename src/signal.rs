@@ -23,18 +23,15 @@ impl State {
     }
     pub fn next_label(&self) -> String {
         match self {
-            State::Disabled => "Unmute".to_string(),
-            State::Enabled => "Mute".to_string(),
+            Self::Disabled => "Unmute".to_string(),
+            Self::Enabled => "Mute".to_string(),
         }
     }
     pub fn enabled(&self) -> bool {
-        match self {
-            State::Disabled => false,
-            State::Enabled => true,
-        }
+        matches!(self, Self::Enabled)
     }
     pub fn disabled(&self) -> bool {
-        !self.enabled()
+        matches!(self, Self::Disabled)
     }
 }
 
