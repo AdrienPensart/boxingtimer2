@@ -1,6 +1,6 @@
+use crate::duration::DurationExt;
 use crate::stopwatch::Stopwatch;
 use crate::tag::Tag;
-use crate::{difficulty::Difficulty, duration::DurationExt};
 use derive_builder::Builder;
 use derive_more::{Deref, DerefMut};
 use derive_new::new;
@@ -38,9 +38,6 @@ pub struct Item {
     #[new(value = "None")]
     #[builder(setter(strip_option), default)]
     name: Option<String>,
-    #[new(value = "None")]
-    #[builder(default)]
-    difficulty: Option<Difficulty>,
     #[deref]
     #[deref_mut]
     stopwatch: Stopwatch,
@@ -63,16 +60,8 @@ impl std::fmt::Display for Item {
         } else {
             "".to_string()
         };
-        if let Some(difficulty) = self.difficulty {
-            write!(
-                f,
-                " - {} : {}",
-                difficulty,
-                self.stopwatch.duration().to_string()
-            )?;
-        } else {
-            write!(f, " : {}", self.stopwatch.duration().to_string())?;
-        }
+
+        write!(f, " : {}", self.stopwatch.duration().to_string())?;
 
         if !self.tags.is_empty() {
             let tags = self
@@ -102,9 +91,6 @@ impl Item {
     pub fn stopwatch_mut(&mut self) -> &mut Stopwatch {
         &mut self.stopwatch
     }
-    pub fn difficulty(&self) -> Option<Difficulty> {
-        self.difficulty
-    }
     pub fn tags(&self) -> &Vec<Tag> {
         &self.tags
     }
@@ -122,7 +108,25 @@ impl Item {
 pub fn Easy(name: &str, duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .name(name)
-        .difficulty(Difficulty::Easy)
+        .tags([Tag::Easy])
+        .stopwatch(duration)
+        .build()
+        .unwrap()
+}
+
+pub fn Medium(name: &str, duration: std::time::Duration) -> Item {
+    ItemBuilder::default()
+        .name(name)
+        .tags([Tag::Medium])
+        .stopwatch(duration)
+        .build()
+        .unwrap()
+}
+
+pub fn Hard(name: &str, duration: std::time::Duration) -> Item {
+    ItemBuilder::default()
+        .name(name)
+        .tags([Tag::Hard])
         .stopwatch(duration)
         .build()
         .unwrap()

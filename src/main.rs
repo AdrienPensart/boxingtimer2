@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 pub mod beep;
-pub mod difficulty;
 pub mod duration;
 pub mod errors;
 pub mod indexedvec;
@@ -15,10 +14,11 @@ pub mod timer;
 use crate::duration::DurationExt;
 use crate::duration::{MINUTE, SECOND};
 use crate::item::GenericItem;
-use crate::item::{Easy, Prepare};
+use crate::item::{Easy, Medium, Prepare};
 use crate::sequence::{Sequence, ROUNDS};
 use crate::signal::{Signal, State};
 use crate::sound::Sound;
+use crate::tag::Tag;
 use dioxus::prelude::*;
 // use dioxus_logger::tracing::error;
 use dioxus_logger::tracing::Level;
@@ -97,10 +97,10 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
             Easy("Speed steps", 30 * SECOND),
             Easy("Left/right jumps", 30 * SECOND),
             // 1 minute
-            Easy("Alternate lunges", 30 * SECOND),
-            Easy("Burpees", 30 * SECOND),
+            Medium("Alternate lunges", 30 * SECOND),
+            Medium("Burpees", 30 * SECOND),
         ],
-        &[tag::Tag::WarmUp],
+        &[Tag::WarmUp],
         &silent,
     );
 
@@ -110,7 +110,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         prepare,
         GenericItem::Duration(2 * MINUTE),
         30 * SECOND,
-        &[tag::Tag::Boxing],
+        &[Tag::Boxing, Tag::Medium],
         &bell,
     );
 
@@ -120,7 +120,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         prepare,
         GenericItem::Duration(2 * MINUTE),
         30 * SECOND,
-        &[tag::Tag::Boxing],
+        &[Tag::Boxing, Tag::Medium],
         &bell,
     );
 
@@ -136,7 +136,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         30 * SECOND,
         4 * ROUNDS,
         1 * MINUTE,
-        &[tag::Tag::Boxing, tag::Tag::Stamina],
+        &[Tag::Boxing, Tag::Stamina, Tag::Medium],
         &bell,
     );
 
@@ -152,7 +152,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         30 * SECOND,
         4 * ROUNDS,
         1 * MINUTE,
-        &[tag::Tag::Boxing, tag::Tag::Stamina],
+        &[Tag::Boxing, Tag::Stamina, Tag::Medium],
         &bell,
     );
 
@@ -160,7 +160,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         prepare,
         GenericItem::Duration(20 * SECOND),
         10 * SECOND,
-        &[tag::Tag::HiiT],
+        &[Tag::HiiT],
         &beep,
     );
 
@@ -168,14 +168,21 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         "5mn",
         prepare,
         &GenericItem::Duration(5 * MINUTE),
-        &[],
+        &[Tag::Easy],
         &bell,
     );
     let _10mn = Sequence::workout(
         "10mn",
         prepare,
         &GenericItem::Duration(10 * MINUTE),
-        &[],
+        &[Tag::Medium],
+        &bell,
+    );
+    let _10mn = Sequence::workout(
+        "10mn",
+        prepare,
+        &GenericItem::Duration(10 * MINUTE),
+        &[Tag::Medium],
         &bell,
     );
 
@@ -210,7 +217,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
 
     rsx! {
         div { class: "flex flex-wrap space-x-2",
-            div { class: "",
+            div { id: "timer",
                 button {
                     class: "btn btn-primary rounded-full w-24 m-2",
                     onclick: move |_| timer.with_mut(|t| t.toggle()),
@@ -227,7 +234,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                     "Restart current"
                 }
             }
-            div { class: "",
+            div { id: "controls",
                 button {
                     class: "btn btn-accent rounded-full m-2",
                     onclick: move |_| timer.with_mut(|t| t.manual_previous()),
@@ -239,7 +246,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                     "Next"
                 }
             }
-            div { class: "",
+            div { id: "sounds",
                 audio {
                     id: bell.to_string(),
                     src: bell.asset(),
@@ -253,11 +260,13 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                     autoplay: false
                 }
                 button {
+                    id: "toggle_signal",
                     class: "btn btn-secondary rounded-full w-24 m-2",
                     onclick: move |_| state_signal.with_mut(|s| s.borrow_mut().toggle()),
                     { state_signal.read().borrow().next_label() }
                 }
                 button {
+                    id: "ring",
                     class: "btn btn-secondary rounded-full m-2",
                     onclick: move |_| timer.with(|t| if !t.always_ring(){bell.always_ring()}),
                     "Ring"
