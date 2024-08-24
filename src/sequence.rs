@@ -17,6 +17,9 @@ pub struct Sequence {
     signal: Signal,
 }
 
+type Rounds = u64;
+pub static ROUNDS: Rounds = 1;
+
 impl Sequence {
     pub fn simple(name: &str, items: &[Item], tags: &[Tag], signal: &Signal) -> Self {
         Self {
@@ -58,13 +61,13 @@ impl Sequence {
         names: Vec<&str>,
         prepare: std::time::Duration,
         workout: std::time::Duration,
-        times: u64,
+        rounds: Rounds,
         rest: std::time::Duration,
         tags: &[Tag],
         signal: &Signal,
     ) -> Self {
         let items = names.iter().map(|n| Workout(n, workout, &[])).collect_vec();
-        let mut items = itertools::intersperse(vec![items; times as usize], vec![Rest(rest)])
+        let mut items = itertools::intersperse(vec![items; rounds as usize], vec![Rest(rest)])
             .flatten()
             .collect_vec();
         if !prepare.is_zero() {
@@ -99,14 +102,14 @@ impl Sequence {
     }
     pub fn rounds(
         name: &str,
-        rounds: usize,
+        rounds: Rounds,
         prepare: std::time::Duration,
         workout: GenericItem,
         rest: std::time::Duration,
         tags: &[Tag],
         signal: &Signal,
     ) -> Self {
-        let rounds_items = vec![workout.item(); rounds];
+        let rounds_items = vec![workout.item(); rounds as usize];
         let mut items = itertools::intersperse(rounds_items, Rest(rest)).collect_vec();
         if !prepare.is_zero() {
             items.insert(0, Prepare(prepare));

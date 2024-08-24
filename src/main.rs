@@ -16,7 +16,7 @@ use crate::duration::DurationExt;
 use crate::duration::{MINUTE, SECOND};
 use crate::item::GenericItem;
 use crate::item::{Easy, Prepare};
-use crate::sequence::Sequence;
+use crate::sequence::{Sequence, ROUNDS};
 use crate::signal::{Signal, State};
 use crate::sound::Sound;
 use dioxus::prelude::*;
@@ -106,7 +106,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
 
     let _3x2m_30s = Sequence::rounds(
         "3x2m (30s rest)",
-        3,
+        3 * ROUNDS,
         prepare,
         GenericItem::Duration(2 * MINUTE),
         30 * SECOND,
@@ -116,7 +116,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
 
     let _6x2m_30s = Sequence::rounds(
         "6x2m (30s rest)",
-        6,
+        6 * ROUNDS,
         prepare,
         GenericItem::Duration(2 * MINUTE),
         30 * SECOND,
@@ -134,7 +134,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         ],
         prepare,
         30 * SECOND,
-        4,
+        4 * ROUNDS,
         1 * MINUTE,
         &[tag::Tag::Boxing, tag::Tag::Stamina],
         &bell,
@@ -150,7 +150,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
         ],
         prepare,
         30 * SECOND,
-        4,
+        4 * ROUNDS,
         1 * MINUTE,
         &[tag::Tag::Boxing, tag::Tag::Stamina],
         &bell,

@@ -19,7 +19,7 @@ impl GenericItem {
     }
     pub fn builder(&self) -> ItemBuilder {
         match self {
-            Self::Duration(duration) => ItemBuilder::default().stopwatch(duration).clone(),
+            Self::Duration(duration) => ItemBuilder::default().stopwatch(*duration).clone(),
             Self::Item(item) => {
                 let name = item.name().clone().unwrap_or("Workout".into());
                 let description = item.description().clone().unwrap_or_default();
@@ -123,7 +123,7 @@ pub fn Easy(name: &str, duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .name(name)
         .difficulty(Difficulty::Easy)
-        .stopwatch(&duration)
+        .stopwatch(duration)
         .build()
         .unwrap()
 }
@@ -132,7 +132,7 @@ pub fn Workout(name: &str, duration: std::time::Duration, tags: &[Tag]) -> Item 
     ItemBuilder::default()
         .name(name)
         .tags(tags)
-        .stopwatch(&duration)
+        .stopwatch(duration)
         .build()
         .unwrap()
 }
@@ -140,7 +140,7 @@ pub fn Workout(name: &str, duration: std::time::Duration, tags: &[Tag]) -> Item 
 pub fn Prepare(duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .tags([Tag::Prepare])
-        .stopwatch(&duration)
+        .stopwatch(duration)
         .build()
         .unwrap()
 }
@@ -148,7 +148,7 @@ pub fn Prepare(duration: std::time::Duration) -> Item {
 pub fn Rest(duration: std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Rest")
-        .stopwatch(&duration)
+        .stopwatch(duration)
         .build()
         .unwrap()
 }

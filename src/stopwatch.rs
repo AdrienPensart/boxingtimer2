@@ -8,9 +8,9 @@ pub struct Stopwatch {
 }
 
 impl Stopwatch {
-    pub fn set(&mut self, duration: &std::time::Duration) {
-        self.duration = *duration;
-        self.left = *duration;
+    pub fn set(&mut self, duration: std::time::Duration) {
+        self.duration = duration;
+        self.left = duration;
     }
     pub fn reset(&mut self) {
         self.left = self.duration;
@@ -39,11 +39,11 @@ impl Stopwatch {
     }
 }
 
-impl From<&std::time::Duration> for Stopwatch {
-    fn from(duration: &std::time::Duration) -> Self {
+impl From<std::time::Duration> for Stopwatch {
+    fn from(duration: std::time::Duration) -> Self {
         Self {
-            duration: *duration,
-            left: *duration,
+            duration,
+            left: duration,
             ..Self::default()
         }
     }
