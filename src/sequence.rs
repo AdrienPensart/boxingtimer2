@@ -250,80 +250,70 @@ impl std::fmt::Display for Sequence {
     }
 }
 
-// #[test]
-// fn sequence_simple_tests() {
-//     use crate::item::{Easy, Prepare};
-//     use crate::signal::SILENT;
-//     let prepare = Prepare(&std::time::Duration::from_secs(5));
-//     let warm_up = Easy("test", &std::time::Duration::from_secs(3));
-//     let mut simple = Sequence::simple(
-//         "simple sequence",
-//         &[prepare.clone(), warm_up.clone()],
-//         &[],
-//         &SILENT,
-//     );
+#[test]
+fn sequence_simple_tests() {
+    use crate::item::{Easy, Prepare};
+    use crate::signal::Signal;
+    let none = Signal::none();
+    let prepare = Prepare(&std::time::Duration::from_secs(5));
+    let warm_up = Easy("test", &std::time::Duration::from_secs(3));
+    let mut simple = Sequence::simple(
+        "simple sequence",
+        &[prepare.clone(), warm_up.clone()],
+        &[],
+        &none,
+    );
 
-//     assert!(simple.auto_next());
-//     assert_eq!(simple.get(), Some(&prepare));
+    assert!(simple.auto_next());
+    assert_eq!(simple.get(), Some(&prepare));
 
-//     assert!(simple.auto_next());
-//     assert_eq!(simple.get(), Some(&warm_up));
+    assert!(simple.auto_next());
+    assert_eq!(simple.get(), Some(&warm_up));
 
-//     assert!(!simple.auto_next());
-//     assert_eq!(simple.get(), None);
+    assert!(!simple.auto_next());
+    assert_eq!(simple.get(), None);
 
-//     simple.manual_next();
-//     assert_eq!(simple.get(), Some(&prepare));
+    simple.manual_next();
+    assert_eq!(simple.get(), Some(&prepare));
 
-//     simple.manual_next();
-//     assert_eq!(simple.get(), Some(&warm_up));
+    simple.manual_next();
+    assert_eq!(simple.get(), Some(&warm_up));
 
-//     assert!(!simple.auto_next());
-//     assert_eq!(simple.get(), None);
+    assert!(!simple.auto_next());
+    assert_eq!(simple.get(), None);
 
-//     simple.manual_next();
-//     assert_eq!(simple.get(), Some(&prepare));
+    simple.manual_next();
+    assert_eq!(simple.get(), Some(&prepare));
 
-//     simple.reset();
-//     assert_eq!(simple.get(), None);
-// }
+    simple.reset();
+    assert_eq!(simple.get(), None);
+}
 
-// #[test]
-// fn sequence_cycle_tests() {
-//     use crate::item::{Easy, Prepare};
-//     use crate::signal::SILENT;
-//     let prepare = Prepare(&std::time::Duration::from_secs(5));
-//     let warm_up = Easy("test", &std::time::Duration::from_secs(3));
-//     let mut cycle = Sequence::cycle(
-//         "simple sequence",
-//         &[prepare.clone(), warm_up.clone()],
-//         &[],
-//         &SILENT,
-//     );
+#[test]
+fn sequence_cycle_tests() {
+    use crate::item::{Easy, Prepare};
+    use crate::signal::Signal;
+    let none = Signal::none();
+    let prepare = Prepare(&std::time::Duration::from_secs(5));
+    let warm_up = Easy("test", &std::time::Duration::from_secs(3));
+    let mut cycle = Sequence::cycle(
+        "simple sequence",
+        &[prepare.clone(), warm_up.clone()],
+        &[],
+        &none,
+    );
 
-//     assert_eq!(cycle.get(), None);
+    assert_eq!(cycle.get(), None);
 
-//     assert!(cycle.auto_next());
-//     assert_eq!(cycle.get(), Some(&prepare));
+    assert!(cycle.auto_next());
+    assert_eq!(cycle.get(), Some(&prepare));
 
-//     assert!(cycle.auto_next());
-//     assert_eq!(cycle.get(), Some(&warm_up));
+    assert!(cycle.auto_next());
+    assert_eq!(cycle.get(), Some(&warm_up));
 
-//     assert!(cycle.auto_next());
-//     assert_eq!(cycle.get(), Some(&warm_up));
+    assert!(cycle.auto_next());
+    assert_eq!(cycle.get(), Some(&warm_up));
 
-//     // cycle.manual_next();
-//     // assert_eq!(cycle.get(), Some(&prepare));
-
-//     // simple.goto_next(true);
-//     // assert_eq!(simple.get(), Some(&warm_up));
-
-//     // simple.goto_next(false);
-//     // assert_eq!(simple.get(), None);
-
-//     // simple.goto_next(true);
-//     // assert_eq!(simple.get(), Some(&prepare));
-
-//     // simple.reset();
-//     // assert_eq!(simple.get(), None);
-// }
+    cycle.manual_next();
+    assert_eq!(cycle.get(), Some(&prepare));
+}

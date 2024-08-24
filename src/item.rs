@@ -149,24 +149,6 @@ pub fn Prepare(duration: &std::time::Duration) -> Item {
         .unwrap()
 }
 
-// pub fn Maintain(duration: &std::time::Duration) -> Item {
-//     ItemBuilder::default()
-//         .name("Maintain")
-//         .difficulty(Difficulty::Hard)
-//         .stopwatch(duration)
-//         .build()
-//         .unwrap()
-// }
-
-// pub fn Contract(duration: &std::time::Duration) -> Item {
-//     ItemBuilder::default()
-//         .name("Contract")
-//         .difficulty(Difficulty::Hard)
-//         .stopwatch(duration)
-//         .build()
-//         .unwrap()
-// }
-
 pub fn Rest(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name("Rest")

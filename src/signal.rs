@@ -46,12 +46,10 @@ pub struct Signal {
 }
 
 impl Signal {
+    pub fn none() -> Self {
+        Self::new(Sound::Silent, Rc::new(RefCell::new(State::Disabled)))
+    }
     pub fn new(sound: Sound, state: Rc<RefCell<State>>) -> Self {
-        // let next_state = match *state.borrow() {
-        // if *state.borrow() == State::Enabled {
-        //     Self::unmute(&sound);
-        // };
-        // *state.borrow_mut() = next_state;
         Self { sound, state }
     }
     pub fn asset(&self) -> String {
@@ -60,42 +58,6 @@ impl Signal {
     pub fn toggle(&mut self) {
         self.state.borrow_mut().toggle();
     }
-    // fn disable() {
-    //     match sound.mute() {
-    //         Ok(()) => {
-    //             info!("signal {sound} muted");
-    //             State::Disabled
-    //         }
-    //         Err(error) => {
-    //             info!("unable to mute signal {sound} : {error}");
-    //             State::Enabled
-    //         }
-    //     }
-    // }
-    // fn enable(sound: &Sound) -> State {
-    //     match sound.unmute() {
-    //         Ok(()) => {
-    //             info!("signal {sound} unmuted");
-    //             State::Enabled
-    //         }
-    //         Err(error) => {
-    //             info!("unable to unmute signal {sound} : {error}");
-    //             State::Disabled
-    //         }
-    //     }
-    // }
-    // fn enable(sound: &Sound) -> State {
-    //     match sound.unmute() {
-    //         Ok(()) => {
-    //             info!("signal {sound} unmuted");
-    //             State::Enabled
-    //         }
-    //         Err(error) => {
-    //             info!("unable to unmute signal {sound} : {error}");
-    //             State::Disabled
-    //         }
-    //     }
-    // }
     pub fn ring(&self) {
         if self.enabled() {
             info!("signal {} ring", self.sound);

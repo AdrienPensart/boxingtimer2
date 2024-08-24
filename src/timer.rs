@@ -129,42 +129,43 @@ impl Timer {
     }
 }
 
-// #[test]
-// fn timer_tests() {
-//     use crate::item::{Easy, Prepare};
-//     use crate::signal::SILENT;
-//     let prepare = Prepare(&std::time::Duration::from_secs(5));
-//     let warm_up = Easy("test", &std::time::Duration::from_secs(3));
-//     let first_sequence = Sequence::simple(
-//         "first sequence",
-//         &[prepare.clone(), warm_up.clone()],
-//         &[],
-//         &SILENT,
-//     );
-//     let second_sequence = Sequence::simple(
-//         "double sequence",
-//         &[prepare.clone(), warm_up.clone()],
-//         &[],
-//         &SILENT,
-//     );
-//     let mut timer = Timer::new(&[first_sequence.clone(), second_sequence.clone()]);
+#[test]
+fn timer_tests() {
+    use crate::item::{Easy, Prepare};
+    use crate::signal::Signal;
+    let none = Signal::none();
+    let prepare = Prepare(&std::time::Duration::from_secs(5));
+    let warm_up = Easy("test", &std::time::Duration::from_secs(3));
+    let first_sequence = Sequence::simple(
+        "first sequence",
+        &[prepare.clone(), warm_up.clone()],
+        &[],
+        &none,
+    );
+    let second_sequence = Sequence::simple(
+        "double sequence",
+        &[prepare.clone(), warm_up.clone()],
+        &[],
+        &none,
+    );
+    let mut timer = Timer::new(&[first_sequence.clone(), second_sequence.clone()]);
 
-//     assert_eq!(timer.sequences.get(), None);
+    assert_eq!(timer.sequences.get(), None);
 
-//     timer.set_sequence(0);
-//     assert_eq!(timer.sequences.get(), Some(&first_sequence));
-//     if let Some(sequence) = timer.sequences.get_mut() {
-//         sequence.manual_next();
-//     }
-//     assert_ne!(timer.sequences.get(), Some(&first_sequence));
+    timer.set_sequence(0);
+    assert_eq!(timer.sequences.get(), Some(&first_sequence));
+    if let Some(sequence) = timer.sequences.get_mut() {
+        sequence.manual_next();
+    }
+    assert_ne!(timer.sequences.get(), Some(&first_sequence));
 
-//     timer.set_sequence(1);
-//     assert_eq!(timer.sequences.get(), Some(&second_sequence));
-//     if let Some(sequence) = timer.sequences.get_mut() {
-//         sequence.manual_next();
-//     }
-//     assert_ne!(timer.sequences.get(), Some(&second_sequence));
+    timer.set_sequence(1);
+    assert_eq!(timer.sequences.get(), Some(&second_sequence));
+    if let Some(sequence) = timer.sequences.get_mut() {
+        sequence.manual_next();
+    }
+    assert_ne!(timer.sequences.get(), Some(&second_sequence));
 
-//     timer.set_sequence(2);
-//     assert_eq!(timer.sequences.get(), None);
-// }
+    timer.set_sequence(2);
+    assert_eq!(timer.sequences.get(), None);
+}
