@@ -25,6 +25,9 @@ impl Stopwatch {
         }
         success
     }
+    pub fn last_seconds(&self) -> bool {
+        self.left.as_secs() > 0 && self.left.as_secs() < 4
+    }
     pub fn duration(&self) -> &std::time::Duration {
         &self.duration
     }

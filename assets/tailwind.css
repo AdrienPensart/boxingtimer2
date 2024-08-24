@@ -1638,10 +1638,6 @@ html {
   margin-inline-start: calc(var(--border-btn) * -1);
 }
 
-.static {
-  position: static;
-}
-
 .m-1 {
   margin: 0.25rem;
 }
@@ -1656,10 +1652,6 @@ html {
 
 .grid {
   display: grid;
-}
-
-.contents {
-  display: contents;
 }
 
 .h-screen {
@@ -1738,10 +1730,6 @@ html {
 
 .p-2 {
   padding: 0.5rem;
-}
-
-.text-center {
-  text-align: center;
 }
 
 .text-3xl {

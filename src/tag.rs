@@ -8,10 +8,11 @@ pub enum Tag {
     Abs,
     Stationary,
     Dynamic,
+    Stamina,
     #[display("Full body")]
     FullBody,
-    Boxing,
     HiiT,
     Prepare,
     Rest,
+    Boxing,
 }

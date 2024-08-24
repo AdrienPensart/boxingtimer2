@@ -5,6 +5,37 @@ use derive_builder::Builder;
 use derive_more::{Deref, DerefMut};
 use derive_new::new;
 
+pub enum GenericItem {
+    Duration(u64),
+    Item(Item),
+}
+
+impl GenericItem {
+    pub fn item(&self) -> Item {
+        match self {
+            Self::Item(item) => item.clone(),
+            Self::Duration(seconds) => {
+                Workout("Workout", &std::time::Duration::from_secs(*seconds), &[])
+            }
+        }
+    }
+    pub fn builder(&self) -> ItemBuilder {
+        match self {
+            Self::Duration(seconds) => ItemBuilder::default()
+                .stopwatch(&std::time::Duration::from_secs(*seconds))
+                .clone(),
+            Self::Item(item) => {
+                let name = item.name().clone().unwrap_or("Workout".into());
+                let description = item.description().clone().unwrap_or_default();
+                ItemBuilder::default()
+                    .name(name)
+                    .description(description)
+                    .clone()
+            }
+        }
+    }
+}
+
 #[derive(new, Default, Builder, Clone, Debug, Eq, PartialEq, Hash, Deref, DerefMut)]
 #[builder(setter(into))]
 pub struct Item {
@@ -20,6 +51,9 @@ pub struct Item {
     #[new(value = "vec![]")]
     #[builder(default)]
     tags: Vec<Tag>,
+    #[new(value = "None")]
+    #[builder(setter(strip_option), default)]
+    description: Option<String>,
 }
 
 impl std::fmt::Display for Item {
@@ -63,6 +97,9 @@ impl Item {
     pub fn name(&self) -> &Option<String> {
         &self.name
     }
+    pub fn description(&self) -> &Option<String> {
+        &self.description
+    }
     pub fn stopwatch(&self) -> &Stopwatch {
         &self.stopwatch
     }
@@ -86,38 +123,18 @@ impl Item {
     }
 }
 
-pub fn WarmUp(name: &str, duration: &std::time::Duration) -> Item {
+pub fn Easy(name: &str, duration: &std::time::Duration) -> Item {
     ItemBuilder::default()
         .name(name)
         .difficulty(Difficulty::Easy)
         .stopwatch(duration)
-        .tags([Tag::WarmUp])
         .build()
         .unwrap()
 }
 
-pub fn Boxing(duration: &std::time::Duration) -> Item {
-    ItemBuilder::default()
-        .difficulty(Difficulty::Medium)
-        .stopwatch(duration)
-        .tags([Tag::Boxing])
-        .build()
-        .unwrap()
-}
-
-pub fn Punch(name: &str, duration: &std::time::Duration) -> Item {
+pub fn Workout(name: &str, duration: &std::time::Duration, tags: &[Tag]) -> Item {
     ItemBuilder::default()
         .name(name)
-        .tags([Tag::Boxing])
-        .stopwatch(duration)
-        .difficulty(Difficulty::Medium)
-        .build()
-        .unwrap()
-}
-
-pub fn Workout(duration: &std::time::Duration, tags: &[Tag]) -> Item {
-    ItemBuilder::default()
-        .name("Workout")
         .tags(tags)
         .stopwatch(duration)
         .build()
@@ -132,23 +149,23 @@ pub fn Prepare(duration: &std::time::Duration) -> Item {
         .unwrap()
 }
 
-pub fn Maintain(duration: &std::time::Duration) -> Item {
-    ItemBuilder::default()
-        .name("Maintain")
-        .difficulty(Difficulty::Hard)
-        .stopwatch(duration)
-        .build()
-        .unwrap()
-}
+// pub fn Maintain(duration: &std::time::Duration) -> Item {
+//     ItemBuilder::default()
+//         .name("Maintain")
+//         .difficulty(Difficulty::Hard)
+//         .stopwatch(duration)
+//         .build()
+//         .unwrap()
+// }
 
-pub fn Contract(duration: &std::time::Duration) -> Item {
-    ItemBuilder::default()
-        .name("Contract")
-        .difficulty(Difficulty::Hard)
-        .stopwatch(duration)
-        .build()
-        .unwrap()
-}
+// pub fn Contract(duration: &std::time::Duration) -> Item {
+//     ItemBuilder::default()
+//         .name("Contract")
+//         .difficulty(Difficulty::Hard)
+//         .stopwatch(duration)
+//         .build()
+//         .unwrap()
+// }
 
 pub fn Rest(duration: &std::time::Duration) -> Item {
     ItemBuilder::default()

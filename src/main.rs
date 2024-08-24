@@ -1,26 +1,28 @@
 #![allow(non_snake_case)]
-pub mod bell;
+pub mod beep;
 pub mod difficulty;
 pub mod duration;
 pub mod errors;
-pub mod helpers;
 pub mod indexedvec;
 pub mod item;
 pub mod sequence;
+pub mod signal;
+pub mod sound;
 pub mod status;
 pub mod stopwatch;
 pub mod tag;
 pub mod timer;
-use crate::bell::{Bell, BELL_ID};
 use crate::duration::DurationExt;
-use crate::item::{Prepare, WarmUp};
+use crate::item::GenericItem;
+use crate::item::{Easy, Prepare};
 use crate::sequence::Sequence;
-use crate::tag::Tag;
-use crate::timer::{Timer, DEFAULT_INTERVAL};
+use crate::signal::{Signal, State};
+use crate::sound::Sound;
 use dioxus::prelude::*;
+// use dioxus_logger::tracing::error;
 use dioxus_logger::tracing::Level;
-// use gloo::console::log;
 use manganis::mg;
+use std::{cell::RefCell, rc::Rc};
 
 const _: &str = mg!(file("assets/tailwind.css"));
 
@@ -48,143 +50,140 @@ fn App() -> Element {
 
 #[component]
 fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
+    let state = if muted {
+        State::Disabled
+    } else {
+        State::Enabled
+    };
+    let state = Rc::new(RefCell::new(state));
+
+    let silent = Signal::new(Sound::Silent, state.clone());
+    let bell = Signal::new(Sound::Bell, state.clone());
+    let beep = Signal::new(Sound::Beep, state.clone());
+
     let prepare = &std::time::Duration::from_secs(prepare);
     let warmup_boxing = Sequence::simple(
         "Warm Up",
         &[
             Prepare(prepare),
             // 1 minute
-            WarmUp("Head rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Shoulders rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Arms rotation", &std::time::Duration::from_secs(20)),
+            Easy("Head rotation", &std::time::Duration::from_secs(20)),
+            Easy("Shoulders rotation", &std::time::Duration::from_secs(20)),
+            Easy("Arms rotation", &std::time::Duration::from_secs(20)),
             // 1 minute
-            WarmUp("Elbows rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Wrists rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Hips rotation", &std::time::Duration::from_secs(20)),
+            Easy("Elbows rotation", &std::time::Duration::from_secs(20)),
+            Easy("Wrists rotation", &std::time::Duration::from_secs(20)),
+            Easy("Hips rotation", &std::time::Duration::from_secs(20)),
             // 1 minute
-            WarmUp("Knees rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Feet rotation", &std::time::Duration::from_secs(20)),
-            WarmUp("Heel raises", &std::time::Duration::from_secs(20)),
+            Easy("Knees rotation", &std::time::Duration::from_secs(20)),
+            Easy("Feet rotation", &std::time::Duration::from_secs(20)),
+            Easy("Heel raises", &std::time::Duration::from_secs(20)),
             // 1 minute
-            WarmUp("Leg swings", &std::time::Duration::from_secs(20)),
-            WarmUp("Side leg swings", &std::time::Duration::from_secs(20)),
-            WarmUp("Single leg touch toes", &std::time::Duration::from_secs(20)),
+            Easy("Leg swings", &std::time::Duration::from_secs(20)),
+            Easy("Side leg swings", &std::time::Duration::from_secs(20)),
+            Easy("Single leg touch toes", &std::time::Duration::from_secs(20)),
             // 1 minute
-            WarmUp("Butt kicks", &std::time::Duration::from_secs(30)),
-            WarmUp("High knees", &std::time::Duration::from_secs(30)),
+            Easy("Butt kicks", &std::time::Duration::from_secs(30)),
+            Easy("High knees", &std::time::Duration::from_secs(30)),
             // 1 minute
-            WarmUp("Jumping jacks", &std::time::Duration::from_secs(30)),
-            WarmUp("Mountain climbers", &std::time::Duration::from_secs(30)),
+            Easy("Jumping jacks", &std::time::Duration::from_secs(30)),
+            Easy("Mountain climbers", &std::time::Duration::from_secs(30)),
             // 1 minute
-            WarmUp("Jump squats", &std::time::Duration::from_secs(30)),
-            WarmUp("Push ups", &std::time::Duration::from_secs(30)),
+            Easy("Jump squats", &std::time::Duration::from_secs(30)),
+            Easy("Push ups", &std::time::Duration::from_secs(30)),
             // 1 minute
-            WarmUp("Speed steps", &std::time::Duration::from_secs(30)),
-            WarmUp("Left/right jumps", &std::time::Duration::from_secs(30)),
+            Easy("Speed steps", &std::time::Duration::from_secs(30)),
+            Easy("Left/right jumps", &std::time::Duration::from_secs(30)),
             // 1 minute
-            WarmUp("Alternate lunges", &std::time::Duration::from_secs(30)),
-            WarmUp("Burpees", &std::time::Duration::from_secs(30)),
+            Easy("Alternate lunges", &std::time::Duration::from_secs(30)),
+            Easy("Burpees", &std::time::Duration::from_secs(30)),
         ],
+        &[tag::Tag::WarmUp],
+        &silent,
     );
 
-    let shadow_boxing = Sequence::boxing(
-        "Shadow boxing: 3x2m + 30s",
+    let _3x2m_30s = Sequence::rounds(
+        "3x2m (30s rest)",
         3,
         prepare,
-        &std::time::Duration::from_secs(120),
+        &GenericItem::Duration(120),
         &std::time::Duration::from_secs(30),
+        &[tag::Tag::Boxing],
+        &bell,
     );
 
-    let heavy_bag = Sequence::boxing(
-        "Heavy bag: 3x2m + 30s",
-        3,
+    let _6x2m_30s = Sequence::rounds(
+        "6x2m (30s rest)",
+        6,
         prepare,
-        &std::time::Duration::from_secs(120),
+        &GenericItem::Duration(120),
         &std::time::Duration::from_secs(30),
+        &[tag::Tag::Boxing],
+        &bell,
     );
 
-    let pro_boxing = Sequence::boxing(
-        "Pro: 12x3m + 1m",
-        12,
-        prepare,
-        &std::time::Duration::from_secs(180),
-        &std::time::Duration::from_secs(60),
-    );
-
-    let olympic_boxing = Sequence::boxing(
-        "Olympic: 12x2m + 1m",
-        12,
-        prepare,
-        &std::time::Duration::from_secs(120),
-        &std::time::Duration::from_secs(60),
-    );
-
-    let stamina_jab_cross_hook = Sequence::stamina(
-        "Jab/Cross/Jab-Cross/Jab-Cross-Hook",
-        vec!["Jab", "Cross", "Jab/Cross", "Jab/Cross/Hook"],
+    let stamina_jab_cross_hook = Sequence::repeat(
+        "1 | 2 | 1-2 | 1-2-3 (60s rest)",
+        vec![
+            "Jab (1)",
+            "Cross (2)",
+            "Jab | Cross (1-2)",
+            "Jab | Cross | Hook (1-2-3)",
+        ],
         prepare,
         &std::time::Duration::from_secs(30),
-        &std::time::Duration::from_secs(60),
         4,
+        &std::time::Duration::from_secs(60),
+        &[tag::Tag::Boxing, tag::Tag::Stamina],
+        &bell,
     );
 
-    let stamina_jab_cross_hook_cross = Sequence::stamina(
-        "Jab/Jab-Cross/Jab-Cross-Hook/Jab-Cross-Hook-Cross",
-        vec!["Jab", "Jab/Cross", "Jab/Cross/Hook", "Jab/Cross/Hook/Cross"],
+    let stamina_jab_cross_hook_cross = Sequence::repeat(
+        "1 | 1-2 | 1-2-3 | 1-2-3-2 (60s rest)",
+        vec![
+            "Jab (1)",
+            "Jab | Cross (1-2)",
+            "Jab | Cross | Hook (1-2-3)",
+            "Jab | Cross | Hook | Cross (1-2-3-2)",
+        ],
         prepare,
         &std::time::Duration::from_secs(30),
-        &std::time::Duration::from_secs(60),
         4,
+        &std::time::Duration::from_secs(60),
+        &[tag::Tag::Boxing, tag::Tag::Stamina],
+        &bell,
     );
 
-    let hiit = Sequence::hiit(
+    let hiit = Sequence::infinite(
         prepare,
-        &std::time::Duration::from_secs(20),
+        &GenericItem::Duration(20),
         &std::time::Duration::from_secs(10),
+        &[tag::Tag::HiiT],
+        &beep,
     );
 
-    let jump_role_5mn = Sequence::workout(
-        "Jump Rope",
-        prepare,
-        &std::time::Duration::from_secs(5 * 60),
-        &[Tag::Boxing],
-    );
+    let _5mn = Sequence::workout("5mn", prepare, &GenericItem::Duration(5 * 60), &[], &bell);
+    let _10mn = Sequence::workout("10mn", prepare, &GenericItem::Duration(10 * 60), &[], &bell);
 
-    let jump_role_10mn = Sequence::workout(
-        "Jump Rope, miss = 1 burpee",
-        prepare,
-        &std::time::Duration::from_secs(10 * 60),
-        &[Tag::Boxing],
-    );
-
-    let mut bell = use_signal(Bell::default);
-    let _mute_bell = use_resource(move || async move {
-        if muted {
-            bell.write().toggle()
-        }
-    });
+    let mut state_signal = use_signal(|| state.clone());
 
     let mut timer = use_signal(|| {
-        Timer::new(&[
-            // test.clone(),
-            // test_cycle.clone(),
+        timer::Timer::new(&[
             warmup_boxing,
-            shadow_boxing,
-            heavy_bag,
-            pro_boxing,
-            olympic_boxing,
+            _3x2m_30s,
+            _6x2m_30s,
             stamina_jab_cross_hook,
             stamina_jab_cross_hook_cross,
             hiit,
-            jump_role_5mn,
-            jump_role_10mn,
+            _5mn,
+            _10mn,
         ])
     });
     let _tick = use_resource(move || async move {
         loop {
-            gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
-            if timer.write().tick(&bell.read()) {
-                gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
+            gloo::timers::future::TimeoutFuture::new(timer::DEFAULT_INTERVAL).await;
+            if timer.write().tick() {
+                gloo::timers::future::TimeoutFuture::new(timer::DEFAULT_INTERVAL).await;
             }
         }
     });
@@ -196,48 +195,63 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
     });
 
     rsx! {
-        audio {
-            id: BELL_ID,
-            src: "bell.mp3",
-            preload: "auto",
-            autoplay: false
+        div { class: "flex flex-wrap space-x-2",
+            div { class: "",
+                button {
+                    class: "btn btn-primary rounded-full w-24 m-2",
+                    onclick: move |_| timer.with_mut(|t| t.toggle()),
+                    {timer.read().next_status().to_string()}
+                }
+                button {
+                    class: "btn btn-primary rounded-full m-2",
+                    onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
+                    "Restart sequence"
+                }
+                button {
+                    class: "btn btn-primary rounded-full m-2",
+                    onclick: move |_| timer.with_mut(|t| t.restart_item()),
+                    "Restart current"
+                }
+            }
+            div { class: "",
+                button {
+                    class: "btn btn-accent rounded-full m-2",
+                    onclick: move |_| timer.with_mut(|t| t.manual_previous()),
+                    "Previous"
+                }
+                button {
+                    class: "btn btn-accent rounded-full m-2",
+                    onclick: move |_| timer.with_mut(|t| t.manual_next()),
+                    "Next"
+                }
+            }
+            div { class: "",
+                audio {
+                    id: bell.to_string(),
+                    src: bell.asset(),
+                    preload: "auto",
+                    autoplay: false
+                }
+                audio {
+                    id: beep.to_string(),
+                    src: beep.asset(),
+                    preload: "auto",
+                    autoplay: false
+                }
+                button {
+                    class: "btn btn-secondary rounded-full w-24 m-2",
+                    onclick: move |_| state_signal.with_mut(|s| s.borrow_mut().toggle()),
+                    { state_signal.read().borrow().next_label() }
+                }
+                button {
+                    class: "btn btn-secondary rounded-full m-2",
+                    onclick: move |_| timer.with(|t| if !t.always_ring(){bell.always_ring()}),
+                    "Ring"
+                }
+            }
         }
-        div { class: "contents flex-wrap space-x-2",
-            button {
-                class: "btn btn-primary rounded-full w-24 m-2",
-                onclick: move |_| timer.with_mut(|t| t.toggle()),
-                {timer.read().next_status().to_string()}
-            }
-            button {
-                class: "btn btn-primary rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
-                "Restart sequence"
-            }
-            button {
-                class: "btn btn-primary rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.restart_item()),
-                "Restart current"
-            }
-            button {
-                class: "btn btn-accent rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.manual_previous()),
-                "Previous"
-            }
-            button {
-                class: "btn btn-accent rounded-full m-2",
-                onclick: move |_| timer.with_mut(|t| t.manual_next()),
-                "Next"
-            }
-            button {
-                class: "btn btn-secondary rounded-full w-24 m-2",
-                onclick: move |_| bell.with_mut(|b| b.toggle()),
-                { bell.read().next_label() }
-            }
-            button {
-                class: "btn btn-secondary rounded-full m-2",
-                onclick: move |_| bell.with(|b| b.always_ring()),
-                "BELL"
-            }
+        div { class: "flex flex-row space-x-1 m-1 ",
+            div {
             select {
                 id: "sequences",
                 name: "Sequence",
@@ -256,16 +270,11 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                     }
                 }
             }
-        }
-        div { class: "flex flex-row space-x-1 m-1 ",
             if let Some(sequence) = timer.read().sequences().get() {
                 if !sequence.is_empty() {
                     ul {
                         id: "sequence",
                         class: "info flex-none p-2 bg-primary-600 rounded-xl bg-sky-900",
-                        li { class: "text-center",
-                            b { { sequence.name() } }
-                        }
                         for (index , item) in sequence.iter().enumerate() {
                             li {
                                 class: "text-nowrap",
@@ -275,6 +284,7 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                         }
                     }
                 }
+            }
             }
             div {
                 id: "status",
@@ -288,7 +298,6 @@ fn BoxingTimer(muted: bool, start: bool, prepare: u64) -> Element {
                                         { item.left().to_string() }
                                     }
                                 }
-
                                 div { id: "status", class: "text-3xl",
                                     "Status: "
                                     { timer.read().status().to_string() }
