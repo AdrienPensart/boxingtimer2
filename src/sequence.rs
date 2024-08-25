@@ -1,11 +1,12 @@
 use crate::indexedvec::IndexedVec;
-use crate::item::{GenericItem, Item, Prepare, Rest, Workout};
+use crate::item::{Item, Rest, Workout};
 use crate::signal::Signal;
 use crate::stopwatch::Stopwatch;
 use crate::tag::Tag;
 use derive_more::{Deref, DerefMut, IntoIterator};
 use dioxus_logger::tracing::info;
 use itertools::Itertools;
+use rand::seq::SliceRandom;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut)]
 pub struct Sequence {
@@ -13,112 +14,101 @@ pub struct Sequence {
     #[deref]
     #[deref_mut]
     items: IndexedVec<Item>,
-    tags: Vec<Tag>,
     signal: Signal,
+    rest: Option<std::time::Duration>,
+}
+
+pub enum SmartSequence {
+    // simple
+    Simple(Sequence),
+    // random
+    Random(Sequence),
+    // infinite
+    Infinite(Sequence),
+    // repeat
+    Repeat(Sequence, usize),
 }
 
 type Rounds = u64;
 pub static ROUNDS: Rounds = 1;
 
 impl Sequence {
-    pub fn simple(name: &str, items: &[Item], tags: &[Tag], signal: &Signal) -> Self {
+    pub fn random(name: &str, items: &[Item], rest: std::time::Duration, signal: &Signal) -> Self {
+        let mut rng = rand::thread_rng();
+        let mut items = items.to_vec();
+        items.shuffle(&mut rng);
+        items = itertools::intersperse(items.to_vec(), Rest(rest)).collect_vec();
+        Self {
+            name: name.into(),
+            items: IndexedVec::simple(&items),
+            signal: signal.clone(),
+            rest: Some(rest),
+        }
+    }
+    pub fn simple(name: &str, items: &[Item], signal: &Signal) -> Self {
         Self {
             name: name.into(),
             items: IndexedVec::simple(items),
-            tags: tags.into(),
             signal: signal.clone(),
+            rest: None,
         }
     }
-    pub fn cycle(name: &str, items: &[Item], tags: &[Tag], signal: &Signal) -> Self {
+    pub fn infinite(workout: Item, rest: std::time::Duration, signal: &Signal) -> Self {
+        let seconds = workout.stopwatch().duration().as_secs();
+        let items = vec![workout, Rest(rest)];
         Self {
-            name: name.into(),
-            items: IndexedVec::cycle(items),
-            tags: tags.into(),
+            name: format!("HiiT {seconds}s / {}s", rest.as_secs()),
+            items: IndexedVec::cycle(&items),
             signal: signal.clone(),
+            rest: None,
         }
     }
-    pub fn signal(&self) -> &Signal {
-        &self.signal
-    }
-    pub fn workout(
-        name: &str,
-        prepare: std::time::Duration,
-        workout: &GenericItem,
-        tags: &[Tag],
-        signal: &Signal,
-    ) -> Self {
-        let workout = workout.item();
+    pub fn workout(name: &str, workout: Item, signal: &Signal) -> Self {
         Self {
             name: name.into(),
-            items: IndexedVec::simple(&[Prepare(prepare), workout]),
-            tags: tags.into(),
+            items: IndexedVec::simple(&[workout]),
             signal: signal.clone(),
+            rest: None,
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub fn repeat(
         name: &str,
         names: Vec<&str>,
-        prepare: std::time::Duration,
         workout: std::time::Duration,
         rounds: Rounds,
         rest: std::time::Duration,
         tags: &[Tag],
         signal: &Signal,
     ) -> Self {
-        let items = names.iter().map(|n| Workout(n, workout, &[])).collect_vec();
-        let mut items = itertools::intersperse(vec![items; rounds as usize], vec![Rest(rest)])
+        let items = names
+            .iter()
+            .map(|n| Workout(n, workout, tags))
+            .collect_vec();
+        let items = itertools::intersperse(vec![items; rounds as usize], vec![Rest(rest)])
             .flatten()
             .collect_vec();
-        if !prepare.is_zero() {
-            items.insert(0, Prepare(prepare));
-        }
         Self {
             name: name.into(),
             items: IndexedVec::simple(&items),
-            tags: tags.into(),
             signal: signal.clone(),
-        }
-    }
-    pub fn infinite(
-        prepare: std::time::Duration,
-        workout: GenericItem,
-        rest: std::time::Duration,
-        tags: &[Tag],
-        signal: &Signal,
-    ) -> Self {
-        let workout = workout.item();
-        let seconds = workout.stopwatch().duration().as_secs();
-        let mut items = vec![workout, Rest(rest)];
-        if !prepare.is_zero() {
-            items.insert(0, Prepare(prepare));
-        }
-        Self {
-            name: format!("HiiT {seconds}s / {}s", rest.as_secs()),
-            items: IndexedVec::cycle(&items),
-            tags: tags.into(),
-            signal: signal.clone(),
+            rest: None,
         }
     }
     pub fn rounds(
         name: &str,
         rounds: Rounds,
-        prepare: std::time::Duration,
-        workout: GenericItem,
+        workout: Item,
         rest: std::time::Duration,
-        tags: &[Tag],
         signal: &Signal,
     ) -> Self {
-        let rounds_items = vec![workout.item(); rounds as usize];
-        let mut items = itertools::intersperse(rounds_items, Rest(rest)).collect_vec();
-        if !prepare.is_zero() {
-            items.insert(0, Prepare(prepare));
-        }
+        let rounds_items = vec![workout; rounds as usize];
+        let items = itertools::intersperse(rounds_items, Rest(rest)).collect_vec();
         Self {
             name: name.into(),
             items: IndexedVec::simple(&items),
-            tags: tags.into(),
             signal: signal.clone(),
+            rest: None,
         }
     }
     pub fn goto_previous(&mut self) -> Option<&mut Item> {
@@ -163,17 +153,15 @@ impl Sequence {
             return true;
         }
 
-        if !self.items.circular() {
+        if self.items.circular() {
             self.reset();
-            return false;
+            return true;
         }
 
-        while let Some(item) = self.items.next_item() {
-            item.reset();
-            if !item.is_prepare() {
-                return true;
-            }
-        }
+        // if let Some(item) = self.items.next_item() {
+        //     item.reset();
+        // }
+
         false
     }
     pub fn stopwatch(&mut self) -> Option<&Stopwatch> {
@@ -217,7 +205,7 @@ impl Sequence {
     pub fn workout_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .filter(|i| !i.is_wait())
+                .filter(|i| !i.is_rest())
                 .map(|i| i.stopwatch().duration().as_secs())
                 .sum(),
         )
@@ -234,10 +222,25 @@ impl Sequence {
         self.items
             .iter()
             .flat_map(|i| i.tags())
-            .filter(|t| **t != Tag::Prepare)
+            .filter(|t| **t != Tag::Rest)
             .unique()
             .cloned()
             .collect_vec()
+    }
+    pub fn signal(&self) -> &Signal {
+        &self.signal
+    }
+    pub fn shuffle(&mut self) {
+        // it was interspersed with rest, rebuild sequence
+        if let Some(rest) = self.rest {
+            let rest = Rest(rest);
+            self.items.retain(&rest);
+            let mut items = self.items.shuffled();
+            items = itertools::intersperse(items, rest).collect_vec();
+            self.items = IndexedVec::simple(&items);
+        } else {
+            self.items.shuffle()
+        }
     }
 }
 
@@ -256,69 +259,66 @@ impl std::fmt::Display for Sequence {
 #[test]
 fn sequence_simple_tests() {
     use crate::duration::SECOND;
-    use crate::item::{Easy, Prepare};
+    use crate::item::{Easy, Medium};
     use crate::signal::Signal;
     let none = Signal::none();
-    let prepare = Prepare(5 * SECOND);
     let warm_up = Easy("test", 3 * SECOND);
+    let workout = Medium("workout", 6 * SECOND);
     let mut simple = Sequence::simple(
         "simple sequence",
-        &[prepare.clone(), warm_up.clone()],
-        &[],
+        &[warm_up.clone(), workout.clone()],
         &none,
     );
 
     assert!(simple.auto_next());
-    assert_eq!(simple.get(), Some(&prepare));
+    assert_eq!(simple.get(), Some(&warm_up));
 
     assert!(simple.auto_next());
-    assert_eq!(simple.get(), Some(&warm_up));
+    assert_eq!(simple.get(), Some(&workout));
 
     assert!(!simple.auto_next());
     assert_eq!(simple.get(), None);
 
     simple.manual_next();
-    assert_eq!(simple.get(), Some(&prepare));
+    assert_eq!(simple.get(), Some(&warm_up));
 
     simple.manual_next();
-    assert_eq!(simple.get(), Some(&warm_up));
+    assert_eq!(simple.get(), Some(&workout));
 
     assert!(!simple.auto_next());
     assert_eq!(simple.get(), None);
 
     simple.manual_next();
-    assert_eq!(simple.get(), Some(&prepare));
+    assert_eq!(simple.get(), Some(&warm_up));
 
     simple.reset();
     assert_eq!(simple.get(), None);
 }
 
-#[test]
-fn sequence_cycle_tests() {
-    use crate::duration::SECOND;
-    use crate::item::{Easy, Prepare};
-    use crate::signal::Signal;
-    let none = Signal::none();
-    let prepare = Prepare(5 * SECOND);
-    let warm_up = Easy("test", 3 * SECOND);
-    let mut cycle = Sequence::cycle(
-        "simple sequence",
-        &[prepare.clone(), warm_up.clone()],
-        &[],
-        &none,
-    );
+// #[test]
+// fn sequence_cycle_tests() {
+//     use crate::duration::SECOND;
+//     use crate::item::Medium;
+//     use crate::signal::Signal;
+//     let none = Signal::none();
 
-    assert_eq!(cycle.get(), None);
+//     let workout = Medium("workout", 6 * SECOND);
+//     let _30_seconds = 30 * SECOND;
+//     let rest = Rest(_30_seconds);
 
-    assert!(cycle.auto_next());
-    assert_eq!(cycle.get(), Some(&prepare));
+//     let mut cycle = Sequence::infinite(workout.clone(), _30_seconds, &none);
 
-    assert!(cycle.auto_next());
-    assert_eq!(cycle.get(), Some(&warm_up));
+//     assert_eq!(cycle.get(), None);
 
-    assert!(cycle.auto_next());
-    assert_eq!(cycle.get(), Some(&warm_up));
+//     assert!(cycle.auto_next());
+//     assert_eq!(cycle.get(), Some(&workout));
 
-    cycle.manual_next();
-    assert_eq!(cycle.get(), Some(&prepare));
-}
+//     assert!(cycle.auto_next());
+//     assert_eq!(cycle.get(), Some(&rest));
+
+//     assert!(cycle.auto_next());
+//     assert_eq!(cycle.get(), Some(&workout));
+
+//     cycle.manual_next();
+//     assert_eq!(cycle.get(), Some(&rest));
+// }

@@ -1,6 +1,5 @@
-// use gloo::console::log;
-
 use derive_more::Deref;
+use rand::seq::SliceRandom;
 
 #[derive(PartialEq, Eq, Clone, Debug, Hash, Deref)]
 pub struct IndexedVec<T> {
@@ -22,7 +21,7 @@ impl<T> Default for IndexedVec<T> {
 
 impl<T> IndexedVec<T>
 where
-    T: std::clone::Clone,
+    T: std::clone::Clone + std::cmp::PartialEq,
 {
     pub fn simple(elements: &[T]) -> Self {
         Self {
@@ -48,9 +47,6 @@ where
         if self.is_empty() {
             return true;
         }
-        // if self.circular {
-        //     return false;
-        // }
         if let Some(index) = self.index {
             index == self.store.len() - 1
         } else {
@@ -71,6 +67,20 @@ where
     pub fn circular(&self) -> bool {
         self.circular
     }
+    pub fn retain(&mut self, value: &T) {
+        self.store.retain(|i| i != value);
+        self.index = None;
+    }
+    pub fn shuffle(&mut self) {
+        let mut rng = rand::thread_rng();
+        self.store.shuffle(&mut rng);
+    }
+    pub fn shuffled(&mut self) -> Vec<T> {
+        let mut rng = rand::thread_rng();
+        let mut store = self.store.clone();
+        store.shuffle(&mut rng);
+        store
+    }
     pub fn get(&self) -> Option<&T> {
         if let Some(index) = self.index {
             self.store.get(index)
@@ -90,9 +100,13 @@ where
             self.index = None;
             return None;
         }
-        let Some(index) = self.index else {
-            self.index = Some(0);
-            return self.store.get_mut(0);
+
+        let index = match self.index {
+            None => {
+                self.index = Some(0);
+                return self.store.get_mut(0);
+            }
+            Some(index) => index,
         };
 
         if index < self.store.len() - 1 {

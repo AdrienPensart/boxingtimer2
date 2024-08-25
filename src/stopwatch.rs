@@ -26,7 +26,7 @@ impl Stopwatch {
         success
     }
     pub fn last_seconds(&self) -> bool {
-        self.left.as_secs() > 0 && self.left.as_secs() < 4
+        self.left.as_secs() < 3
     }
     pub fn duration(&self) -> &std::time::Duration {
         &self.duration
@@ -36,6 +36,16 @@ impl Stopwatch {
     }
     pub fn elapsed(&self) -> &std::time::Duration {
         &self.elapsed
+    }
+}
+
+impl From<&std::time::Duration> for Stopwatch {
+    fn from(duration: &std::time::Duration) -> Self {
+        Self {
+            duration: *duration,
+            left: *duration,
+            ..Self::default()
+        }
     }
 }
 

@@ -16,6 +16,8 @@ pub enum TimerErrorKind {
     DocumentError,
     #[error("Cannot get sound")]
     SoundError,
+    #[error("Invalid sequence")]
+    InvalidSequence,
 }
 
 impl From<js_sys::Error> for TimerErrorKind {
