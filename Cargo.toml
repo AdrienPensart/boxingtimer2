@@ -19,9 +19,8 @@ wasm-bindgen-futures = "0.4.42"
 # wasm-bindgen = "0.2.92"
 web-sys = { version = "0.3.69", features = ["HtmlAudioElement"] }
 duration-string = { version = "0.4.0", features = ["serde"] }
-derive_builder = { version = "0.20.0", features = ["clippy"] }
-derive-new = "0.6.0"
 itertools = "0.13.0"
 thiserror = "1.0.63"
 manganis = "0.2.2"
 rand = "0.8"
+bon = "2.1.0"

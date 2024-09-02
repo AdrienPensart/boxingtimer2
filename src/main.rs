@@ -59,9 +59,9 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
 
     let preparation = std::time::Duration::from_secs(prepare);
 
-    let warmup = Sequence::simple(
-        "Warm-up : 🌡",
-        &[
+    let warmup = Sequence::simple()
+        .name("Warm-up : 🌡")
+        .items(&[
             // 1 minute
             Easy("Head rotation", 20 * SECOND),
             Easy("Shoulders rotation", 20 * SECOND),
@@ -93,13 +93,13 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
             // 1 minute
             Medium("Alternate lunges", 30 * SECOND),
             Medium("Burpees", 30 * SECOND),
-        ],
-        &silent,
-    );
+        ])
+        .signal(&silent)
+        .call();
 
-    let cardio_warmup = Sequence::simple(
-        "Cardio Warm-up : ❤️‍🔥",
-        &[
+    let cardio_warmup = Sequence::simple()
+        .name("Cardio Warm-up : ❤️‍🔥")
+        .items(&[
             // 1 minute
             Easy("Jumping jacks", 15 * SECOND),
             Easy("High knees", 30 * SECOND),
@@ -125,90 +125,114 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
             Easy("Crunches", 15 * SECOND),
             Easy("Jumping jacks", 15 * SECOND),
             Easy("Plank", 15 * SECOND),
-        ],
-        &beep,
-    );
+        ])
+        .signal(&beep)
+        .call();
 
-    let boxing_3x2m_30s = Sequence::rounds(
-        "3x2m (30s rest)",
-        3 * ROUNDS,
-        Workout("Boxing Round", 2 * MINUTE, &[Tag::Boxing, Tag::Medium]),
-        30 * SECOND,
-        &bell,
-    );
+    let workout_10m = Sequence::rounds()
+        .name("1m/10x Workout")
+        .rounds(10)
+        .workout(Workout("Workout!", 1 * MINUTE, &[]))
+        .rest(1 * MINUTE)
+        .signal(&beep)
+        .call();
 
-    let boxing_3x3m_1m = Sequence::rounds(
-        "3x3m (60s rest)",
-        3 * ROUNDS,
-        Workout("Boxing Round", 3 * MINUTE, &[Tag::Boxing, Tag::Medium]),
-        60 * SECOND,
-        &bell,
-    );
+    let boxing_3x2m_30s = Sequence::rounds()
+        .name("3x2m (30s rest)")
+        .rounds(3 * ROUNDS)
+        .workout(Workout(
+            "Boxing Round",
+            2 * MINUTE,
+            &[Tag::Boxing, Tag::Medium],
+        ))
+        .rest(30 * SECOND)
+        .signal(&bell)
+        .call();
 
-    let boxing_6x2m_30s = Sequence::rounds(
-        "6x2m (30s rest)",
-        6 * ROUNDS,
-        Workout("Boxing Round", 2 * MINUTE, &[Tag::Boxing, Tag::Medium]),
-        30 * SECOND,
-        &bell,
-    );
+    let boxing_3x3m_1m = Sequence::rounds()
+        .name("3x3m (60s rest)")
+        .rounds(3 * ROUNDS)
+        .workout(Workout(
+            "Boxing Round",
+            3 * MINUTE,
+            &[Tag::Boxing, Tag::Medium],
+        ))
+        .rest(60 * SECOND)
+        .signal(&bell)
+        .call();
 
-    let boxing_6x3m_1m = Sequence::rounds(
-        "6x3m (60s rest)",
-        6 * ROUNDS,
-        Workout("Boxing Round", 3 * MINUTE, &[Tag::Boxing, Tag::Medium]),
-        60 * SECOND,
-        &bell,
-    );
+    let boxing_6x2m_30s = Sequence::rounds()
+        .name("6x2m (30s rest)")
+        .rounds(6 * ROUNDS)
+        .workout(Workout(
+            "Boxing Round",
+            2 * MINUTE,
+            &[Tag::Boxing, Tag::Medium],
+        ))
+        .rest(30 * SECOND)
+        .signal(&bell)
+        .call();
 
-    let stamina_jab_cross_hook = Sequence::repeat(
-        "1 | 2 | 1-2 | 1-2-3 (60s rest)",
-        vec![
+    let boxing_6x3m_1m = Sequence::rounds()
+        .name("6x3m (60s rest)")
+        .rounds(6 * ROUNDS)
+        .workout(Workout(
+            "Boxing Round",
+            3 * MINUTE,
+            &[Tag::Boxing, Tag::Medium],
+        ))
+        .rest(60 * SECOND)
+        .signal(&bell)
+        .call();
+
+    let stamina_jab_cross_hook = Sequence::repeat()
+        .name("1 | 2 | 1-2 | 1-2-3 (60s rest)")
+        .names(vec![
             "Jab (1)",
             "Cross (2)",
             "Jab | Cross (1-2)",
             "Jab | Cross | Hook (1-2-3)",
-        ],
-        30 * SECOND,
-        4 * ROUNDS,
-        1 * MINUTE,
-        &[Tag::Boxing, Tag::Medium],
-        &bell,
-    );
+        ])
+        .workout(30 * SECOND)
+        .rounds(4 * ROUNDS)
+        .rest(1 * MINUTE)
+        .tags(&[Tag::Boxing, Tag::Medium])
+        .signal(&bell)
+        .call();
 
-    let stamina_jab_jab_cross_cross = Sequence::repeat(
-        "1 | 1-1 | 1-1-2 | 1-1-2-2 (60s rest)",
-        vec![
+    let stamina_jab_jab_cross_cross = Sequence::repeat()
+        .name("1 | 1-1 | 1-1-2 | 1-1-2-2 (60s rest)")
+        .names(vec![
             "Jab (1)",
             "Double Jab (1-1)",
             "Double Jab | Cross (1-1-2)",
             "Double Jab | Cross | Cross",
-        ],
-        30 * SECOND,
-        4 * ROUNDS,
-        1 * MINUTE,
-        &[Tag::Boxing, Tag::Medium],
-        &bell,
-    );
+        ])
+        .workout(30 * SECOND)
+        .rounds(4 * ROUNDS)
+        .rest(1 * MINUTE)
+        .tags(&[Tag::Boxing, Tag::Medium])
+        .signal(&bell)
+        .call();
 
-    let stamina_jab_cross_hook_cross = Sequence::repeat(
-        "1 | 1-2 | 1-2-3 | 1-2-3-2 (60s rest)",
-        vec![
+    let stamina_jab_cross_hook_cross = Sequence::repeat()
+        .name("1 | 1-2 | 1-2-3 | 1-2-3-2 (60s rest)")
+        .names(vec![
             "Jab (1)",
             "Jab | Cross (1-2)",
             "Jab | Cross | Hook (1-2-3)",
             "Jab | Cross | Hook | Cross (1-2-3-2)",
-        ],
-        30 * SECOND,
-        4 * ROUNDS,
-        1 * MINUTE,
-        &[Tag::Boxing, Tag::Medium],
-        &bell,
-    );
+        ])
+        .workout(30 * SECOND)
+        .rounds(4 * ROUNDS)
+        .rest(1 * MINUTE)
+        .tags(&[Tag::Boxing, Tag::Medium])
+        .signal(&bell)
+        .call();
 
-    let random_hiit = Sequence::random(
-        "Random training 🎲",
-        &[
+    let random_hiit = Sequence::random()
+        .name("Random training 🎲")
+        .items(&[
             Workout("Jumping Jacks", 30 * SECOND, &[Tag::Dynamic]),
             Workout("Pull-ups", 30 * SECOND, &[Tag::Dynamic]),
             Workout("Plank", 30 * SECOND, &[Tag::Stationary]),
@@ -216,23 +240,36 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
             Workout("Burpees", 30 * SECOND, &[Tag::Dynamic]),
             Workout("Push-ups", 30 * SECOND, &[Tag::Dynamic]),
             Workout("Alternate Lunges", 30 * SECOND, &[Tag::Dynamic]),
-        ],
-        30 * SECOND,
-        &beep,
-    );
+        ])
+        .rest(30 * SECOND)
+        .signal(&beep)
+        .call();
 
-    let hiit = Sequence::infinite(
-        Workout("Workout!", 20 * SECOND, &[Tag::Hard]),
-        10 * SECOND,
-        &beep,
-    );
-    let _5mn = Sequence::workout("5mn", Workout("Workout", 5 * MINUTE, &[Tag::Easy]), &bell);
-    let _10mn = Sequence::workout(
-        "10mn",
-        Workout("Workout", 10 * MINUTE, &[Tag::Medium]),
-        &bell,
-    );
-    let _15mn = Sequence::workout("15mn", Workout("Workout", 15 * MINUTE, &[Tag::Hard]), &bell);
+    let hiit = Sequence::rounds()
+        .name("HiiT 20s/10s (4x)")
+        .rounds(4 * ROUNDS)
+        .workout(Workout("Workout!", 20 * SECOND, &[Tag::Hard]))
+        .rest(10 * SECOND)
+        .signal(&beep)
+        .call();
+
+    let _5mn = Sequence::workout()
+        .name("5mn")
+        .workout(Workout("Workout", 5 * MINUTE, &[Tag::Easy]))
+        .signal(&bell)
+        .call();
+
+    let _10mn = Sequence::workout()
+        .name("10mn")
+        .workout(Workout("Workout", 10 * MINUTE, &[Tag::Medium]))
+        .signal(&bell)
+        .call();
+
+    let _15mn = Sequence::workout()
+        .name("15mn")
+        .workout(Workout("Workout", 15 * MINUTE, &[Tag::Hard]))
+        .signal(&bell)
+        .call();
 
     let mut state_signal = use_signal(|| state.clone());
 
@@ -242,6 +279,7 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
             &[
                 warmup,
                 cardio_warmup,
+                workout_10m,
                 boxing_3x2m_30s,
                 boxing_3x3m_1m,
                 boxing_6x2m_30s,
@@ -267,44 +305,39 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
     });
 
     rsx! {
-        div { id: "controls", class: "flex flex-wrap space-x-2",
-            div { id: "timer_controls",
+        div { id: "controls", class: "flex flex-wrap space-x-3",
+            div { id: "timer_controls", class: "space-x-1.5",
                 button {
-                    class: "btn btn-primary rounded-full w-24 m-2",
+                    class: "rounded-full text-3xl",
                     onclick: move |_| timer.with_mut(|t| t.toggle()),
                     {timer.read().next_status().to_string()}
                 }
                 button {
-                    class: "btn btn-primary rounded-full m-2",
+                    class: "rounded-full text-3xl",
                     onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
-                    "Restart sequence"
-                }
-                button {
-                    class: "btn btn-primary rounded-full m-2",
-                    onclick: move |_| timer.with_mut(|t| t.restart_item()),
-                    "Restart current"
+                    "🗘"
                 }
             }
-            div { id: "sequence_controls",
+            div { id: "sequence_controls", class: "space-x-1.5",
                 button {
-                    class: "btn btn-accent rounded-full m-2",
+                    class: "rounded-full text-3xl",
                     onclick: move |_| timer.with_mut(|t| t.manual_previous()),
-                    "Previous"
+                    "⏪"
                 }
                 button {
-                    class: "btn btn-accent rounded-full m-2",
+                    class: "rounded-full text-3xl",
                     onclick: move |_| timer.with_mut(|t| t.manual_next()),
-                    "Next"
+                    "⏩"
                 }
                 if timer.read().sequences().get().is_some() {
                     button {
-                        class: "btn btn-accent rounded-full m-2",
+                        class: "rounded-full text-3xl",
                         onclick: move |_| timer.with_mut(|t| t.shuffle()),
-                        "Shuffle"
+                        "🎲"
                     }
                 }
             }
-            div { id: "sounds_controls",
+            div { id: "sounds_controls", class: "space-x-1.5",
                 audio {
                     id: bell.to_string(),
                     src: bell.asset(),
@@ -319,13 +352,13 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 }
                 button {
                     id: "toggle_signal",
-                    class: "btn btn-secondary rounded-full w-24 m-2",
+                    class: "text-3xl",
                     onclick: move |_| state_signal.with_mut(|s| s.borrow_mut().toggle()),
-                    { state_signal.read().borrow().next_label() }
+                    { state_signal.read().borrow().next().to_string() }
                 }
                 button {
                     id: "ring",
-                    class: "btn btn-secondary rounded-full m-2",
+                    class: "text-3xl",
                     onclick: move |_| {
                         timer
                             .with(|t| {
@@ -334,7 +367,7 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                                 }
                             })
                     },
-                    "Ring"
+                    "🛎"
                 }
             }
         }
@@ -376,16 +409,15 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 div {
                     id: "informations",
                     class: "rounded-xl bg-sky-900 text-2xl p-2",
-                    div { id: "status",
-                        "Status: "
-                        { timer.read().status().to_string() }
-                    }
+                    // div { id: "status",
+                    //     "Status: "
+                    //     { timer.read().status().to_string() }
+                    // }
                     div { id: "elapsed",
                         "Elapsed: "
                         { timer.read().elapsed().to_string() }
                     }
                     if let Some(sequence) = timer.read().sequences().get() {
-                        // div { class: "items-center justify-center display-grid grid p-12",
                         div { id: "workout",
                             "Workout: "
                             { sequence.workout_total().to_string() }
@@ -411,6 +443,11 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 div { class: "flex flex-col items-center justify-center",
                     div { id: "item", class: "text-9xl", { timer.read().label() } }
                     div { id: "counter", class: "text-9xl", { timer.read().left().to_string() } }
+                    button {
+                        class: "text-3xl",
+                        onclick: move |_| timer.with_mut(|t| t.restart_item()),
+                        "🗘"
+                    }
                 }
             }
         }

@@ -6,7 +6,6 @@ pub struct IndexedVec<T> {
     index: Option<usize>,
     #[deref]
     store: Vec<T>,
-    circular: bool,
 }
 
 impl<T> Default for IndexedVec<T> {
@@ -14,7 +13,6 @@ impl<T> Default for IndexedVec<T> {
         Self {
             index: None,
             store: vec![],
-            circular: false,
         }
     }
 }
@@ -23,18 +21,10 @@ impl<T> IndexedVec<T>
 where
     T: std::clone::Clone + std::cmp::PartialEq,
 {
-    pub fn simple(elements: &[T]) -> Self {
+    pub fn new(elements: &[T]) -> Self {
         Self {
             index: None,
             store: Vec::from(elements),
-            ..Default::default()
-        }
-    }
-    pub fn cycle(elements: &[T]) -> Self {
-        Self {
-            index: None,
-            store: Vec::from(elements),
-            circular: true,
         }
     }
     pub fn apply<F: FnMut(&mut T)>(&mut self, f: F) {
@@ -63,9 +53,6 @@ where
             self.index = None;
         }
         self.store.get_mut(index)
-    }
-    pub fn circular(&self) -> bool {
-        self.circular
     }
     pub fn retain(&mut self, value: &T) {
         self.store.retain(|i| i != value);
@@ -112,10 +99,8 @@ where
         if index < self.store.len() - 1 {
             self.index = Some(index + 1);
             self.store.get_mut(index + 1)
-        } else if index == self.store.len() - 1 && self.circular {
-            self.index = Some(0);
-            self.store.get_mut(0)
         } else {
+            self.index = None;
             None
         }
     }
@@ -143,7 +128,6 @@ where
 #[test]
 fn indexedvec_default_tests() {
     let mut default = IndexedVec::<bool>::default();
-    assert!(!default.circular());
     assert!(default.is_empty());
     assert!(default.index().is_none());
     assert!(default.get().is_none());
@@ -158,8 +142,7 @@ fn indexedvec_default_tests() {
 
 #[test]
 fn indexedvec_simple_tests() {
-    let mut simple = IndexedVec::<bool>::simple(&[false, true]);
-    assert!(!simple.circular());
+    let mut simple = IndexedVec::<bool>::new(&[false, true]);
     assert!(!simple.is_empty());
     assert!(simple.index().is_none());
     assert!(simple.get().is_none());
@@ -177,46 +160,14 @@ fn indexedvec_simple_tests() {
     assert_eq!(simple.get(), Some(&true));
     assert!(simple.last());
 
-    assert!(simple.next_item().is_none());
-    // assert!(simple.get().is_none());
-    assert_eq!(simple.get(), Some(&true));
+    let next = simple.next_item();
+    assert!(next.is_none());
+    assert!(simple.index().is_none());
+    assert!(simple.get().is_none());
 
     simple.reset();
     assert_eq!(simple.next_item(), Some(&mut false));
     assert_eq!(simple.index(), Some(0));
     assert_eq!(simple.get(), Some(&false));
     assert!(!simple.last());
-}
-
-#[test]
-fn indexedvec_cycle_tests() {
-    let mut circular = IndexedVec::<bool>::cycle(&[false, true]);
-    assert!(circular.circular());
-    assert!(!circular.is_empty());
-    assert!(circular.index().is_none());
-    assert!(circular.get().is_none());
-
-    let next = circular.next_item();
-    assert_eq!(next, Some(&mut false));
-    assert_eq!(circular.index(), Some(0));
-    assert_eq!(circular.get(), Some(&false));
-    assert!(!circular.last());
-
-    let next = circular.next_item();
-    assert_eq!(next, Some(&mut true));
-    assert_eq!(circular.index(), Some(1));
-    assert_eq!(circular.get(), Some(&true));
-    assert!(circular.last());
-
-    let next = circular.next_item();
-    assert_eq!(next, Some(&mut false));
-    assert_eq!(circular.index(), Some(0));
-    assert_eq!(circular.get(), Some(&false));
-    assert!(!circular.last());
-
-    let next = circular.next_item();
-    assert_eq!(next, Some(&mut true));
-    assert_eq!(circular.index(), Some(1));
-    assert_eq!(circular.get(), Some(&true));
-    assert!(circular.last());
 }

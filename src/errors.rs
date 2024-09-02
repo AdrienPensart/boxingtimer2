@@ -1,9 +1,5 @@
-use crate::item::ItemBuilderError;
-
 #[derive(thiserror::Error, Debug)]
 pub enum TimerErrorKind {
-    #[error("Item error: {0}")]
-    ItemBuilderError(#[from] ItemBuilderError),
     #[error("JS error: {0:?}")]
     JsError(js_sys::Error),
     #[error("Cannot get audio element: {0:?}")]

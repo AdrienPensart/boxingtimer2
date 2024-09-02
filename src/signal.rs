@@ -7,7 +7,9 @@ use dioxus_logger::tracing::info;
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
 pub enum State {
     #[default]
+    #[display("🔊")]
     Enabled,
+    #[display("🔇")]
     Disabled,
 }
 
@@ -19,12 +21,6 @@ impl State {
         match self {
             Self::Disabled => Self::Enabled,
             Self::Enabled => Self::Disabled,
-        }
-    }
-    pub fn next_label(&self) -> String {
-        match self {
-            Self::Disabled => "Unmute".to_string(),
-            Self::Enabled => "Mute".to_string(),
         }
     }
     pub fn enabled(&self) -> bool {
@@ -69,8 +65,8 @@ impl Signal {
             info!("unable to play {} (always): {error}", self.sound);
         }
     }
-    pub fn next_label(&self) -> String {
-        self.state.borrow().next_label()
+    pub fn next(&self) -> State {
+        self.state.borrow().next()
     }
     pub fn enabled(&self) -> bool {
         self.state.borrow().enabled()

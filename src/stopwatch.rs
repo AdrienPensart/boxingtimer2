@@ -12,8 +12,9 @@ impl Stopwatch {
         self.duration = duration;
         self.left = duration;
     }
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self) -> &mut Self {
         self.left = self.duration;
+        self
     }
     pub fn increment(&mut self) {
         self.left.increment();

@@ -21,7 +21,7 @@ impl Timer {
     pub fn new(preparation: std::time::Duration, sequences: &[Sequence]) -> Self {
         Self {
             preparation: Stopwatch::from(preparation),
-            sequences: IndexedVec::simple(sequences),
+            sequences: IndexedVec::new(sequences),
             ..Default::default()
         }
     }
@@ -49,9 +49,6 @@ impl Timer {
         info!("timer: setting sequence of index {index}");
         if let Some(s) = self.sequences.set_index(index) {
             s.reset();
-            // if self.status.running() {
-            //     s.set_index(0);
-            // }
         } else {
             info!("timer: no current sequence")
         }
@@ -65,8 +62,12 @@ impl Timer {
     }
     pub fn restart_item(&mut self) {
         if let Some(sequence) = self.sequences.get_mut() {
-            self.changed = true;
-            sequence.reset_current()
+            if sequence.get().is_none() {
+                self.preparation.reset();
+            } else {
+                self.changed = true;
+                sequence.reset_current()
+            }
         }
     }
     pub fn tick(&mut self) -> bool {
@@ -75,7 +76,6 @@ impl Timer {
             return false;
         }
         if self.status.paused() {
-            // log!("paused, skipping tick");
             return false;
         }
 
@@ -103,7 +103,7 @@ impl Timer {
             sequence.signal().ring();
         }
         info!("goto next");
-        if sequence.auto_next() {
+        if sequence.auto_next().is_some() {
             return true;
         }
         self.status.toggle();
@@ -177,8 +177,17 @@ fn timer_tests() {
     let none = Signal::none();
     let preparation = std::time::Duration::from_secs(5);
     let warm_up = Easy("test", std::time::Duration::from_secs(3));
-    let first_sequence = Sequence::simple("first sequence", &[warm_up.clone()], &none);
-    let second_sequence = Sequence::simple("double sequence", &[warm_up.clone()], &none);
+    let first_sequence = Sequence::simple()
+        .name("first sequence")
+        .items(&[warm_up.clone()])
+        .signal(&none)
+        .call();
+
+    let second_sequence = Sequence::simple()
+        .name("double sequence")
+        .items(&[warm_up.clone()])
+        .signal(&none)
+        .call();
     let mut timer = Timer::new(
         preparation,
         &[first_sequence.clone(), second_sequence.clone()],
