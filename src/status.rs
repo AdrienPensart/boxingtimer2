@@ -2,9 +2,9 @@ use derive_more::Display;
 
 #[derive(Display, Debug, PartialEq, Eq, Clone)]
 pub enum Status {
-    #[display("⏸")]
+    #[display("🛑")]
     Paused,
-    #[display("⏵")]
+    #[display("🟢")]
     Running,
 }
 

@@ -21,10 +21,10 @@ use crate::tag::Tag;
 use dioxus::prelude::*;
 // use dioxus_logger::tracing::error;
 use dioxus_logger::tracing::Level;
-use manganis::mg;
+// use manganis::mg;
 use std::{cell::RefCell, rc::Rc};
 
-const _: &str = mg!(file("assets/tailwind.css"));
+// const _: &str = mg!(file("assets/tailwind.css"));
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
@@ -51,6 +51,9 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
     } else {
         State::Enabled
     };
+    if prepare == 0 {
+        prepare = 20;
+    }
     let state = Rc::new(RefCell::new(state));
 
     let silent = Signal::new(Sound::Silent, state.clone());
@@ -305,6 +308,7 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
     });
 
     rsx! {
+        link { rel: "stylesheet", href: "tailwind.css" }
         div { id: "controls", class: "flex flex-wrap space-x-3",
             div { id: "timer_controls", class: "space-x-1.5",
                 button {
@@ -315,7 +319,7 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 button {
                     class: "rounded-full text-3xl",
                     onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
-                    "🗘"
+                    "♻"
                 }
             }
             div { id: "sequence_controls", class: "space-x-1.5",
@@ -446,7 +450,7 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                     button {
                         class: "text-3xl",
                         onclick: move |_| timer.with_mut(|t| t.restart_item()),
-                        "🗘"
+                        "♻"
                     }
                 }
             }
