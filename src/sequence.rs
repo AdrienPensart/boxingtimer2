@@ -17,6 +17,7 @@ pub struct Sequence {
     items: IndexedVec<Item>,
     signal: Signal,
     rest: Option<std::time::Duration>,
+    shufflable: bool,
 }
 
 pub enum SmartSequence {
@@ -46,6 +47,7 @@ impl Sequence {
             items: IndexedVec::new(&items),
             signal: signal.clone(),
             rest: Some(rest),
+            shufflable: true,
         }
     }
     #[builder]
@@ -55,6 +57,7 @@ impl Sequence {
             items: IndexedVec::new(items),
             signal: signal.clone(),
             rest: None,
+            shufflable: false,
         }
     }
     #[builder]
@@ -64,6 +67,7 @@ impl Sequence {
             items: IndexedVec::new(&[workout]),
             signal: signal.clone(),
             rest: None,
+            shufflable: false,
         }
     }
     #[builder]
@@ -89,6 +93,7 @@ impl Sequence {
             items: IndexedVec::new(&items),
             signal: signal.clone(),
             rest: None,
+            shufflable: false,
         }
     }
     #[builder]
@@ -106,6 +111,7 @@ impl Sequence {
             items: IndexedVec::new(&items),
             signal: signal.clone(),
             rest: None,
+            shufflable: false,
         }
     }
 
@@ -217,16 +223,21 @@ impl Sequence {
         &self.signal
     }
     pub fn shuffle(&mut self) {
-        // it was interspersed with rest, rebuild sequence
-        if let Some(rest) = self.rest {
-            let rest = Rest(rest);
-            self.items.retain(&rest);
-            let mut items = self.items.shuffled();
-            items = itertools::intersperse(items, rest).collect_vec();
-            self.items = IndexedVec::new(&items);
-        } else {
-            self.items.shuffle()
+        if self.shufflable {
+            // it was interspersed with rest, rebuild sequence
+            if let Some(rest) = self.rest {
+                let rest = Rest(rest);
+                self.items.retain(&rest);
+                let mut items = self.items.shuffled();
+                items = itertools::intersperse(items, rest).collect_vec();
+                self.items = IndexedVec::new(&items);
+            } else {
+                self.items.shuffle()
+            }
         }
+    }
+    pub fn shufflable(&self) -> bool {
+        self.shufflable
     }
 }
 

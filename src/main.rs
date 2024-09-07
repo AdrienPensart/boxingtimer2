@@ -125,9 +125,9 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
             Medium("Burpees", 30 * SECOND),
             // 1 minute
             Easy("Jumping jacks", 15 * SECOND),
-            Easy("Crunches", 15 * SECOND),
+            Easy("Jumps", 15 * SECOND),
             Easy("Jumping jacks", 15 * SECOND),
-            Easy("Plank", 15 * SECOND),
+            Easy("Crunches", 15 * SECOND),
         ])
         .signal(&beep)
         .call();
@@ -309,74 +309,53 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
 
     rsx! {
         link { rel: "stylesheet", href: "tailwind.css" }
-        div { id: "controls", class: "flex flex-wrap space-x-3",
-            div { id: "timer_controls", class: "space-x-1.5",
-                button {
-                    class: "rounded-full text-3xl",
-                    onclick: move |_| timer.with_mut(|t| t.toggle()),
-                    {timer.read().next_status().to_string()}
-                }
-                button {
-                    class: "rounded-full text-3xl",
-                    onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
-                    "♻"
-                }
-            }
-            div { id: "sequence_controls", class: "space-x-1.5",
-                button {
-                    class: "rounded-full text-3xl",
-                    onclick: move |_| timer.with_mut(|t| t.manual_previous()),
-                    "⏪"
-                }
-                button {
-                    class: "rounded-full text-3xl",
-                    onclick: move |_| timer.with_mut(|t| t.manual_next()),
-                    "⏩"
-                }
-                if timer.read().sequences().get().is_some() {
-                    button {
-                        class: "rounded-full text-3xl",
-                        onclick: move |_| timer.with_mut(|t| t.shuffle()),
-                        "🎲"
+        div { class: "flex flex-row space-x-1 m-1 ",
+            div { id: "left_panel", class: "space-y-1.5",
+                if let Some(sequence) = timer.read().sequences().get() {
+                    div { id: "controls", class: "flex justify-evenly",
+                        button {
+                            class: "rounded-full text-3xl",
+                            onclick: move |_| timer.with_mut(|t| t.toggle()),
+                            {timer.read().next_status().to_string()}
+                        }
+                        button {
+                            class: "rounded-full text-3xl",
+                            onclick: move |_| timer.with_mut(|t| t.restart_sequence()),
+                            "♻"
+                        }
+                        button {
+                            class: "rounded-full text-3xl",
+                            onclick: move |_| timer.with_mut(|t| t.manual_previous()),
+                            "⏪"
+                        }
+                        button {
+                            class: "rounded-full text-3xl",
+                            onclick: move |_| timer.with_mut(|t| t.manual_next()),
+                            "⏩"
+                        }
+                        if sequence.shufflable() {
+                            button {
+                                class: "rounded-full text-3xl",
+                                onclick: move |_| timer.with_mut(|t| t.shuffle()),
+                                "🎲"
+                            }
+                        }
+                        if !sequence.signal().sound().is_silent() {
+                            button {
+                                id: "toggle_signal",
+                                class: "text-3xl",
+                                onclick: move |_| state_signal.with_mut(|s| s.borrow_mut().toggle()),
+                                { state_signal.read().borrow().next().to_string() }
+                            }
+                            button {
+                                id: "emit_signal",
+                                class: "text-3xl",
+                                onclick: move |_| { timer.with(|t| { t.always_ring() }) },
+                                "🛎"
+                            }
+                        }
                     }
                 }
-            }
-            div { id: "sounds_controls", class: "space-x-1.5",
-                audio {
-                    id: bell.to_string(),
-                    src: bell.asset(),
-                    preload: "auto",
-                    autoplay: false
-                }
-                audio {
-                    id: beep.to_string(),
-                    src: beep.asset(),
-                    preload: "auto",
-                    autoplay: false
-                }
-                button {
-                    id: "toggle_signal",
-                    class: "text-3xl",
-                    onclick: move |_| state_signal.with_mut(|s| s.borrow_mut().toggle()),
-                    { state_signal.read().borrow().next().to_string() }
-                }
-                button {
-                    id: "ring",
-                    class: "text-3xl",
-                    onclick: move |_| {
-                        timer
-                            .with(|t| {
-                                if !t.always_ring() {
-                                    bell.always_ring()
-                                }
-                            })
-                    },
-                    "🛎"
-                }
-            }
-        }
-        div { class: "flex flex-row space-x-1 m-1 ",
-            div { class: "space-y-1.5",
                 select {
                     id: "sequences",
                     name: "Sequence",
@@ -413,10 +392,6 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 div {
                     id: "informations",
                     class: "rounded-xl bg-sky-900 text-2xl p-2",
-                    // div { id: "status",
-                    //     "Status: "
-                    //     { timer.read().status().to_string() }
-                    // }
                     div { id: "elapsed",
                         "Elapsed: "
                         { timer.read().elapsed().to_string() }
@@ -438,6 +413,20 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                             "Total: "
                             { sequence.total().to_string() }
                         }
+                    }
+                }
+                div { id: "sounds",
+                    audio {
+                        id: bell.to_string(),
+                        src: bell.asset(),
+                        preload: "auto",
+                        autoplay: false
+                    }
+                    audio {
+                        id: beep.to_string(),
+                        src: beep.asset(),
+                        preload: "auto",
+                        autoplay: false
                     }
                 }
             }

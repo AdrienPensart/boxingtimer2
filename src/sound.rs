@@ -45,13 +45,16 @@ impl Sound {
             .ok_or_else(|| TimerErrorKind::DocumentError)?;
         let sound = document
             .get_element_by_id(self.to_string().as_str())
-            .ok_or_else(|| TimerErrorKind::SoundError)?;
+            .ok_or_else(|| TimerErrorKind::SoundError(self.to_string()))?;
         sound
             .dyn_into::<web_sys::HtmlAudioElement>()
             .map_err(TimerErrorKind::AudioError)
     }
-
     pub fn play(&self) -> Result<(), TimerErrorKind> {
+        if self.is_silent() {
+            gloo::dialogs::alert("Sequence is silent");
+            return Ok(());
+        }
         let promise = self.audio()?.play()?;
         wasm_bindgen_futures::spawn_local(async move {
             let future = wasm_bindgen_futures::JsFuture::from(promise);

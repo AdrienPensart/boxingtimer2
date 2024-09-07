@@ -10,8 +10,8 @@ pub enum TimerErrorKind {
     WindowError,
     #[error("Cannot get document")]
     DocumentError,
-    #[error("Cannot get sound")]
-    SoundError,
+    #[error("Cannot get sound of id: {0}")]
+    SoundError(String),
     #[error("Invalid sequence")]
     InvalidSequence,
 }

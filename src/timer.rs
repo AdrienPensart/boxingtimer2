@@ -36,12 +36,9 @@ impl Timer {
     pub fn sequences(&self) -> &IndexedVec<Sequence> {
         &self.sequences
     }
-    pub fn always_ring(&self) -> bool {
+    pub fn always_ring(&self) {
         if let Some(sequence) = self.sequences.get() {
             sequence.signal().always_ring();
-            true
-        } else {
-            false
         }
     }
     pub fn set_sequence(&mut self, index: usize) {
