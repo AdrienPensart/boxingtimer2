@@ -21,10 +21,10 @@ use crate::tag::Tag;
 use dioxus::prelude::*;
 // use dioxus_logger::tracing::error;
 use dioxus_logger::tracing::Level;
-// use manganis::mg;
+use manganis::mg;
 use std::{cell::RefCell, rc::Rc};
 
-// const _: &str = mg!(file("assets/tailwind.css"));
+const _: &str = mg!(file("assets/tailwind.css"));
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
