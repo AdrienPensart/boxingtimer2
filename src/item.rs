@@ -4,7 +4,7 @@ use crate::tag::Tag;
 use bon::builder;
 use derive_more::{Deref, DerefMut};
 
-#[derive(Default, Clone, Debug, Eq, PartialEq, Hash, Deref, DerefMut)]
+#[derive(Default, Clone, Debug, Eq, PartialEq, Hash, Deref, DerefMut, bon::Builder)]
 #[builder(on(String, into), on(Vec<_>, into), on(Stopwatch, into))]
 pub struct Item {
     name: String,

@@ -127,6 +127,7 @@ impl Sequence {
         // } else {
         //     self.position = self.items.len() - 1
         // }
+        #[allow(clippy::manual_inspect)]
         self.items.previous_item().map(|p| {
             p.reset();
             p
