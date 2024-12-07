@@ -8,19 +8,36 @@ edition = "2021"
 dioxus-daisyui = "0.7.0"
 
 [dependencies]
-dioxus = { version = "0.5", features = ["web", "router"] }
+dioxus = { version = "0.6", features = ["router"] }
 gloo = { version = "0.11.0", features = ["futures", "dialogs"] }
-# log = "0.4.19"
-dioxus-logger = "0.5.0"
+dioxus-logger = "0.6.0"
 console_error_panic_hook = "0.1.7"
 derive_more = { version = "1.0", features = ["full"] }
-js-sys = "0.3.74"
-web-sys = { version = "0.3.74", features = ["HtmlAudioElement"] }
+js-sys = "0.3.76"
+web-sys = { version = "0.3.76", features = ["HtmlAudioElement"] }
 duration-string = { version = "0.4.0", features = ["serde"] }
 itertools = "0.13.0"
-thiserror = "2.0.3"
-manganis = "0.2.2"
+thiserror = "2.0.4"
+manganis = "0.6.0"
 rand = "0.8"
-bon = "3.1.1"
+bon = "3.2.0"
 wasm-bindgen = "0.2.97"
 wasm-bindgen-futures = "0.4.47"
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"

@@ -21,10 +21,8 @@ use crate::tag::Tag;
 use dioxus::prelude::*;
 // use dioxus_logger::tracing::error;
 use dioxus_logger::tracing::Level;
-use manganis::mg;
+use document::Stylesheet;
 use std::{cell::RefCell, rc::Rc};
-
-const _: &str = mg!(file("assets/tailwind.css"));
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
@@ -40,6 +38,7 @@ fn main() {
 
 fn App() -> Element {
     rsx! {
+        Stylesheet { href: asset!("/assets/tailwind.css") }
         Router::<Route> {}
     }
 }
