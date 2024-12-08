@@ -45,9 +45,6 @@ impl Signal {
     pub fn new(sound: Sound, state: Rc<RefCell<State>>) -> Self {
         Self { sound, state }
     }
-    pub fn asset(&self) -> String {
-        self.sound.asset()
-    }
     pub fn toggle(&mut self) {
         self.state.borrow_mut().toggle();
     }

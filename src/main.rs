@@ -1,5 +1,4 @@
 #![allow(non_snake_case)]
-pub mod beep;
 pub mod duration;
 pub mod errors;
 pub mod indexedvec;
@@ -19,15 +18,18 @@ use crate::signal::{Signal, State};
 use crate::sound::Sound;
 use crate::tag::Tag;
 use dioxus::prelude::*;
-// use dioxus_logger::tracing::error;
 use dioxus_logger::tracing::Level;
 use document::Stylesheet;
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 enum Route {
-    #[route("/?:muted&:prepare")]
-    BoxingTimer { muted: bool, prepare: u64 },
+    #[route("/?:muted&:prepare&:sequence")]
+    BoxingTimer {
+        muted: bool,
+        prepare: u64,
+        sequence: String,
+    },
 }
 
 fn main() {
@@ -44,7 +46,7 @@ fn App() -> Element {
 }
 
 #[component]
-fn BoxingTimer(muted: bool, prepare: u64) -> Element {
+fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
     let state = if muted {
         State::Disabled
     } else {
@@ -276,7 +278,7 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
     let mut state_signal = use_signal(|| state.clone());
 
     let mut timer = use_signal(|| {
-        timer::Timer::new(
+        let mut timer = timer::Timer::new(
             preparation,
             &[
                 warmup,
@@ -295,8 +297,13 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 _10mn,
                 _15mn,
             ],
-        )
+        );
+        if !sequence.is_empty() {
+            timer.set_sequence_by_slug(&sequence)
+        }
+        timer
     });
+
     let _tick = use_resource(move || async move {
         loop {
             gloo::timers::future::TimeoutFuture::new(timer::DEFAULT_INTERVAL).await;
@@ -361,7 +368,17 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                     class: "select select-success",
                     oninput: move |ev| {
                         if let Ok(index) = ev.data.value().parse::<usize>() {
-                            timer.with_mut(|t| t.set_sequence(index));
+                            timer
+                                .with_mut(|t| {
+                                    if let Some(slug) = t.set_sequence(index) {
+                                        let nav = navigator();
+                                        nav.push(Route::BoxingTimer {
+                                            muted,
+                                            prepare,
+                                            sequence: slug,
+                                        });
+                                    }
+                                });
                         }
                     },
                     option { disabled: true, selected: true, "Select a workout" }
@@ -417,13 +434,13 @@ fn BoxingTimer(muted: bool, prepare: u64) -> Element {
                 div { id: "sounds",
                     audio {
                         id: bell.to_string(),
-                        src: bell.asset(),
+                        src: asset!("/assets/Bell.mp3"),
                         preload: "auto",
                         autoplay: false
                     }
                     audio {
                         id: beep.to_string(),
-                        src: beep.asset(),
+                        src: asset!("/assets/Beep.mp3"),
                         preload: "auto",
                         autoplay: false
                     }

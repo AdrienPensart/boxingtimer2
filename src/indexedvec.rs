@@ -1,10 +1,11 @@
-use derive_more::Deref;
+use derive_more::{Deref, IntoIterator};
 use rand::seq::SliceRandom;
 
-#[derive(PartialEq, Eq, Clone, Debug, Hash, Deref)]
+#[derive(PartialEq, Eq, Clone, Debug, Hash, Deref, IntoIterator)]
 pub struct IndexedVec<T> {
     index: Option<usize>,
     #[deref]
+    #[into_iterator(ref)]
     store: Vec<T>,
 }
 

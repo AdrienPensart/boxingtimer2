@@ -41,13 +41,22 @@ impl Timer {
             sequence.signal().always_ring();
         }
     }
-    pub fn set_sequence(&mut self, index: usize) {
+    pub fn set_sequence_by_slug(&mut self, slug: &str) {
+        for index in 0..self.sequences.len() {
+            if self.sequences[index].slug() == slug {
+                self.set_sequence(index);
+            }
+        }
+    }
+    pub fn set_sequence(&mut self, index: usize) -> Option<String> {
         self.preparation.reset();
         info!("timer: setting sequence of index {index}");
         if let Some(s) = self.sequences.set_index(index) {
             s.reset();
+            Some(s.slug())
         } else {
-            info!("timer: no current sequence")
+            info!("timer: no current sequence");
+            None
         }
     }
     pub fn restart_sequence(&mut self) {

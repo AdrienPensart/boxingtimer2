@@ -21,9 +21,6 @@ impl Sound {
     pub fn is_beep(&self) -> bool {
         matches!(self, Self::Beep)
     }
-    pub fn asset(&self) -> String {
-        format!("{self}.mp3")
-    }
     pub fn muted(&self) -> Option<Result<bool, TimerErrorKind>> {
         if *self != Self::Silent {
             match self.audio() {
@@ -59,10 +56,7 @@ impl Sound {
         wasm_bindgen_futures::spawn_local(async move {
             let future = wasm_bindgen_futures::JsFuture::from(promise);
             if let Err(err) = future.await {
-                info!(
-                    "failed to await future: {}",
-                    err.as_string().unwrap_or("unknown error".to_string())
-                )
+                info!("failed to await future: {:?}", err)
             }
         });
         Ok(())

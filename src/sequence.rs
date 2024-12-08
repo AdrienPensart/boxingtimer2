@@ -8,6 +8,7 @@ use derive_more::{Deref, DerefMut, IntoIterator};
 use dioxus_logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
+use slug::slugify;
 
 #[derive(Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut)]
 pub struct Sequence {
@@ -115,6 +116,9 @@ impl Sequence {
         }
     }
 
+    pub fn slug(&self) -> String {
+        slugify(&self.name)
+    }
     pub fn goto_previous(&mut self) -> Option<&mut Item> {
         info!("sequence: goto previous");
         if self.items.is_empty() {
