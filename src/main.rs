@@ -10,13 +10,13 @@ pub mod status;
 pub mod stopwatch;
 pub mod tag;
 pub mod timer;
+pub mod workout;
 use crate::duration::DurationExt;
 use crate::duration::{MINUTE, SECOND};
-use crate::item::{Easy, Medium, Workout};
-use crate::sequence::{Sequence, ROUNDS};
+use crate::sequence::{Exercises, Sequence, ROUNDS};
 use crate::signal::{Signal, State};
 use crate::sound::Sound;
-use crate::tag::Tag;
+use crate::tag::Difficulty;
 use dioxus::prelude::*;
 use dioxus_logger::tracing::Level;
 use document::Stylesheet;
@@ -65,213 +65,267 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
 
     let warmup = Sequence::simple()
         .name("Warm-up : 🌡")
-        .items(&[
+        .workouts(&[
             // 1 minute
-            Easy("Head rotation", 20 * SECOND),
-            Easy("Shoulders rotation", 20 * SECOND),
-            Easy("Arms rotation", 20 * SECOND),
+            item::HEAD_ROTATION.easy(20 * SECOND),
+            item::SHOULDER_ROTATION.easy(20 * SECOND),
+            item::ARM_ROTATION.easy(20 * SECOND),
             // 1 minute
-            Easy("Elbows rotation", 20 * SECOND),
-            Easy("Wrists rotation", 20 * SECOND),
-            Easy("Hips rotation", 20 * SECOND),
+            item::ELBOW_ROTATION.easy(20 * SECOND),
+            item::WRIST_ROTATION.easy(20 * SECOND),
+            item::HIP_ROTATION.easy(20 * SECOND),
             // 1 minute
-            Easy("Knees rotation", 20 * SECOND),
-            Easy("Feet rotation", 20 * SECOND),
-            Easy("Heel raises", 20 * SECOND),
+            item::KNEE_ROTATION.easy(20 * SECOND),
+            item::FEET_ROTATION.easy(20 * SECOND),
+            item::HEEL_RAISES.easy(20 * SECOND),
             // 1 minute
-            Easy("Leg swings", 20 * SECOND),
-            Easy("Side leg swings", 20 * SECOND),
-            Easy("Single leg touch toes", 20 * SECOND),
+            item::LEG_SWINGS.easy(20 * SECOND),
+            item::SIDE_LEG_SWINGS.easy(20 * SECOND),
+            item::SINGLE_LEG_TOUCH_TOES.easy(20 * SECOND),
             // 1 minute
-            Easy("Butt kicks", 30 * SECOND),
-            Easy("High knees", 30 * SECOND),
+            item::BUTT_KICKS.easy(30 * SECOND),
+            item::HIGH_KNEES.easy(30 * SECOND),
             // 1 minute
-            Easy("Jumping jacks", 30 * SECOND),
-            Easy("Mountain climbers", 30 * SECOND),
+            item::JUMPING_JACK.easy(30 * SECOND),
+            item::MOUNTAIN_CLIMBER.easy(30 * SECOND),
             // 1 minute
-            Medium("Jump squats", 30 * SECOND),
-            Medium("Push ups", 30 * SECOND),
+            item::JUMP_SQUAT.medium(30 * SECOND),
+            item::PUSH_UP.medium(30 * SECOND),
             // 1 minute
-            Easy("Speed steps", 30 * SECOND),
-            Easy("Left/right jumps", 30 * SECOND),
+            item::SPEED_STEP.easy(30 * SECOND),
+            item::ALTERNATE_STEP.easy(30 * SECOND),
             // 1 minute
-            Medium("Alternate lunges", 30 * SECOND),
-            Medium("Burpees", 30 * SECOND),
+            item::ALTERNATE_LUNGE.medium(30 * SECOND),
+            item::BURPEE.medium(30 * SECOND),
         ])
         .signal(&silent)
         .call();
 
     let cardio_warmup = Sequence::simple()
         .name("Cardio Warm-up : ❤️‍🔥")
-        .items(&[
+        .workouts(&[
             // 1 minute
-            Easy("Jumping jacks", 15 * SECOND),
-            Easy("High knees", 30 * SECOND),
-            Easy("Jumping jacks", 15 * SECOND),
-            Easy("Butt kicks", 30 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::HIGH_KNEES.easy(15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::BUTT_KICKS.easy(15 * SECOND),
             // 1 minute
-            Easy("Jumping jacks", 15 * SECOND),
-            Medium("Push ups", 15 * SECOND),
-            Easy("Jumping jacks", 15 * SECOND),
-            Easy("Mountain climbers", 15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::ALTERNATE_STEP.easy(15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::MOUNTAIN_CLIMBER.easy(15 * SECOND),
             // 1 minute
-            Easy("Jumping jacks", 15 * SECOND),
-            Medium("Jump squats", 15 * SECOND),
-            Easy("Jumping jacks", 15 * SECOND),
-            Medium("Alternate lunges", 15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::SQUAT.easy(15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::LUNGE.easy(15 * SECOND),
             // 1 minute
-            Easy("Jumping jacks", 15 * SECOND),
-            Easy("Speed steps", 30 * SECOND),
-            Easy("Jumping jacks", 15 * SECOND),
-            Medium("Burpees", 30 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::JUMP_SQUAT.easy(15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::ALTERNATE_LUNGE.medium(15 * SECOND),
             // 1 minute
-            Easy("Jumping jacks", 15 * SECOND),
-            Easy("Jumps", 15 * SECOND),
-            Easy("Jumping jacks", 15 * SECOND),
-            Easy("Crunches", 15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::JUMPS.easy(15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::PUSH_UP.easy(15 * SECOND),
+            // 1 minute
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::COMMANDO_PLANK.easy(15 * SECOND),
+            item::JUMPING_JACK.easy(15 * SECOND),
+            item::BURPEE.easy(15 * SECOND),
         ])
         .signal(&beep)
         .call();
 
-    let workout_10m = Sequence::rounds()
+    let _5_rounds_1m = Sequence::rounds()
+        .name("1m/5x Workout")
+        .rounds(5)
+        .workout(item::WORKOUT.workout(1 * MINUTE))
+        .rest(30 * SECOND)
+        .signal(&beep)
+        .difficulty(Difficulty::Medium)
+        .call();
+
+    let _10_rounds_1m = Sequence::rounds()
         .name("1m/10x Workout")
         .rounds(10)
-        .workout(Workout("Workout!", 1 * MINUTE, &[]))
-        .rest(1 * MINUTE)
+        .workout(item::WORKOUT.workout(1 * MINUTE))
+        .rest(30 * SECOND)
         .signal(&beep)
+        .difficulty(Difficulty::Medium)
+        .call();
+
+    let _15_rounds_1m = Sequence::rounds()
+        .name("1m/15x Workout")
+        .rounds(10)
+        .workout(item::WORKOUT.workout(1 * MINUTE))
+        .rest(30 * SECOND)
+        .signal(&beep)
+        .difficulty(Difficulty::Medium)
         .call();
 
     let boxing_3x2m_30s = Sequence::rounds()
-        .name("3x2m (30s rest)")
+        .name("3x2m")
         .rounds(3 * ROUNDS)
-        .workout(Workout(
-            "Boxing Round",
-            2 * MINUTE,
-            &[Tag::Boxing, Tag::Medium],
-        ))
+        .workout(item::BOXING_ROUND.workout(2 * MINUTE))
         .rest(30 * SECOND)
         .signal(&bell)
+        .difficulty(Difficulty::Easy)
         .call();
 
     let boxing_3x3m_1m = Sequence::rounds()
-        .name("3x3m (60s rest)")
+        .name("3x3m")
         .rounds(3 * ROUNDS)
-        .workout(Workout(
-            "Boxing Round",
-            3 * MINUTE,
-            &[Tag::Boxing, Tag::Medium],
-        ))
-        .rest(60 * SECOND)
+        .workout(item::BOXING_ROUND.workout(2 * MINUTE))
+        .rest(MINUTE)
         .signal(&bell)
+        .difficulty(Difficulty::Easy)
         .call();
 
     let boxing_6x2m_30s = Sequence::rounds()
-        .name("6x2m (30s rest)")
+        .name("6x2m")
         .rounds(6 * ROUNDS)
-        .workout(Workout(
-            "Boxing Round",
-            2 * MINUTE,
-            &[Tag::Boxing, Tag::Medium],
-        ))
+        .workout(item::BOXING_ROUND.workout(2 * MINUTE))
         .rest(30 * SECOND)
         .signal(&bell)
+        .difficulty(Difficulty::Medium)
         .call();
 
     let boxing_6x3m_1m = Sequence::rounds()
-        .name("6x3m (60s rest)")
+        .name("6x3m")
         .rounds(6 * ROUNDS)
-        .workout(Workout(
-            "Boxing Round",
-            3 * MINUTE,
-            &[Tag::Boxing, Tag::Medium],
-        ))
-        .rest(60 * SECOND)
+        .workout(item::BOXING_ROUND.workout(3 * MINUTE))
+        .rest(MINUTE)
         .signal(&bell)
+        .difficulty(Difficulty::Hard)
         .call();
 
     let stamina_jab_cross_hook = Sequence::repeat()
-        .name("1 | 2 | 1-2 | 1-2-3 (60s rest)")
-        .names(vec![
+        .name("30s: 1 | 2 | 1-2 | 1-2-3")
+        .exercises(Exercises::from(vec![
             "Jab (1)",
             "Cross (2)",
             "Jab | Cross (1-2)",
             "Jab | Cross | Hook (1-2-3)",
-        ])
+        ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
-        .rest(1 * MINUTE)
-        .tags(&[Tag::Boxing, Tag::Medium])
+        .rest(MINUTE)
+        .difficulty(Difficulty::Medium)
         .signal(&bell)
         .call();
 
     let stamina_jab_jab_cross_cross = Sequence::repeat()
-        .name("1 | 1-1 | 1-1-2 | 1-1-2-2 (60s rest)")
-        .names(vec![
+        .name("30s: 1 | 1-1 | 1-1-2 | 1-1-2-2")
+        .exercises(Exercises::from(vec![
             "Jab (1)",
             "Double Jab (1-1)",
             "Double Jab | Cross (1-1-2)",
             "Double Jab | Cross | Cross",
-        ])
+        ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
-        .rest(1 * MINUTE)
-        .tags(&[Tag::Boxing, Tag::Medium])
+        .rest(MINUTE)
+        .difficulty(Difficulty::Medium)
         .signal(&bell)
         .call();
 
     let stamina_jab_cross_hook_cross = Sequence::repeat()
-        .name("1 | 1-2 | 1-2-3 | 1-2-3-2 (60s rest)")
-        .names(vec![
+        .name("30s: 1 | 1-2 | 1-2-3 | 1-2-3-2")
+        .exercises(Exercises::from(vec![
             "Jab (1)",
             "Jab | Cross (1-2)",
             "Jab | Cross | Hook (1-2-3)",
             "Jab | Cross | Hook | Cross (1-2-3-2)",
-        ])
+        ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
-        .rest(1 * MINUTE)
-        .tags(&[Tag::Boxing, Tag::Medium])
+        .rest(MINUTE)
+        .difficulty(Difficulty::Medium)
         .signal(&bell)
         .call();
 
-    let random_hiit = Sequence::random()
-        .name("Random training 🎲")
-        .items(&[
-            Workout("Jumping Jacks", 30 * SECOND, &[Tag::Dynamic]),
-            Workout("Pull-ups", 30 * SECOND, &[Tag::Dynamic]),
-            Workout("Plank", 30 * SECOND, &[Tag::Stationary]),
-            Workout("Jump Squats", 30 * SECOND, &[Tag::Dynamic]),
-            Workout("Burpees", 30 * SECOND, &[Tag::Dynamic]),
-            Workout("Push-ups", 30 * SECOND, &[Tag::Dynamic]),
-            Workout("Alternate Lunges", 30 * SECOND, &[Tag::Dynamic]),
+    let stamina_roll_left = Sequence::repeat()
+        .name("30s: 1-2-3 | 1-2-3-ROLL | 1-2-3-ROLL-3 | 1-2-3-ROLL-3-2")
+        .exercises(Exercises::from(vec![
+            "Jab | Cross | Hook",
+            "Jab | Cross | Hook | ROLL",
+            "Jab | Cross | Hook | ROLL | Hook",
+            "Jab | Cross | Hook | ROLL | Hook | Cross",
+        ]))
+        .workout(30 * SECOND)
+        .rounds(4 * ROUNDS)
+        .rest(MINUTE)
+        .difficulty(Difficulty::Hard)
+        .signal(&bell)
+        .call();
+
+    let stamina_roll_right = Sequence::repeat()
+        .name("30s: 1-2-ROLL | 1-2-ROLL-2 | 1-2-ROLL-2-3 | 1-2-ROLL-2-3-2")
+        .exercises(Exercises::from(vec![
+            "Jab | Cross | ROLL",
+            "Jab | Cross | ROLL | Cross",
+            "Jab | Cross | ROLL | Cross | Hook",
+            "Jab | Cross | ROLL | Cross | Hook | Cross",
+        ]))
+        .workout(30 * SECOND)
+        .rounds(4 * ROUNDS)
+        .rest(MINUTE)
+        .difficulty(Difficulty::Hard)
+        .signal(&bell)
+        .call();
+
+    let random_training = Sequence::random()
+        .name("Random training (30s each) 🎲")
+        .workouts(&[
+            item::JUMPING_JACK.workout(30 * SECOND),
+            item::PULL_UP.workout(30 * SECOND),
+            item::PLANK.workout(30 * SECOND),
+            item::SIDE_PLANK.workout(30 * SECOND),
+            item::JUMP_SQUAT.workout(30 * SECOND),
+            item::BURPEE.workout(30 * SECOND),
+            item::PUSH_UP.workout(30 * SECOND),
+            item::ALTERNATE_LUNGE.workout(30 * SECOND),
+            item::CRUNCHES.workout(30 * SECOND),
         ])
         .rest(30 * SECOND)
         .signal(&beep)
         .call();
 
-    let hiit = Sequence::rounds()
-        .name("HiiT 20s/10s (4x)")
+    let hiit_4x = Sequence::rounds()
+        .name("HiiT 20s (4x)")
         .rounds(4 * ROUNDS)
-        .workout(Workout("Workout!", 20 * SECOND, &[Tag::Hard]))
+        .workout(item::WORKOUT.workout(20 * SECOND))
+        .difficulty(Difficulty::Medium)
+        .rest(10 * SECOND)
+        .signal(&beep)
+        .call();
+
+    let hiit_8x = Sequence::rounds()
+        .name("HiiT 20s (8x)")
+        .rounds(8 * ROUNDS)
+        .workout(item::WORKOUT.workout(20 * SECOND))
+        .difficulty(Difficulty::Hard)
         .rest(10 * SECOND)
         .signal(&beep)
         .call();
 
     let _5mn = Sequence::workout()
-        .name("5mn")
-        .workout(Workout("Workout", 5 * MINUTE, &[Tag::Easy]))
+        .name("5m")
+        .workout(item::WORKOUT.workout(5 * MINUTE))
         .signal(&bell)
         .call();
 
     let _10mn = Sequence::workout()
-        .name("10mn")
-        .workout(Workout("Workout", 10 * MINUTE, &[Tag::Medium]))
+        .name("10m")
+        .workout(item::WORKOUT.workout(10 * MINUTE))
         .signal(&bell)
         .call();
 
     let _15mn = Sequence::workout()
-        .name("15mn")
-        .workout(Workout("Workout", 15 * MINUTE, &[Tag::Hard]))
+        .name("15m")
+        .workout(item::WORKOUT.workout(15 * MINUTE))
         .signal(&bell)
         .call();
 
@@ -283,7 +337,9 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
             &[
                 warmup,
                 cardio_warmup,
-                workout_10m,
+                _5_rounds_1m,
+                _10_rounds_1m,
+                _15_rounds_1m,
                 boxing_3x2m_30s,
                 boxing_3x3m_1m,
                 boxing_6x2m_30s,
@@ -291,8 +347,11 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
                 stamina_jab_cross_hook,
                 stamina_jab_jab_cross_cross,
                 stamina_jab_cross_hook_cross,
-                hiit,
-                random_hiit,
+                stamina_roll_left,
+                stamina_roll_right,
+                hiit_4x,
+                hiit_8x,
+                random_training,
                 _5mn,
                 _10mn,
                 _15mn,
@@ -351,7 +410,7 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
                                 id: "toggle_signal",
                                 class: "text-3xl",
                                 onclick: move |_| state_signal.with_mut(|s| s.borrow_mut().toggle()),
-                                { state_signal.read().borrow().next().to_string() }
+                                {state_signal.read().borrow().next().to_string()}
                             }
                             button {
                                 id: "emit_signal",
@@ -386,7 +445,7 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
                         option {
                             value: index.to_string(),
                             selected: timer.read().sequences().get().map(|s| s.name() == sequence.name()),
-                            { sequence.to_string() }
+                            {sequence.to_string()}
                         }
                     }
                 }
@@ -410,24 +469,28 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
                     class: "rounded-xl bg-sky-900 text-2xl p-2",
                     div { id: "elapsed",
                         "Elapsed: "
-                        { timer.read().elapsed().to_string() }
+                        {timer.read().elapsed().to_string()}
                     }
                     if let Some(sequence) = timer.read().sequences().get() {
                         div { id: "workout",
                             "Workout: "
-                            { sequence.workout_total().to_string() }
+                            {sequence.workout_total().to_string()}
                         }
-                        div { id: "rest",
-                            "Rest: "
-                            { sequence.rest_total().to_string() }
+                        if !sequence.rest_total().is_zero() {
+                            div { id: "rest",
+                                "Rest: "
+                                {sequence.rest_total().to_string()}
+                            }
                         }
                         div { id: "left",
                             "Left: "
-                            { sequence.left_total().to_string() }
+                            {sequence.left_total().to_string()}
                         }
-                        div { id: "total",
-                            "Total: "
-                            { sequence.total().to_string() }
+                        if !sequence.rest_total().is_zero() {
+                            div { id: "total",
+                                "Total: "
+                                {sequence.total().to_string()}
+                            }
                         }
                     }
                 }
@@ -436,13 +499,13 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
                         id: bell.to_string(),
                         src: asset!("/assets/Bell.mp3"),
                         preload: "auto",
-                        autoplay: false
+                        autoplay: false,
                     }
                     audio {
                         id: beep.to_string(),
                         src: asset!("/assets/Beep.mp3"),
                         preload: "auto",
-                        autoplay: false
+                        autoplay: false,
                     }
                 }
             }
@@ -450,8 +513,8 @@ fn BoxingTimer(muted: bool, prepare: u64, sequence: String) -> Element {
                 id: "timer",
                 class: "bg-blue-600 flex w-full items-center justify-center h-screen rounded-xl",
                 div { class: "flex flex-col items-center justify-center",
-                    div { id: "item", class: "text-9xl", { timer.read().label() } }
-                    div { id: "counter", class: "text-9xl", { timer.read().left().to_string() } }
+                    div { id: "item", class: "text-9xl", {timer.read().label()} }
+                    div { id: "counter", class: "text-9xl", {timer.read().left().to_string()} }
                     button {
                         class: "text-3xl",
                         onclick: move |_| timer.with_mut(|t| t.restart_item()),

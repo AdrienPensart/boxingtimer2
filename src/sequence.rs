@@ -1,8 +1,10 @@
+use crate::duration::DurationExt;
 use crate::indexedvec::IndexedVec;
-use crate::item::{Item, Rest, Workout};
+use crate::item::Item;
 use crate::signal::Signal;
 use crate::stopwatch::Stopwatch;
-use crate::tag::Tag;
+use crate::tag::{Difficulty, Tag};
+use crate::workout::Workout;
 use bon::bon;
 use derive_more::{Deref, DerefMut, IntoIterator};
 use dioxus_logger::tracing::info;
@@ -15,114 +17,164 @@ pub struct Sequence {
     name: String,
     #[deref]
     #[deref_mut]
-    items: IndexedVec<Item>,
+    workouts: IndexedVec<Workout>,
     signal: Signal,
     rest: Option<std::time::Duration>,
     shufflable: bool,
+    difficulty: Option<Difficulty>,
 }
 
-pub enum SmartSequence {
-    // simple
-    Simple(Sequence),
-    // random
-    Random(Sequence),
-    // infinite
-    Infinite(Sequence),
-    // repeat
-    Repeat(Sequence, usize),
-}
+// pub enum SmartSequence {
+//     // simple
+//     Simple(Sequence),
+//     // random
+//     Random(Sequence),
+//     // infinite
+//     Infinite(Sequence),
+//     // repeat
+//     Repeat(Sequence, usize),
+// }
 
 type Rounds = u64;
 pub static ROUNDS: Rounds = 1;
 
+pub enum Exercises {
+    Items(Vec<Item>),
+    Names(Vec<String>),
+}
+
+impl Exercises {
+    pub fn from(names: Vec<&str>) -> Self {
+        Self::Names(names.iter().map(|name| name.to_string()).collect_vec())
+    }
+    pub fn workouts(&self, duration: std::time::Duration) -> Vec<Workout> {
+        match self {
+            Self::Items(items) => items
+                .iter()
+                .map(|item| item.workout(duration))
+                .collect_vec(),
+            Self::Names(names) => names
+                .iter()
+                .map(|name| Item::new(name, &[], None).workout(duration))
+                .collect_vec(),
+        }
+    }
+}
+
 #[bon]
 impl Sequence {
     #[builder]
-    pub fn random(name: &str, items: &[Item], rest: std::time::Duration, signal: &Signal) -> Self {
+    pub fn random(
+        name: &str,
+        workouts: &[Workout],
+        rest: std::time::Duration,
+        signal: &Signal,
+        difficulty: Option<Difficulty>,
+    ) -> Self {
         let mut rng = rand::thread_rng();
-        let mut items = items.to_vec();
-        items.shuffle(&mut rng);
-        items = itertools::intersperse(items.to_vec(), Rest(rest)).collect_vec();
+        let mut workouts = workouts.to_vec();
+        workouts.shuffle(&mut rng);
+        workouts = itertools::intersperse(workouts.to_vec(), Workout::rest(rest)).collect_vec();
         Self {
             name: name.into(),
-            items: IndexedVec::new(&items),
+            workouts: IndexedVec::new(&workouts),
             signal: signal.clone(),
             rest: Some(rest),
             shufflable: true,
+            difficulty,
         }
     }
     #[builder]
-    pub fn simple(name: &str, items: &[Item], signal: &Signal) -> Self {
+    pub fn simple(
+        name: &str,
+        workouts: &[Workout],
+        signal: &Signal,
+        difficulty: Option<Difficulty>,
+    ) -> Self {
+        let total = std::time::Duration::from_secs(
+            workouts
+                .iter()
+                .map(|workout| workout.stopwatch().duration().as_secs())
+                .sum(),
+        );
         Self {
-            name: name.into(),
-            items: IndexedVec::new(items),
+            name: format!("{name} ({} total)", total.to_string()),
+            workouts: IndexedVec::new(workouts),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
+            difficulty,
         }
     }
     #[builder]
-    pub fn workout(name: &str, workout: Item, signal: &Signal) -> Self {
+    pub fn workout(
+        name: &str,
+        workout: Workout,
+        signal: &Signal,
+        difficulty: Option<Difficulty>,
+    ) -> Self {
         Self {
             name: name.into(),
-            items: IndexedVec::new(&[workout]),
+            workouts: IndexedVec::new(&[workout]),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
+            difficulty,
         }
     }
     #[builder]
     #[allow(clippy::too_many_arguments)]
     pub fn repeat(
         name: &str,
-        names: Vec<&str>,
+        exercises: Exercises,
         workout: std::time::Duration,
         rounds: Rounds,
         rest: std::time::Duration,
-        tags: &[Tag],
         signal: &Signal,
+        difficulty: Option<Difficulty>,
     ) -> Self {
-        let items = names
-            .iter()
-            .map(|n| Workout(n, workout, tags))
-            .collect_vec();
-        let items = itertools::intersperse(vec![items; rounds as usize], vec![Rest(rest)])
-            .flatten()
-            .collect_vec();
+        let workouts = exercises.workouts(workout);
+        let workouts =
+            itertools::intersperse(vec![workouts; rounds as usize], vec![Workout::rest(rest)])
+                .flatten()
+                .collect_vec();
         Self {
-            name: name.into(),
-            items: IndexedVec::new(&items),
+            name: format!("{name} ({}s rest)", rest.as_secs()),
+            workouts: IndexedVec::new(&workouts),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
+            difficulty,
         }
     }
     #[builder]
     pub fn rounds(
         name: &str,
         rounds: Rounds,
-        workout: Item,
+        workout: Workout,
         rest: std::time::Duration,
         signal: &Signal,
+        difficulty: Option<Difficulty>,
     ) -> Self {
-        let rounds_items = vec![workout; rounds as usize];
-        let items = itertools::intersperse(rounds_items, Rest(rest)).collect_vec();
+        let workouts = itertools::intersperse(vec![workout; rounds as usize], Workout::rest(rest))
+            .collect_vec();
         Self {
-            name: name.into(),
-            items: IndexedVec::new(&items),
+            name: format!("{name} ({}s rest)", rest.as_secs()),
+            workouts: IndexedVec::new(&workouts),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
+            difficulty,
         }
     }
 
     pub fn slug(&self) -> String {
         slugify(&self.name)
     }
-    pub fn goto_previous(&mut self) -> Option<&mut Item> {
+    pub fn goto_previous(&mut self) -> Option<&mut Workout> {
         info!("sequence: goto previous");
-        if self.items.is_empty() {
-            info!("sequence: items is empty, no previous");
+        if self.workouts.is_empty() {
+            info!("sequence: workouts is empty, no previous");
             return None;
         }
 
@@ -132,54 +184,54 @@ impl Sequence {
         //     self.position = self.items.len() - 1
         // }
         #[allow(clippy::manual_inspect)]
-        self.items.previous_item().map(|p| {
+        self.workouts.previous_item().map(|p| {
             p.reset();
             p
         })
     }
-    pub fn manual_next(&mut self) -> Option<&mut Item> {
+    pub fn manual_next(&mut self) -> Option<&mut Workout> {
         info!("sequence: manual next");
-        if self.items.is_empty() {
-            info!("sequence: items is empty, no next");
-        } else if !self.items.last() {
-            self.items.next_item();
+        if self.workouts.is_empty() {
+            info!("sequence: workouts is empty, no next");
+        } else if !self.workouts.last() {
+            self.workouts.next_item();
             self.reset_current();
         } else {
-            self.items.set_index(0);
+            self.workouts.set_index(0);
             self.reset_current();
         }
         self.get_mut()
     }
-    pub fn auto_next(&mut self) -> Option<&mut Item> {
+    pub fn auto_next(&mut self) -> Option<&mut Workout> {
         info!("sequence: auto next");
-        if self.items.is_empty() {
-            info!("sequence: items is empty, no next");
+        if self.workouts.is_empty() {
+            info!("sequence: workouts is empty, no next");
             return None;
         }
-        let item = self.items.next_item()?;
+        let item = self.workouts.next_item()?;
         item.reset();
         Some(item)
     }
     pub fn stopwatch(&mut self) -> Option<&Stopwatch> {
-        self.items.get().map(|i| i.stopwatch())
+        self.workouts.get().map(|i| i.stopwatch())
     }
     pub fn decrement(&mut self) -> bool {
-        self.items.get_mut().map_or(false, |i| i.decrement())
+        self.workouts.get_mut().map_or(false, |i| i.decrement())
     }
     pub fn last_seconds(&self) -> bool {
-        self.items.get().map_or(false, |i| i.last_seconds())
+        self.workouts.get().map_or(false, |i| i.last_seconds())
     }
     pub fn reset_current(&mut self) {
         info!("sequence: reset current item");
-        if let Some(i) = self.items.get_mut() {
+        if let Some(i) = self.workouts.get_mut() {
             i.reset();
         }
     }
     pub fn reset(&mut self) {
-        info!("sequence: reset all items");
-        self.items.reset();
-        self.items.apply(|item| {
-            item.reset();
+        info!("sequence: reset all workouts");
+        self.workouts.reset();
+        self.workouts.apply(|workout| {
+            workout.reset();
         });
     }
     pub fn name(&self) -> &str {
@@ -188,40 +240,39 @@ impl Sequence {
     pub fn total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .map(|item| item.stopwatch().duration().as_secs())
+                .map(|workout| workout.stopwatch().duration().as_secs())
                 .sum(),
         )
     }
     pub fn left_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .map(|item| item.stopwatch().left().as_secs())
+                .map(|workout| workout.stopwatch().left().as_secs())
                 .sum(),
         )
     }
     pub fn workout_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .filter(|i| !i.is_rest())
-                .map(|i| i.stopwatch().duration().as_secs())
+                .filter(|workout| !workout.is_rest())
+                .map(|workout| workout.stopwatch().duration().as_secs())
                 .sum(),
         )
     }
     pub fn rest_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .filter(|i| i.is_rest())
-                .map(|i| i.stopwatch().duration().as_secs())
+                .filter(|workout| workout.is_rest())
+                .map(|workout| workout.stopwatch().duration().as_secs())
                 .sum(),
         )
     }
     pub fn tags(&self) -> Vec<Tag> {
-        self.items
+        self.workouts
             .iter()
-            .flat_map(|i| i.tags())
-            .filter(|t| **t != Tag::Rest)
+            .filter(|workout| !workout.is_rest())
+            .flat_map(|workout| workout.tags().clone())
             .unique()
-            .cloned()
             .collect_vec()
     }
     pub fn signal(&self) -> &Signal {
@@ -231,13 +282,12 @@ impl Sequence {
         if self.shufflable {
             // it was interspersed with rest, rebuild sequence
             if let Some(rest) = self.rest {
-                let rest = Rest(rest);
-                self.items.retain(&rest);
-                let mut items = self.items.shuffled();
-                items = itertools::intersperse(items, rest).collect_vec();
-                self.items = IndexedVec::new(&items);
+                let rest = Workout::rest(rest);
+                self.workouts.retain(&rest);
+                let workouts = itertools::intersperse(self.workouts.shuffled(), rest).collect_vec();
+                self.workouts = IndexedVec::new(&workouts);
             } else {
-                self.items.shuffle()
+                self.workouts.shuffle()
             }
         }
     }
@@ -261,14 +311,14 @@ impl std::fmt::Display for Sequence {
 #[test]
 fn sequence_simple_tests() {
     use crate::duration::SECOND;
-    use crate::item::{Easy, Medium};
+    use crate::item::{HEAD_ROTATION, WORKOUT};
     use crate::signal::Signal;
     let none = Signal::none();
-    let warm_up = Easy("test", 3 * SECOND);
-    let workout = Medium("workout", 6 * SECOND);
+    let warm_up = HEAD_ROTATION.workout(3 * SECOND);
+    let workout = WORKOUT.workout(6 * SECOND);
     let mut simple = Sequence::simple()
         .name("simple sequence")
-        .items(&[warm_up.clone(), workout.clone()])
+        .workouts(&[warm_up.clone(), workout.clone()])
         .signal(&none)
         .call();
 
