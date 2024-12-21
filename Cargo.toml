@@ -5,7 +5,7 @@ authors = ["Adrien Pensart <crunchengine@gmail.com>"]
 edition = "2021"
 
 [build-dependencies]
-dioxus-daisyui = "0.7.0"
+dioxus-daisyui = "0.8.0"
 
 [dependencies]
 dioxus = { version = "0.6", features = ["router"] }
@@ -17,13 +17,15 @@ js-sys = "0.3.76"
 web-sys = { version = "0.3.76", features = ["HtmlAudioElement"] }
 duration-string = { version = "0.4.0", features = ["serde"] }
 itertools = "0.13.0"
-thiserror = "2.0.7"
+thiserror = "2.0"
 manganis = "0.6.0"
 rand = "0.8"
 bon = "3.3.0"
 wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
 slug = "0.1.6"
+dioxus-free-icons = { version = "0.9.0", features = ["ionicons"] }
+dioxus-signals = "0.6.1"
 
 [features]
 default = ["web"]

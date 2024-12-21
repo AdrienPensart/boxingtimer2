@@ -1,6 +1,6 @@
 use crate::duration::DurationExt;
+use crate::exercises::Exercises;
 use crate::indexedvec::IndexedVec;
-use crate::item::Item;
 use crate::signal::Signal;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
@@ -15,6 +15,7 @@ use slug::slugify;
 #[derive(Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut)]
 pub struct Sequence {
     name: String,
+    description: Option<String>,
     #[deref]
     #[deref_mut]
     workouts: IndexedVec<Workout>,
@@ -38,34 +39,12 @@ pub struct Sequence {
 type Rounds = u64;
 pub static ROUNDS: Rounds = 1;
 
-pub enum Exercises {
-    Items(Vec<Item>),
-    Names(Vec<String>),
-}
-
-impl Exercises {
-    pub fn from(names: Vec<&str>) -> Self {
-        Self::Names(names.iter().map(|name| name.to_string()).collect_vec())
-    }
-    pub fn workouts(&self, duration: std::time::Duration) -> Vec<Workout> {
-        match self {
-            Self::Items(items) => items
-                .iter()
-                .map(|item| item.workout(duration))
-                .collect_vec(),
-            Self::Names(names) => names
-                .iter()
-                .map(|name| Item::new(name, &[], None).workout(duration))
-                .collect_vec(),
-        }
-    }
-}
-
 #[bon]
 impl Sequence {
     #[builder]
     pub fn random(
         name: &str,
+        description: Option<&str>,
         workouts: &[Workout],
         rest: std::time::Duration,
         signal: &Signal,
@@ -77,6 +56,7 @@ impl Sequence {
         workouts = itertools::intersperse(workouts.to_vec(), Workout::rest(rest)).collect_vec();
         Self {
             name: name.into(),
+            description: description.map(str::to_string),
             workouts: IndexedVec::new(&workouts),
             signal: signal.clone(),
             rest: Some(rest),
@@ -87,6 +67,7 @@ impl Sequence {
     #[builder]
     pub fn simple(
         name: &str,
+        description: Option<&str>,
         workouts: &[Workout],
         signal: &Signal,
         difficulty: Option<Difficulty>,
@@ -99,6 +80,7 @@ impl Sequence {
         );
         Self {
             name: format!("{name} ({} total)", total.to_string()),
+            description: description.map(str::to_string),
             workouts: IndexedVec::new(workouts),
             signal: signal.clone(),
             rest: None,
@@ -109,12 +91,14 @@ impl Sequence {
     #[builder]
     pub fn workout(
         name: &str,
+        description: Option<&str>,
         workout: Workout,
         signal: &Signal,
         difficulty: Option<Difficulty>,
     ) -> Self {
         Self {
             name: name.into(),
+            description: description.map(str::to_string),
             workouts: IndexedVec::new(&[workout]),
             signal: signal.clone(),
             rest: None,
@@ -126,6 +110,7 @@ impl Sequence {
     #[allow(clippy::too_many_arguments)]
     pub fn repeat(
         name: &str,
+        description: Option<&str>,
         exercises: Exercises,
         workout: std::time::Duration,
         rounds: Rounds,
@@ -140,6 +125,7 @@ impl Sequence {
                 .collect_vec();
         Self {
             name: format!("{name} ({}s rest)", rest.as_secs()),
+            description: description.map(str::to_string),
             workouts: IndexedVec::new(&workouts),
             signal: signal.clone(),
             rest: None,
@@ -150,6 +136,7 @@ impl Sequence {
     #[builder]
     pub fn rounds(
         name: &str,
+        description: Option<&str>,
         rounds: Rounds,
         workout: Workout,
         rest: std::time::Duration,
@@ -160,6 +147,7 @@ impl Sequence {
             .collect_vec();
         Self {
             name: format!("{name} ({}s rest)", rest.as_secs()),
+            description: description.map(str::to_string),
             workouts: IndexedVec::new(&workouts),
             signal: signal.clone(),
             rest: None,

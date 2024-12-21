@@ -63,11 +63,18 @@ impl std::fmt::Display for Item {
     }
 }
 
+// GENERIC
+
+pub static WARM_UP: std::sync::LazyLock<Item> =
+    std::sync::LazyLock::new(|| Item::new("Warm Up", &[], Some("Generic warm-up".to_owned())));
+
 pub static WORKOUT: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Workout", &[], Some("Generic workout".to_owned())));
 
 pub static REST: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Rest", &[Mouvement::Rest.into()], None));
+
+// PLANKS
 
 pub static PLANK: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Plank", &[Mouvement::Stationary.into()], None));
@@ -77,6 +84,8 @@ pub static SIDE_PLANK: std::sync::LazyLock<Item> =
 
 pub static COMMANDO_PLANK: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Commando Plank", &[Mouvement::Stationary.into()], None));
+
+// WARM UP
 
 pub static HEAD_ROTATION: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Head Rotation", &[], None));
@@ -111,8 +120,16 @@ pub static LEG_SWINGS: std::sync::LazyLock<Item> =
 pub static SIDE_LEG_SWINGS: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Side Leg Swings", &[], None));
 
-pub static SINGLE_LEG_TOUCH_TOES: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::new("Single Leg Touch Ttoes", &[], None));
+pub static SINGLE_LEG_TOUCH_TOES: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::new(
+        "Single Leg Touch Toes",
+        &[Mouvement::Stretching.into()],
+        None,
+    )
+});
+
+pub static WINDMILL: std::sync::LazyLock<Item> =
+    std::sync::LazyLock::new(|| Item::new("Windmill", &[Mouvement::Stretching.into()], None));
 
 pub static BUTT_KICKS: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Butt Kicks", &[Mouvement::Dynamic.into()], None));
@@ -158,6 +175,17 @@ pub static JUMPS: std::sync::LazyLock<Item> =
 
 pub static CRUNCHES: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Crunches", &[Tag::Body(Body::Abs)], None));
+
+pub static SCISSOR_KICK: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::new(
+        "Scissor Kick",
+        &[Tag::Body(Body::Abs), Tag::Body(Body::Hip)],
+        None,
+    )
+});
+
+pub static HIP_THRUST: std::sync::LazyLock<Item> =
+    std::sync::LazyLock::new(|| Item::new("Hip Thrust", &[Tag::Body(Body::Hip)], None));
 
 pub static BOXING_ROUND: std::sync::LazyLock<Item> =
     std::sync::LazyLock::new(|| Item::new("Boxing Round 🥊", &[], None));

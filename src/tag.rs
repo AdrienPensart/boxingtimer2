@@ -24,10 +24,15 @@ pub struct Tags(Vec<Tag>);
 pub enum Difficulty {
     #[display("🟩")]
     Easy,
-    #[display("🟧")]
+
+    #[display("🟨")]
     Medium,
-    #[display("🟥")]
+
+    #[display("🟧")]
     Hard,
+
+    #[display("🟥")]
+    Elite,
 }
 
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -36,18 +41,26 @@ pub enum Body {
     Abs,
     Pectorals,
     Legs,
+    Hip,
 }
 
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Mouvement {
-    #[display("❤️‍🔥")]
+    #[display("💓")]
     Cardio,
+
     #[display("⏳")]
     Rest,
+
     #[display("🏋")]
     Strengthening,
+
     #[display("🤸🏼")]
     Stationary,
+
+    #[display("🪢")]
+    Stretching,
+
     #[display("🏃")]
     Dynamic,
 }

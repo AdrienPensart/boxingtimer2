@@ -110,13 +110,18 @@ where
             self.index = None;
             return None;
         }
-        if let Some(index) = self.index {
-            let future_index = if index > 0 { index - 1 } else { 0 };
-            self.index = Some(future_index);
-            self.store.get_mut(future_index)
+        let future_index = if let Some(index) = self.index {
+            if index == 0 {
+                self.store.len() - 1
+            } else {
+                index - 1
+            }
         } else {
-            None
-        }
+            self.store.len() - 1
+        };
+
+        self.index = Some(future_index);
+        self.store.get_mut(future_index)
     }
     pub fn len(&self) -> usize {
         self.store.len()
