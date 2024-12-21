@@ -7,7 +7,7 @@ use crate::timer::Timer;
 use dioxus::prelude::*;
 use std::{cell::RefCell, rc::Rc};
 
-#[derive(Default, Clone, Eq, PartialEq)]
+#[derive(Default, Clone)]
 pub struct Global {
     pub timer: dioxus_signals::Signal<Timer>,
     pub state: dioxus_signals::Signal<Rc<RefCell<State>>>,

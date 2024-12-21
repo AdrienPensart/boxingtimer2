@@ -5,7 +5,7 @@ use crate::sound::Sound;
 use dioxus::prelude::*;
 use std::{cell::RefCell, rc::Rc};
 
-#[derive(Default, Clone, Eq, PartialEq)]
+#[derive(Default, Clone)]
 pub struct MobileGlobal {
     pub timer: dioxus_signals::Signal<MobileTimer>,
     pub state: dioxus_signals::Signal<Rc<RefCell<State>>>,

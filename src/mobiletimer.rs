@@ -4,7 +4,7 @@ use crate::status::Status;
 use crate::stopwatch::Stopwatch;
 use dioxus_logger::tracing::info;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug)]
 pub struct MobileTimer {
     status: Status,
     sequence: Sequence,

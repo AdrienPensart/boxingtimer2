@@ -20,6 +20,7 @@ pub mod workout;
 use crate::duration::DurationExt;
 use crate::global::Global;
 use crate::signal::Signal;
+use defaults::default_sequences;
 use dioxus::prelude::*;
 // use dioxus_free_icons::icons::io_icons::IoTimeSharp;
 // use dioxus_free_icons::Icon;
@@ -63,10 +64,10 @@ fn App() -> Element {
 
 #[component]
 fn MobileHome() -> Element {
-    let global = Global::new(false, 10, None);
+    let sequences = default_sequences(&Signal::none(), &Signal::none(), &Signal::none());
     rsx! {
         ul {
-            for sequence in global.sequences.iter() {
+            for sequence in sequences.iter() {
                 li {
                     Link {
                         to: Route::MobileTimer {
@@ -185,7 +186,8 @@ fn MobileControls() -> Element {
 }
 
 #[component]
-fn Controls(global: Global) -> Element {
+fn Controls() -> Element {
+    let mut global = use_context::<Global>();
     rsx! {
         if let Some(sequence) = global.timer.read().sequences().get() {
             div { id: "controls", class: "flex justify-evenly",
@@ -237,12 +239,12 @@ fn Controls(global: Global) -> Element {
 
 #[component]
 fn Home(muted: bool, prepare: u64, sequence: String) -> Element {
-    let mut global = Global::new(muted, prepare, Some(sequence));
-
+    let global = Global::new(muted, prepare, Some(sequence));
+    let mut global = use_context_provider(|| global);
     rsx! {
         div { class: "flex flex-row space-x-1 m-1 ",
             div { id: "left_panel", class: "space-y-1.5",
-                Controls { global: global.clone() }
+                Controls {}
                 select {
                     id: "sequences",
                     name: "Sequence",
@@ -294,6 +296,7 @@ fn Home(muted: bool, prepare: u64, sequence: String) -> Element {
                         "Elapsed: "
                         {global.timer.read().elapsed().to_string()}
                     }
+                    Link { to: Route::MobileHome {}, "Mobile version" }
                     if let Some(sequence) = global.timer.read().sequences().get() {
                         div { id: "workout",
                             "Workout: "
