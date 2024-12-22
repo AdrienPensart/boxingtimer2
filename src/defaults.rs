@@ -9,8 +9,17 @@ pub const DEFAULT_INTERVAL: u32 = 1000;
 pub const PREPARE: u64 = 15;
 pub const PREPARE_DURATION: std::time::Duration = std::time::Duration::from_secs(PREPARE);
 pub const PREPARE_LABEL: &str = "Prepare";
+pub const RESTART_SEQUENCE: &str = "♼";
+pub const PREVIOUS_ITEM: &str = "⏪";
+pub const NEXT_ITEM: &str = "⏩";
+pub const RANDOMIZE: &str = "🎲";
+pub const SIGNAL: &str = "🛎";
 
-pub fn default_sequences(bell: &SoundSignal, beep: &SoundSignal, silent: &SoundSignal) -> Vec<Sequence> {
+pub fn default_sequences(
+    bell: &SoundSignal,
+    beep: &SoundSignal,
+    silent: &SoundSignal,
+) -> Vec<Sequence> {
     let warmup = Sequence::simple()
         .name("Warm-up : 🔥")
         .workouts(&[

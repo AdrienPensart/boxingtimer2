@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc};
-
 use crate::sound::Sound;
 use derive_more::Display;
 use dioxus::logger::tracing::info;
+use dioxus::prelude::*;
+use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
 pub enum TimerState {
@@ -73,5 +73,25 @@ impl SoundSignal {
     }
     pub fn sound(&self) -> &Sound {
         &self.sound
+    }
+}
+
+#[component]
+pub fn Sounds(bell: SoundSignal, beep: SoundSignal) -> Element {
+    rsx! {
+        div { id: "sounds",
+            audio {
+                id: bell.to_string(),
+                src: asset!("/assets/Bell.mp3"),
+                preload: "auto",
+                autoplay: false,
+            }
+            audio {
+                id: beep.to_string(),
+                src: asset!("/assets/Beep.mp3"),
+                preload: "auto",
+                autoplay: false,
+            }
+        }
     }
 }
