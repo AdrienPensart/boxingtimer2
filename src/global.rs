@@ -1,6 +1,6 @@
 use crate::defaults;
 use crate::sequence::Sequence;
-use crate::signal::{Signal, State};
+use crate::signal::{SoundSignal, TimerState};
 use crate::sound::Sound;
 
 use crate::timer::Timer;
@@ -9,19 +9,19 @@ use std::{cell::RefCell, rc::Rc};
 
 #[derive(Default, Clone)]
 pub struct Global {
-    pub timer: dioxus_signals::Signal<Timer>,
-    pub state: dioxus_signals::Signal<Rc<RefCell<State>>>,
+    pub timer: dioxus::signals::Signal<Timer>,
+    pub state: dioxus::signals::Signal<Rc<RefCell<TimerState>>>,
     pub sequences: Vec<Sequence>,
-    pub bell: Signal,
-    pub beep: Signal,
+    pub bell: SoundSignal,
+    pub beep: SoundSignal,
 }
 
 impl Global {
     pub fn new(muted: bool, prepare: u64, sequence: Option<String>) -> Self {
         let state = if muted {
-            State::Disabled
+            TimerState::Disabled
         } else {
-            State::Enabled
+            TimerState::Enabled
         };
         let prepare = if prepare == 0 {
             defaults::PREPARE
@@ -30,9 +30,9 @@ impl Global {
         };
         let state = Rc::new(RefCell::new(state));
 
-        let silent = Signal::new(Sound::Silent, state.clone());
-        let bell = Signal::new(Sound::Bell, state.clone());
-        let beep = Signal::new(Sound::Beep, state.clone());
+        let silent = SoundSignal::new(Sound::Silent, state.clone());
+        let bell = SoundSignal::new(Sound::Bell, state.clone());
+        let beep = SoundSignal::new(Sound::Beep, state.clone());
         let sequences = defaults::default_sequences(&bell, &beep, &silent);
 
         let mut timer = use_signal(|| {

@@ -2,7 +2,7 @@ use crate::duration::{MINUTE, SECOND};
 use crate::exercises::Exercises;
 use crate::item;
 use crate::sequence::{Sequence, ROUNDS};
-use crate::signal::Signal;
+use crate::signal::SoundSignal;
 use crate::tag::Difficulty;
 
 pub const DEFAULT_INTERVAL: u32 = 1000;
@@ -10,7 +10,7 @@ pub const PREPARE: u64 = 15;
 pub const PREPARE_DURATION: std::time::Duration = std::time::Duration::from_secs(PREPARE);
 pub const PREPARE_LABEL: &str = "Prepare";
 
-pub fn default_sequences(bell: &Signal, beep: &Signal, silent: &Signal) -> Vec<Sequence> {
+pub fn default_sequences(bell: &SoundSignal, beep: &SoundSignal, silent: &SoundSignal) -> Vec<Sequence> {
     let warmup = Sequence::simple()
         .name("Warm-up : 🔥")
         .workouts(&[

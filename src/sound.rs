@@ -1,6 +1,6 @@
 use crate::errors::TimerErrorKind;
 use derive_more::Display;
-use dioxus_logger::tracing::info;
+use dioxus::logger::tracing::info;
 use web_sys::wasm_bindgen::JsCast;
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]

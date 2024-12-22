@@ -4,7 +4,7 @@ use crate::indexedvec::IndexedVec;
 use crate::sequence::Sequence;
 use crate::status::Status;
 use crate::stopwatch::Stopwatch;
-use dioxus_logger::tracing::info;
+use dioxus::logger::tracing::info;
 
 #[derive(Default, Clone)]
 pub struct Timer {
@@ -184,8 +184,8 @@ impl Timer {
 fn timer_tests() {
     use crate::duration::SECOND;
     use crate::item;
-    use crate::signal::Signal;
-    let none = Signal::none();
+    use crate::signal::SoundSignal;
+    let none = SoundSignal::none();
     let preparation = std::time::Duration::from_secs(5);
     let warm_up = item::WARM_UP.workout(3 * SECOND);
     let first_sequence = Sequence::simple()

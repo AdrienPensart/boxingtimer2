@@ -2,7 +2,7 @@ use crate::defaults;
 use crate::sequence::Sequence;
 use crate::status::Status;
 use crate::stopwatch::Stopwatch;
-use dioxus_logger::tracing::info;
+use dioxus::logger::tracing::info;
 
 #[derive(Default, Debug)]
 pub struct MobileTimer {

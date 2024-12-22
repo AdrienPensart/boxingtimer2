@@ -2,10 +2,10 @@ use std::{cell::RefCell, rc::Rc};
 
 use crate::sound::Sound;
 use derive_more::Display;
-use dioxus_logger::tracing::info;
+use dioxus::logger::tracing::info;
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
-pub enum State {
+pub enum TimerState {
     #[default]
     #[display("🔊")]
     Enabled,
@@ -13,7 +13,7 @@ pub enum State {
     Disabled,
 }
 
-impl State {
+impl TimerState {
     pub fn toggle(&mut self) {
         *self = self.next()
     }
@@ -33,16 +33,16 @@ impl State {
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
 #[display("{sound}")]
-pub struct Signal {
+pub struct SoundSignal {
     sound: Sound,
-    state: Rc<RefCell<State>>,
+    state: Rc<RefCell<TimerState>>,
 }
 
-impl Signal {
+impl SoundSignal {
     pub fn none() -> Self {
-        Self::new(Sound::Silent, Rc::new(RefCell::new(State::Disabled)))
+        Self::new(Sound::Silent, Rc::new(RefCell::new(TimerState::Disabled)))
     }
-    pub fn new(sound: Sound, state: Rc<RefCell<State>>) -> Self {
+    pub fn new(sound: Sound, state: Rc<RefCell<TimerState>>) -> Self {
         Self { sound, state }
     }
     pub fn toggle(&mut self) {
@@ -62,7 +62,7 @@ impl Signal {
             info!("unable to play {} (always): {error}", self.sound);
         }
     }
-    pub fn next(&self) -> State {
+    pub fn next(&self) -> TimerState {
         self.state.borrow().next()
     }
     pub fn enabled(&self) -> bool {

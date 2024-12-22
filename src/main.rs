@@ -19,12 +19,10 @@ pub mod timer;
 pub mod workout;
 use crate::duration::DurationExt;
 use crate::global::Global;
-use crate::signal::Signal;
+use crate::signal::SoundSignal;
 use defaults::default_sequences;
+use dioxus::logger::tracing::Level;
 use dioxus::prelude::*;
-// use dioxus_free_icons::icons::io_icons::IoTimeSharp;
-// use dioxus_free_icons::Icon;
-use dioxus_logger::tracing::Level;
 use loading::ChildrenOrLoading;
 use mobileglobal::MobileGlobal;
 
@@ -43,7 +41,7 @@ enum Route {
 }
 
 fn main() {
-    dioxus_logger::init(Level::INFO).expect("failed to init logger");
+    dioxus::logger::init(Level::INFO).expect("failed to init logger");
     console_error_panic_hook::set_once();
     launch(App);
 }
@@ -51,12 +49,6 @@ fn main() {
 fn App() -> Element {
     rsx! {
         document::Link { rel: "icon", href: asset!("/assets/favicon.png") }
-        // Icon {
-        //     width: 30,
-        //     height: 30,
-        //     fill: "black",
-        //     icon: IoTimeSharp,
-        // }
         document::Stylesheet { href: asset!("/assets/tailwind.css") }
         ChildrenOrLoading { Router::<Route> {} }
     }
@@ -64,7 +56,11 @@ fn App() -> Element {
 
 #[component]
 fn MobileHome() -> Element {
-    let sequences = default_sequences(&Signal::none(), &Signal::none(), &Signal::none());
+    let sequences = default_sequences(
+        &SoundSignal::none(),
+        &SoundSignal::none(),
+        &SoundSignal::none(),
+    );
     rsx! {
         ul {
             for sequence in sequences.iter() {
@@ -76,26 +72,6 @@ fn MobileHome() -> Element {
                         {sequence.to_string()}
                     }
                 }
-            }
-        }
-    }
-}
-
-#[component]
-fn Sounds(bell: Signal, beep: Signal) -> Element {
-    rsx! {
-        div { id: "sounds",
-            audio {
-                id: bell.to_string(),
-                src: asset!("/assets/Bell.mp3"),
-                preload: "auto",
-                autoplay: false,
-            }
-            audio {
-                id: beep.to_string(),
-                src: asset!("/assets/Beep.mp3"),
-                preload: "auto",
-                autoplay: false,
             }
         }
     }
@@ -114,15 +90,17 @@ fn MobileTimer(sequence: String) -> Element {
     rsx! {
         Sounds { bell: global.bell, beep: global.beep }
         MobileControls {}
-        div { id: "timer", class: "flex",
-            label { id: "item", {global.timer.read().label()} }
+        div { id: "timer", class: "flex justify-evenly text-3xl p-2",
+            button {
+                id: "item",
+                onclick: move |_| global.timer.with_mut(|t| t.restart_item()),
+                {global.timer.read().label()}
+                "(♻)"
+            }
             label { id: "counter", {global.timer.read().left().to_string()} }
-            button { onclick: move |_| global.timer.with_mut(|t| t.restart_item()), "♻" }
         }
         if !global.timer.read().sequence().is_empty() {
-            ul {
-                id: "sequence",
-                class: "info flex-none p-2 rounded-xl bg-sky-900",
+            ul { id: "sequence", class: "info flex-none p-2",
                 for (index , item) in global.timer.read().sequence().iter().enumerate() {
                     li {
                         class: "text-nowrap",
@@ -132,6 +110,7 @@ fn MobileTimer(sequence: String) -> Element {
                 }
             }
         }
+        Link { class: "flex text-2xl justify-center", to: Route::MobileHome {}, {"Home"} }
     }
 }
 
@@ -139,7 +118,7 @@ fn MobileTimer(sequence: String) -> Element {
 fn MobileControls() -> Element {
     let mut global = use_context::<MobileGlobal>();
     rsx! {
-        div { id: "controls", class: "flex justify-evenly",
+        div { id: "controls", class: "flex justify-evenly p-2",
             button {
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.toggle()),
@@ -148,7 +127,7 @@ fn MobileControls() -> Element {
             button {
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.restart_sequence()),
-                "♻"
+                "♼"
             }
             button {
                 class: "rounded-full text-3xl",
@@ -296,7 +275,6 @@ fn Home(muted: bool, prepare: u64, sequence: String) -> Element {
                         "Elapsed: "
                         {global.timer.read().elapsed().to_string()}
                     }
-                    Link { to: Route::MobileHome {}, "Mobile version" }
                     if let Some(sequence) = global.timer.read().sequences().get() {
                         div { id: "workout",
                             "Workout: "
@@ -320,6 +298,7 @@ fn Home(muted: bool, prepare: u64, sequence: String) -> Element {
                         }
                     }
                 }
+                Link { to: Route::MobileHome {}, "Mobile version" }
                 Sounds { bell: global.bell, beep: global.beep }
             }
             div {
@@ -336,6 +315,26 @@ fn Home(muted: bool, prepare: u64, sequence: String) -> Element {
                         "♻"
                     }
                 }
+            }
+        }
+    }
+}
+
+#[component]
+fn Sounds(bell: SoundSignal, beep: SoundSignal) -> Element {
+    rsx! {
+        div { id: "sounds",
+            audio {
+                id: bell.to_string(),
+                src: asset!("/assets/Bell.mp3"),
+                preload: "auto",
+                autoplay: false,
+            }
+            audio {
+                id: beep.to_string(),
+                src: asset!("/assets/Beep.mp3"),
+                preload: "auto",
+                autoplay: false,
             }
         }
     }

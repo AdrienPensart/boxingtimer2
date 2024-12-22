@@ -1,13 +1,13 @@
 use crate::duration::DurationExt;
 use crate::exercises::Exercises;
 use crate::indexedvec::IndexedVec;
-use crate::signal::Signal;
+use crate::signal::SoundSignal;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
 use bon::bon;
 use derive_more::{Deref, DerefMut, IntoIterator};
-use dioxus_logger::tracing::info;
+use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
 use slug::slugify;
@@ -19,7 +19,7 @@ pub struct Sequence {
     #[deref]
     #[deref_mut]
     workouts: IndexedVec<Workout>,
-    signal: Signal,
+    signal: SoundSignal,
     rest: Option<std::time::Duration>,
     shufflable: bool,
     difficulty: Option<Difficulty>,
@@ -47,7 +47,7 @@ impl Sequence {
         description: Option<&str>,
         workouts: &[Workout],
         rest: std::time::Duration,
-        signal: &Signal,
+        signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
         let mut rng = rand::thread_rng();
@@ -69,7 +69,7 @@ impl Sequence {
         name: &str,
         description: Option<&str>,
         workouts: &[Workout],
-        signal: &Signal,
+        signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
         let total = std::time::Duration::from_secs(
@@ -93,7 +93,7 @@ impl Sequence {
         name: &str,
         description: Option<&str>,
         workout: Workout,
-        signal: &Signal,
+        signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
         Self {
@@ -115,7 +115,7 @@ impl Sequence {
         workout: std::time::Duration,
         rounds: Rounds,
         rest: std::time::Duration,
-        signal: &Signal,
+        signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
         let workouts = exercises.workouts(workout);
@@ -140,7 +140,7 @@ impl Sequence {
         rounds: Rounds,
         workout: Workout,
         rest: std::time::Duration,
-        signal: &Signal,
+        signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
         let workouts = itertools::intersperse(vec![workout; rounds as usize], Workout::rest(rest))
@@ -263,7 +263,7 @@ impl Sequence {
             .unique()
             .collect_vec()
     }
-    pub fn signal(&self) -> &Signal {
+    pub fn signal(&self) -> &SoundSignal {
         &self.signal
     }
     pub fn shuffle(&mut self) {
@@ -300,8 +300,8 @@ impl std::fmt::Display for Sequence {
 fn sequence_simple_tests() {
     use crate::duration::SECOND;
     use crate::item::{HEAD_ROTATION, WORKOUT};
-    use crate::signal::Signal;
-    let none = Signal::none();
+    use crate::signal::SoundSignal;
+    let none = SoundSignal::none();
     let warm_up = HEAD_ROTATION.workout(3 * SECOND);
     let workout = WORKOUT.workout(6 * SECOND);
     let mut simple = Sequence::simple()
