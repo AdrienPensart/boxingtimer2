@@ -20,7 +20,7 @@ impl Exercises {
                 .collect_vec(),
             Self::Names(names) => names
                 .iter()
-                .map(|name| Item::new(name, &[], None).workout(duration))
+                .map(|name| Item::builder().name(name).build().workout(duration))
                 .collect_vec(),
         }
     }

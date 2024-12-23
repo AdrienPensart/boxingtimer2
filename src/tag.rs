@@ -38,6 +38,7 @@ pub enum Difficulty {
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Body {
     Full,
+    Core,
     Abs,
     Pectorals,
     Legs,

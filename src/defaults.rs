@@ -52,7 +52,7 @@ pub fn default_sequences(
             item::SPEED_STEP.easy(30 * SECOND),
             item::ALTERNATE_STEP.easy(30 * SECOND),
             // 1 minute
-            item::ALTERNATE_LUNGE.medium(30 * SECOND),
+            item::LUNGE.medium(30 * SECOND),
             item::BURPEE.medium(30 * SECOND),
         ])
         .signal(silent)
@@ -80,7 +80,7 @@ pub fn default_sequences(
             item::JUMPING_JACK.easy(15 * SECOND),
             item::JUMP_SQUAT.easy(15 * SECOND),
             item::JUMPING_JACK.easy(15 * SECOND),
-            item::ALTERNATE_LUNGE.medium(15 * SECOND),
+            item::LUNGE.medium(15 * SECOND),
             // 1 minute
             item::JUMPING_JACK.easy(15 * SECOND),
             item::JUMPS.easy(15 * SECOND),
@@ -248,7 +248,7 @@ pub fn default_sequences(
             item::JUMP_SQUAT.workout(30 * SECOND),
             item::BURPEE.workout(30 * SECOND),
             item::PUSH_UP.workout(30 * SECOND),
-            item::ALTERNATE_LUNGE.workout(30 * SECOND),
+            item::LUNGE.workout(30 * SECOND),
             item::CRUNCHES.workout(30 * SECOND),
         ])
         .rest(30 * SECOND)
