@@ -1,7 +1,7 @@
 use derive_more::{Deref, IntoIterator};
 use rand::seq::SliceRandom;
 
-#[derive(PartialEq, Eq, Clone, Debug, Hash, Deref, IntoIterator)]
+#[derive(PartialEq, Eq, Clone, Debug, Hash, Deref, IntoIterator, Default)]
 pub struct IndexedVec<T> {
     index: Option<usize>,
     #[deref]
@@ -9,11 +9,26 @@ pub struct IndexedVec<T> {
     store: Vec<T>,
 }
 
-impl<T> Default for IndexedVec<T> {
-    fn default() -> Self {
+impl<T> From<&[T]> for IndexedVec<T>
+where
+    T: std::clone::Clone + std::cmp::PartialEq,
+{
+    fn from(items: &[T]) -> Self {
         Self {
             index: None,
-            store: vec![],
+            store: items.into(),
+        }
+    }
+}
+
+impl<T> From<Vec<T>> for IndexedVec<T>
+where
+    T: std::clone::Clone + std::cmp::PartialEq,
+{
+    fn from(items: Vec<T>) -> Self {
+        Self {
+            index: None,
+            store: items,
         }
     }
 }
@@ -22,12 +37,6 @@ impl<T> IndexedVec<T>
 where
     T: std::clone::Clone + std::cmp::PartialEq,
 {
-    pub fn new(elements: &[T]) -> Self {
-        Self {
-            index: None,
-            store: Vec::from(elements),
-        }
-    }
     pub fn apply<F: FnMut(&mut T)>(&mut self, f: F) {
         self.store.iter_mut().for_each(f)
     }
@@ -148,7 +157,7 @@ fn indexedvec_default_tests() {
 
 #[test]
 fn indexedvec_simple_tests() {
-    let mut simple = IndexedVec::<bool>::new(&[false, true]);
+    let mut simple = IndexedVec::from(vec![false, true]);
     assert!(!simple.is_empty());
     assert!(simple.index().is_none());
     assert!(simple.get().is_none());

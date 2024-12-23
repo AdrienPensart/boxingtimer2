@@ -1,6 +1,8 @@
 use crate::tag::{Body, Difficulty, Mouvement, Tag, Tags};
 use crate::workout::Workout;
 use bon::Builder;
+use itertools::Itertools;
+use slug::slugify;
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash, Builder)]
 pub struct Item {
@@ -12,11 +14,16 @@ pub struct Item {
     variations: Vec<String>,
     #[builder(into)]
     description: Option<String>,
+    #[builder(into)]
+    difficulty: Option<Difficulty>,
 }
 
 impl Item {
     pub fn name(&self) -> &str {
         &self.name
+    }
+    pub fn slug(&self) -> String {
+        slugify(&self.name)
     }
     pub fn tags(&self) -> &Tags {
         &self.tags
@@ -29,16 +36,12 @@ impl Item {
     }
     pub fn joined_tags(&self) -> Option<String> {
         if !self.tags.is_empty() {
-            Some(
-                self.tags
-                    .iter()
-                    .map(|&t| t.to_string())
-                    .collect::<Vec<_>>()
-                    .join(" / "),
-            )
-        } else {
-            None
+            let joined = self.tags.iter().map(|&t| t.to_string()).join(" / ");
+            if !joined.is_empty() {
+                return Some(joined);
+            }
         }
+        None
     }
     pub fn workout(&self, duration: std::time::Duration) -> Workout {
         Workout::builder()
@@ -79,21 +82,21 @@ impl std::fmt::Display for Item {
 
 pub static WARM_UP: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
-        .name("Warm Up")
+        .name("🔥Warm Up")
         .description("Generic warm-up")
         .build()
 });
 
 pub static WORKOUT: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
-        .name("Workout")
+        .name("🎯Workout")
         .description("Generic workout")
         .build()
 });
 
 pub static REST: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
-        .name("Rest")
+        .name("💤Rest")
         .tags(bon::vec![Mouvement::Rest])
         .build()
 });
@@ -139,39 +142,80 @@ pub static COMMANDO_PLANK: std::sync::LazyLock<Item> = std::sync::LazyLock::new(
 
 // WARM UP
 
-pub static HEAD_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Head Rotation").build());
+pub static HEAD_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Head Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static SHOULDER_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Shoulder Rotation").build());
+pub static SHOULDER_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Shoulder Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static ARM_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Arms Rotation").build());
+pub static ARM_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Arms Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static ELBOW_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Elbows Rotation").build());
+pub static ELBOW_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Elbows Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static WRIST_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Wrists Rotation").build());
+pub static WRIST_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Wrists Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static HIP_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Hips Rotation").build());
+pub static HIP_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Hips Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static KNEE_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Knees Rotation").build());
+pub static KNEE_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Knees Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static FEET_ROTATION: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Feet Rotation").build());
+pub static FEET_ROTATION: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Feet Rotation")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Rotation])
+        .build()
+});
 
-pub static HEEL_RAISES: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Heels Raises").build());
+pub static HEEL_RAISES: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Heels Raises")
+        .tags(bon::vec![Tag::WarmUp])
+        .build()
+});
 
-pub static INCHWORM: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Inchworm").build());
+pub static INCHWORM: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Inchworm")
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Stretching])
+        .build()
+});
 
 pub static LEG_SWINGS: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Leg Swings")
+        .tags(bon::vec![Tag::WarmUp])
         .variations(bon::vec!["Side Leg Swings"])
         .build()
 });
@@ -179,6 +223,7 @@ pub static LEG_SWINGS: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
 pub static SIDE_LEG_SWINGS: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Side Leg Swings")
+        .tags(bon::vec![Tag::WarmUp])
         .variations(bon::vec!["Front Leg Swings"])
         .build()
 });
@@ -186,42 +231,42 @@ pub static SIDE_LEG_SWINGS: std::sync::LazyLock<Item> = std::sync::LazyLock::new
 pub static SINGLE_LEG_TOUCH_TOES: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Single Leg Touch Toes")
-        .tags(bon::vec![Mouvement::Stretching])
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Stretching])
         .build()
 });
 
 pub static WINDMILL: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Windmill")
-        .tags(bon::vec![Mouvement::Stretching])
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Stretching])
         .build()
 });
 
 pub static BUTT_KICKS: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Butt Kicks")
-        .tags(bon::vec![Mouvement::Dynamic])
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Dynamic])
         .build()
 });
 
 pub static HIGH_KNEES: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("High Knees")
-        .tags(bon::vec![Mouvement::Dynamic])
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Dynamic])
         .build()
 });
 
 pub static JUMPING_JACK: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Jumping Jack")
-        .tags(bon::vec![Mouvement::Dynamic])
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Dynamic])
         .build()
 });
 
 pub static MOUNTAIN_CLIMBER: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
         .name("Mountain Climber")
-        .tags(bon::vec![Mouvement::Dynamic])
+        .tags(bon::vec![Tag::WarmUp, Mouvement::Dynamic])
         .build()
 });
 
@@ -320,10 +365,14 @@ pub static HIP_THRUST: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
 
 pub static BOXING_ROUND: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
     Item::builder()
-        .name("Boxing Round 🥊")
+        .name("🥊Boxing Round")
         .tags(bon::vec![Tag::Boxing])
         .build()
 });
 
-pub static ROPE: std::sync::LazyLock<Item> =
-    std::sync::LazyLock::new(|| Item::builder().name("Rope").build());
+pub static ROPE: std::sync::LazyLock<Item> = std::sync::LazyLock::new(|| {
+    Item::builder()
+        .name("Rope")
+        .variations(bon::vec!["Double Unders", "Criss Cross", "High Knees"])
+        .build()
+});

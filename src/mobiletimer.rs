@@ -2,6 +2,7 @@ use crate::defaults;
 use crate::sequence::Sequence;
 use crate::status::Status;
 use crate::stopwatch::Stopwatch;
+use crate::workout::Workout;
 use dioxus::logger::tracing::info;
 
 #[derive(Default, Debug)]
@@ -40,15 +41,11 @@ impl MobileTimer {
         self.changed = true;
         self.sequence.reset();
     }
-    pub fn restart_item(&mut self) {
+    pub fn restart_workout(&mut self) {
         self.preparation.reset();
-        self.sequence.reset_current();
+        self.sequence.reset_workout();
     }
     pub fn tick(&mut self) -> bool {
-        // info!(
-        //     "tick : {} / {} / {}",
-        //     self.status, self.changed, self.preparation
-        // );
         if self.changed {
             self.changed = false;
             return false;
@@ -58,7 +55,6 @@ impl MobileTimer {
         }
 
         if self.sequence.get().is_none() && self.preparation.decrement() {
-            // info!("preparation : {}", self.preparation);
             if self.sequence.signal().sound().is_beep() && self.preparation.last_seconds() {
                 self.sequence.signal().ring();
             }
@@ -103,6 +99,9 @@ impl MobileTimer {
             return defaults::PREPARE_LABEL;
         };
         item.name()
+    }
+    pub fn current_workout(&self) -> Option<&Workout> {
+        self.sequence.get()
     }
     pub fn status(&self) -> &Status {
         &self.status

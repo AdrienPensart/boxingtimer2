@@ -79,6 +79,15 @@ pub fn MobileHome() -> Element {
                 }
             }
         }
+        Link {
+            class: "flex text-2xl justify-center",
+            to: routes::Route::WebHome {
+                prepare: defaults::PREPARE,
+                muted: false,
+                sequence: "".to_string(),
+            },
+            {"Home"}
+        }
     }
 }
 
@@ -97,8 +106,8 @@ pub fn MobileTimer(sequence: String) -> Element {
         MobileControls {}
         div { id: "timer", class: "flex justify-evenly text-3xl p-2",
             button {
-                id: "item",
-                onclick: move |_| global.timer.with_mut(|t| t.restart_item()),
+                id: "current_workout",
+                onclick: move |_| global.timer.with_mut(|t| t.restart_workout()),
                 {global.timer.read().label()}
                 "(♻)"
             }
@@ -116,9 +125,20 @@ pub fn MobileTimer(sequence: String) -> Element {
             }
         }
         Link {
+            id: "mobile_home",
             class: "flex text-2xl justify-center",
             to: routes::Route::MobileHome {},
-            {"Home"}
+            {"Mobile Home"}
+        }
+        Link {
+            id: "web_home",
+            class: "flex text-2xl justify-center",
+            to: routes::Route::WebHome {
+                prepare: defaults::PREPARE,
+                muted: false,
+                sequence: "".to_string(),
+            },
+            {"Web Home"}
         }
     }
 }
@@ -129,27 +149,32 @@ pub fn MobileControls() -> Element {
     rsx! {
         div { id: "controls", class: "flex justify-evenly p-2",
             button {
+                id: "toggle_timer",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.toggle()),
                 {global.timer.read().next_status().to_string()}
             }
             button {
+                id: "restart_sequence",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.restart_sequence()),
                 {defaults::RESTART_SEQUENCE}
             }
             button {
+                id: "previous_item",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
                 {defaults::PREVIOUS_ITEM}
             }
             button {
+                id: "next_item",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
                 {defaults::NEXT_ITEM}
             }
             if global.timer.read().sequence().shufflable() {
                 button {
+                    id: "randomize",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.shuffle()),
                     {defaults::RANDOMIZE}

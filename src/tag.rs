@@ -9,9 +9,11 @@ pub enum Tag {
     #[from]
     Mouvement(Mouvement),
 
-    // Boxing
-    #[display("🥊")]
+    #[display("🔥")]
+    WarmUp,
+    #[display("")]
     Boxing,
+    #[display("👣")]
     Footwork,
 }
 
@@ -47,10 +49,13 @@ pub enum Body {
 
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Mouvement {
+    #[display("💫")]
+    Rotation,
+
     #[display("💓")]
     Cardio,
 
-    #[display("⏳")]
+    #[display("")]
     Rest,
 
     #[display("🏋")]

@@ -8,7 +8,7 @@ use crate::tag::Difficulty;
 pub const DEFAULT_INTERVAL: u32 = 1000;
 pub const PREPARE: u64 = 15;
 pub const PREPARE_DURATION: std::time::Duration = std::time::Duration::from_secs(PREPARE);
-pub const PREPARE_LABEL: &str = "Prepare";
+pub const PREPARE_LABEL: &str = "⏳";
 pub const RESTART_SEQUENCE: &str = "♼";
 pub const PREVIOUS_ITEM: &str = "⏪";
 pub const NEXT_ITEM: &str = "⏩";
@@ -21,7 +21,7 @@ pub fn default_sequences(
     silent: &SoundSignal,
 ) -> Vec<Sequence> {
     let warmup = Sequence::simple()
-        .name("Warm-up : 🔥")
+        .name("🔥Warm-up")
         .workouts(&[
             // 1 minute
             item::HEAD_ROTATION.easy(20 * SECOND),
@@ -59,7 +59,7 @@ pub fn default_sequences(
         .call();
 
     let cardio_warmup = Sequence::simple()
-        .name("Cardio Warm-up : 💓")
+        .name("💓Warm-up")
         .workouts(&[
             // 1 minute
             item::JUMPING_JACK.easy(15 * SECOND),
@@ -96,7 +96,7 @@ pub fn default_sequences(
         .call();
 
     let _5_rounds_1m = Sequence::rounds()
-        .name("1m/5x Workout")
+        .name("🥊1m/5x Workout")
         .rounds(5)
         .workout(item::WORKOUT.workout(1 * MINUTE))
         .rest(30 * SECOND)
@@ -105,7 +105,7 @@ pub fn default_sequences(
         .call();
 
     let _10_rounds_1m = Sequence::rounds()
-        .name("1m/10x Workout")
+        .name("🥊1m/10x Workout")
         .rounds(10)
         .workout(item::WORKOUT.workout(1 * MINUTE))
         .rest(30 * SECOND)
@@ -114,7 +114,7 @@ pub fn default_sequences(
         .call();
 
     let _15_rounds_1m = Sequence::rounds()
-        .name("1m/15x Workout")
+        .name("🥊1m/15x Workout")
         .rounds(10)
         .workout(item::WORKOUT.workout(1 * MINUTE))
         .rest(30 * SECOND)
@@ -123,7 +123,7 @@ pub fn default_sequences(
         .call();
 
     let boxing_3x2m_30s = Sequence::rounds()
-        .name("3x2m")
+        .name("🥊3x2m")
         .rounds(3 * ROUNDS)
         .workout(item::BOXING_ROUND.workout(2 * MINUTE))
         .rest(30 * SECOND)
@@ -132,7 +132,7 @@ pub fn default_sequences(
         .call();
 
     let boxing_3x3m_1m = Sequence::rounds()
-        .name("3x3m")
+        .name("🥊3x3m")
         .rounds(3 * ROUNDS)
         .workout(item::BOXING_ROUND.workout(2 * MINUTE))
         .rest(MINUTE)
@@ -141,7 +141,7 @@ pub fn default_sequences(
         .call();
 
     let boxing_6x2m_30s = Sequence::rounds()
-        .name("6x2m")
+        .name("🥊6x2m")
         .rounds(6 * ROUNDS)
         .workout(item::BOXING_ROUND.workout(2 * MINUTE))
         .rest(30 * SECOND)
@@ -150,7 +150,7 @@ pub fn default_sequences(
         .call();
 
     let boxing_6x3m_1m = Sequence::rounds()
-        .name("6x3m")
+        .name("🥊6x3m")
         .rounds(6 * ROUNDS)
         .workout(item::BOXING_ROUND.workout(3 * MINUTE))
         .rest(MINUTE)
@@ -159,13 +159,13 @@ pub fn default_sequences(
         .call();
 
     let stamina_jab_cross_hook = Sequence::repeat()
-        .name("Stamina 30s 1-2-3")
+        .name("🥊Stamina 30s 1-2-3")
         .description("1 | 2 | 1-2 | 1-2-3")
         .exercises(Exercises::from(vec![
-            "Jab (1)",
-            "Cross (2)",
-            "Jab | Cross (1-2)",
-            "Jab | Cross | Hook (1-2-3)",
+            "🥊Jab (1)",
+            "🥊Cross (2)",
+            "🥊Jab | Cross (1-2)",
+            "🥊Jab | Cross | Hook (1-2-3)",
         ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
@@ -175,13 +175,13 @@ pub fn default_sequences(
         .call();
 
     let stamina_jab_jab_cross_cross = Sequence::repeat()
-        .name("Stamina 30s 1-1-2-2")
+        .name("🥊Stamina 30s 1-1-2-2")
         .description("1 | 1-1 | 1-1-2 | 1-1-2-2")
         .exercises(Exercises::from(vec![
-            "Jab (1)",
-            "Double Jab (1-1)",
-            "Double Jab | Cross (1-1-2)",
-            "Double Jab | Cross | Cross",
+            "🥊Jab (1)",
+            "🥊Double Jab (1-1)",
+            "🥊Double Jab | Cross (1-1-2)",
+            "🥊Double Jab | Cross | Cross",
         ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
@@ -191,13 +191,13 @@ pub fn default_sequences(
         .call();
 
     let stamina_jab_cross_hook_cross = Sequence::repeat()
-        .name("Stamina 30s 1-2-3-2")
+        .name("🥊Stamina 30s 1-2-3-2")
         .description("1 | 1-2 | 1-2-3 | 1-2-3-2")
         .exercises(Exercises::from(vec![
-            "Jab (1)",
-            "Jab | Cross (1-2)",
-            "Jab | Cross | Hook (1-2-3)",
-            "Jab | Cross | Hook | Cross (1-2-3-2)",
+            "🥊Jab (1)",
+            "🥊Jab | Cross (1-2)",
+            "🥊Jab | Cross | Hook (1-2-3)",
+            "🥊Jab | Cross | Hook | Cross (1-2-3-2)",
         ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
@@ -207,13 +207,13 @@ pub fn default_sequences(
         .call();
 
     let stamina_roll_left = Sequence::repeat()
-        .name("Stamina 30s 1-2-3-ROLL-3-2")
+        .name("🥊Stamina 30s 1-2-3-ROLL-3-2")
         .description("1-2-3 | 1-2-3-ROLL | 1-2-3-ROLL-3 | 1-2-3-ROLL-3-2")
         .exercises(Exercises::from(vec![
-            "Jab | Cross | Hook",
-            "Jab | Cross | Hook | ROLL",
-            "Jab | Cross | Hook | ROLL | Hook",
-            "Jab | Cross | Hook | ROLL | Hook | Cross",
+            "🥊Jab | Cross | Hook",
+            "🥊Jab | Cross | Hook | ROLL",
+            "🥊Jab | Cross | Hook | ROLL | Hook",
+            "🥊Jab | Cross | Hook | ROLL | Hook | Cross",
         ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
@@ -223,13 +223,13 @@ pub fn default_sequences(
         .call();
 
     let stamina_roll_right = Sequence::repeat()
-        .name("Stamina 30s 1-2-ROLL-2-3-2")
+        .name("🥊Stamina 30s 1-2-ROLL-2-3-2")
         .description("1-2-ROLL | 1-2-ROLL-2 | 1-2-ROLL-2-3 | 1-2-ROLL-2-3-2")
         .exercises(Exercises::from(vec![
-            "Jab | Cross | ROLL",
-            "Jab | Cross | ROLL | Cross",
-            "Jab | Cross | ROLL | Cross | Hook",
-            "Jab | Cross | ROLL | Cross | Hook | Cross",
+            "🥊Jab | Cross | ROLL",
+            "🥊Jab | Cross | ROLL | Cross",
+            "🥊Jab | Cross | ROLL | Cross | Hook",
+            "🥊Jab | Cross | ROLL | Cross | Hook | Cross",
         ]))
         .workout(30 * SECOND)
         .rounds(4 * ROUNDS)
@@ -239,7 +239,7 @@ pub fn default_sequences(
         .call();
 
     let random_training = Sequence::random()
-        .name("Random training (30s each) 🎲")
+        .name("🎲Random training (30s)")
         .workouts(&[
             item::JUMPING_JACK.workout(30 * SECOND),
             item::PULL_UP.workout(30 * SECOND),
@@ -256,7 +256,7 @@ pub fn default_sequences(
         .call();
 
     let hiit_4x = Sequence::rounds()
-        .name("HiiT 20s (4x)")
+        .name("🧨HiiT 20s (4x)")
         .rounds(4 * ROUNDS)
         .workout(item::WORKOUT.workout(20 * SECOND))
         .difficulty(Difficulty::Medium)
@@ -265,7 +265,7 @@ pub fn default_sequences(
         .call();
 
     let hiit_8x = Sequence::rounds()
-        .name("HiiT 20s (8x)")
+        .name("🧨HiiT 20s (8x)")
         .rounds(8 * ROUNDS)
         .workout(item::WORKOUT.workout(20 * SECOND))
         .difficulty(Difficulty::Hard)
@@ -273,23 +273,12 @@ pub fn default_sequences(
         .signal(beep)
         .call();
 
-    let _5mn = Sequence::workout()
-        .name("5m")
-        .workout(item::WORKOUT.workout(5 * MINUTE))
-        .signal(bell)
-        .call();
-
-    let _10mn = Sequence::workout()
-        .name("10m")
-        .workout(item::WORKOUT.workout(10 * MINUTE))
-        .signal(bell)
-        .call();
-
-    let _15mn = Sequence::workout()
-        .name("15m")
-        .workout(item::WORKOUT.workout(15 * MINUTE))
-        .signal(bell)
-        .call();
+    let _1mn = item::WORKOUT.workout(1 * MINUTE).sequence(bell);
+    let _2mn = item::WORKOUT.workout(2 * MINUTE).sequence(bell);
+    let _3mn = item::WORKOUT.workout(3 * MINUTE).sequence(bell);
+    let _5mn = item::WORKOUT.workout(5 * MINUTE).sequence(bell);
+    let _10mn = item::WORKOUT.workout(10 * MINUTE).sequence(bell);
+    let _15mn = item::WORKOUT.workout(15 * MINUTE).sequence(bell);
 
     vec![
         warmup,
@@ -309,6 +298,9 @@ pub fn default_sequences(
         hiit_4x,
         hiit_8x,
         random_training,
+        _1mn,
+        _2mn,
+        _3mn,
         _5mn,
         _10mn,
         _15mn,

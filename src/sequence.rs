@@ -5,38 +5,31 @@ use crate::signal::SoundSignal;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
-use bon::bon;
+use bon::{bon, Builder};
 use derive_more::{Deref, DerefMut, IntoIterator};
 use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
 use slug::slugify;
 
-#[derive(Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut, Builder)]
 pub struct Sequence {
+    #[builder(into)]
     name: String,
+    #[builder(into)]
     description: Option<String>,
     #[deref]
     #[deref_mut]
+    #[builder(into)]
     workouts: IndexedVec<Workout>,
     signal: SoundSignal,
     rest: Option<std::time::Duration>,
+    #[builder(default)]
     shufflable: bool,
     difficulty: Option<Difficulty>,
 }
 
-// pub enum SmartSequence {
-//     // simple
-//     Simple(Sequence),
-//     // random
-//     Random(Sequence),
-//     // infinite
-//     Infinite(Sequence),
-//     // repeat
-//     Repeat(Sequence, usize),
-// }
-
-type Rounds = u64;
+type Rounds = usize;
 pub static ROUNDS: Rounds = 1;
 
 #[bon]
@@ -50,14 +43,14 @@ impl Sequence {
         signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
-        let mut rng = rand::thread_rng();
         let mut workouts = workouts.to_vec();
-        workouts.shuffle(&mut rng);
-        workouts = itertools::intersperse(workouts.to_vec(), Workout::rest(rest)).collect_vec();
+        workouts.shuffle(&mut rand::thread_rng());
+
+        let workouts = itertools::intersperse(workouts, Workout::rest(rest)).collect_vec();
         Self {
             name: name.into(),
             description: description.map(str::to_string),
-            workouts: IndexedVec::new(&workouts),
+            workouts: workouts.into(),
             signal: signal.clone(),
             rest: Some(rest),
             shufflable: true,
@@ -81,25 +74,7 @@ impl Sequence {
         Self {
             name: format!("{name} ({} total)", total.to_string()),
             description: description.map(str::to_string),
-            workouts: IndexedVec::new(workouts),
-            signal: signal.clone(),
-            rest: None,
-            shufflable: false,
-            difficulty,
-        }
-    }
-    #[builder]
-    pub fn workout(
-        name: &str,
-        description: Option<&str>,
-        workout: Workout,
-        signal: &SoundSignal,
-        difficulty: Option<Difficulty>,
-    ) -> Self {
-        Self {
-            name: name.into(),
-            description: description.map(str::to_string),
-            workouts: IndexedVec::new(&[workout]),
+            workouts: IndexedVec::from(workouts),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
@@ -118,15 +93,16 @@ impl Sequence {
         signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
-        let workouts = exercises.workouts(workout);
-        let workouts =
-            itertools::intersperse(vec![workouts; rounds as usize], vec![Workout::rest(rest)])
-                .flatten()
-                .collect_vec();
+        #[allow(unstable_name_collisions)]
+        let workouts = std::iter::repeat(exercises.workouts(workout))
+            .take(rounds)
+            .intersperse(vec![Workout::rest(rest)])
+            .flatten()
+            .collect_vec();
         Self {
             name: format!("{name} ({}s rest)", rest.as_secs()),
             description: description.map(str::to_string),
-            workouts: IndexedVec::new(&workouts),
+            workouts: workouts.into(),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
@@ -143,19 +119,21 @@ impl Sequence {
         signal: &SoundSignal,
         difficulty: Option<Difficulty>,
     ) -> Self {
-        let workouts = itertools::intersperse(vec![workout; rounds as usize], Workout::rest(rest))
+        #[allow(unstable_name_collisions)]
+        let workouts = std::iter::repeat(workout)
+            .take(rounds)
+            .intersperse(Workout::rest(rest))
             .collect_vec();
         Self {
             name: format!("{name} ({}s rest)", rest.as_secs()),
             description: description.map(str::to_string),
-            workouts: IndexedVec::new(&workouts),
+            workouts: workouts.into(),
             signal: signal.clone(),
             rest: None,
             shufflable: false,
             difficulty,
         }
     }
-
     pub fn slug(&self) -> String {
         slugify(&self.name)
     }
@@ -183,10 +161,10 @@ impl Sequence {
             info!("sequence: workouts is empty, no next");
         } else if !self.workouts.last() {
             self.workouts.next_item();
-            self.reset_current();
+            self.reset_workout();
         } else {
             self.workouts.set_index(0);
-            self.reset_current();
+            self.reset_workout();
         }
         self.get_mut()
     }
@@ -209,7 +187,7 @@ impl Sequence {
     pub fn last_seconds(&self) -> bool {
         self.workouts.get().map_or(false, |i| i.last_seconds())
     }
-    pub fn reset_current(&mut self) {
+    pub fn reset_workout(&mut self) {
         info!("sequence: reset current item");
         if let Some(i) = self.workouts.get_mut() {
             i.reset();
@@ -273,7 +251,7 @@ impl Sequence {
                 let rest = Workout::rest(rest);
                 self.workouts.retain(&rest);
                 let workouts = itertools::intersperse(self.workouts.shuffled(), rest).collect_vec();
-                self.workouts = IndexedVec::new(&workouts);
+                self.workouts = workouts.into();
             } else {
                 self.workouts.shuffle()
             }

@@ -146,7 +146,9 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                         }
                     }
                 }
-                Link { to: Route::MobileHome {}, "Mobile version" }
+                div { class: "flex justify-center text-2xl",
+                    Link { id: "mobile_home", to: Route::MobileHome {}, "Mobile Home" }
+                }
                 signal::Sounds { bell: global.bell, beep: global.beep }
             }
             div {
@@ -158,8 +160,9 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                         {global.timer.read().left().to_string()}
                     }
                     button {
+                        id: "restart_workout",
                         class: "text-3xl",
-                        onclick: move |_| global.timer.with_mut(|t| t.restart_item()),
+                        onclick: move |_| global.timer.with_mut(|t| t.restart_workout()),
                         "♻"
                     }
                 }
@@ -175,27 +178,32 @@ pub fn WebControls() -> Element {
         if let Some(sequence) = global.timer.read().sequences().get() {
             div { id: "controls", class: "flex justify-evenly",
                 button {
+                    id: "toggle_timer",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.toggle()),
                     {global.timer.read().next_status().to_string()}
                 }
                 button {
+                    id: "restart_sequence",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.restart_sequence()),
                     {defaults::RESTART_SEQUENCE}
                 }
                 button {
+                    id: "previous_item",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
                     {defaults::PREVIOUS_ITEM}
                 }
                 button {
+                    id: "next_item",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
                     {defaults::NEXT_ITEM}
                 }
                 if sequence.shufflable() {
                     button {
+                        id: "randomize",
                         class: "rounded-full text-3xl",
                         onclick: move |_| global.timer.with_mut(|t| t.shuffle()),
                         {defaults::RANDOMIZE}

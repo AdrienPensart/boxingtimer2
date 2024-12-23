@@ -1,5 +1,7 @@
 use crate::duration::DurationExt;
 use crate::item::{Item, REST};
+use crate::sequence::Sequence;
+use crate::signal::SoundSignal;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tags};
 use bon::Builder;
@@ -7,7 +9,6 @@ use derive_more::{Deref, DerefMut};
 
 #[derive(Default, Clone, Debug, Eq, PartialEq, Hash, Deref, DerefMut, Builder)]
 pub struct Workout {
-    // #[builder(into)]
     item: Item,
     #[deref]
     #[deref_mut]
@@ -33,12 +34,20 @@ impl std::fmt::Display for Workout {
 }
 
 impl Workout {
+    pub fn sequence(&self, signal: &SoundSignal) -> Sequence {
+        Sequence::builder()
+            .name(format!(
+                "{} ({})",
+                self.name(),
+                self.stopwatch.duration().to_string()
+            ))
+            .description(self.description().clone().unwrap_or_default())
+            .signal(signal.clone())
+            .workouts(vec![self.clone()])
+            .build()
+    }
     pub fn rest(duration: std::time::Duration) -> Self {
-        Self {
-            item: REST.clone(),
-            stopwatch: duration.into(),
-            difficulty: None,
-        }
+        REST.workout(duration)
     }
     pub fn stopwatch(&self) -> &Stopwatch {
         &self.stopwatch

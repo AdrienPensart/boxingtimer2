@@ -22,7 +22,7 @@ impl Timer {
     pub fn new(preparation: std::time::Duration, sequences: &[Sequence]) -> Self {
         Self {
             preparation: Stopwatch::from(preparation),
-            sequences: IndexedVec::new(sequences),
+            sequences: sequences.into(),
             ..Default::default()
         }
     }
@@ -70,13 +70,13 @@ impl Timer {
             sequence.reset();
         }
     }
-    pub fn restart_item(&mut self) {
+    pub fn restart_workout(&mut self) {
         if let Some(sequence) = self.sequences.get_mut() {
             if sequence.get().is_none() {
                 self.preparation.reset();
             } else {
                 self.changed = true;
-                sequence.reset_current()
+                sequence.reset_workout()
             }
         }
     }
