@@ -3,7 +3,7 @@ use crate::item::{Item, REST};
 use crate::sequence::Sequence;
 use crate::signal::SoundSignal;
 use crate::stopwatch::Stopwatch;
-use crate::tag::{Difficulty, Tags};
+use crate::tag::Difficulty;
 use bon::Builder;
 use derive_more::{Deref, DerefMut};
 
@@ -38,10 +38,10 @@ impl Workout {
         Sequence::builder()
             .name(format!(
                 "{} ({})",
-                self.name(),
+                self.item.name(),
                 self.stopwatch.duration().to_string()
             ))
-            .description(self.description().clone().unwrap_or_default())
+            .description(self.item.description().clone().unwrap_or_default())
             .signal(signal.clone())
             .workouts(vec![self.clone()])
             .build()
@@ -52,19 +52,10 @@ impl Workout {
     pub fn stopwatch(&self) -> &Stopwatch {
         &self.stopwatch
     }
-    pub fn stopwatch_mut(&mut self) -> &mut Stopwatch {
-        &mut self.stopwatch
-    }
     pub fn is_rest(&self) -> bool {
         self.item.is_rest()
     }
-    pub fn name(&self) -> &str {
-        self.item.name()
-    }
-    pub fn tags(&self) -> &Tags {
-        self.item.tags()
-    }
-    pub fn description(&self) -> &Option<String> {
-        self.item.description()
+    pub fn item(&self) -> &Item {
+        &self.item
     }
 }

@@ -28,8 +28,8 @@ impl Timer {
     }
     pub fn left(&self) -> &std::time::Duration {
         if let Some(sequence) = self.sequences.get() {
-            if let Some(item) = sequence.get() {
-                return item.left();
+            if let Some(workout) = sequence.get() {
+                return workout.left();
             }
         }
         self.preparation.left()
@@ -139,12 +139,10 @@ impl Timer {
         let Some(sequence) = self.sequences.get() else {
             return defaults::PREPARE_LABEL;
         };
-
-        let Some(item) = sequence.get() else {
+        let Some(workout) = sequence.get() else {
             return defaults::PREPARE_LABEL;
         };
-
-        item.name()
+        workout.item().name()
     }
     pub fn status(&self) -> &Status {
         &self.status

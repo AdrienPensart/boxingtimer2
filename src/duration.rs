@@ -22,6 +22,9 @@ impl DurationExt for std::time::Duration {
     }
     fn to_string(&self) -> String {
         let seconds = self.as_secs();
+        if seconds <= 60 {
+            return format!("{seconds}s");
+        }
         let (minutes, seconds_left) = (seconds / 60, seconds % 60);
         format!("{minutes}:{seconds_left:02}")
     }

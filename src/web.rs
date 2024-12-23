@@ -95,6 +95,7 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                     option { disabled: true, selected: true, "Select a workout" }
                     for (index , sequence) in global.timer.read().sequences().iter().enumerate() {
                         option {
+                            id: format!("sequence_{}", sequence.slug()),
                             value: index.to_string(),
                             selected: global.timer.read().sequences().get().map(|s| s.name() == sequence.name()),
                             {sequence.to_string()}
@@ -106,11 +107,12 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                         ul {
                             id: "sequence",
                             class: "info flex-none p-2 rounded-xl bg-sky-900",
-                            for (index , item) in sequence.iter().enumerate() {
+                            for (index , workout) in sequence.iter().enumerate() {
                                 li {
+                                    id: format!("workout_{}", workout.item().slug()),
                                     class: "text-nowrap",
                                     class: if sequence.index() == Some(index) { "text-red-600" } else { "" },
-                                    span { class: "text-sm", "{item}" }
+                                    span { class: "text-sm", "{workout}" }
                                 }
                             }
                         }
@@ -155,7 +157,7 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                 id: "timer",
                 class: "bg-blue-600 flex w-full items-center justify-center h-screen rounded-xl",
                 div { class: "flex flex-col items-center justify-center",
-                    div { id: "item", class: "text-9xl", {global.timer.read().label()} }
+                    div { id: "workout", class: "text-9xl", {global.timer.read().label()} }
                     div { id: "counter", class: "text-9xl",
                         {global.timer.read().left().to_string()}
                     }
@@ -190,13 +192,13 @@ pub fn WebControls() -> Element {
                     {defaults::RESTART_SEQUENCE}
                 }
                 button {
-                    id: "previous_item",
+                    id: "previous_workout",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
                     {defaults::PREVIOUS_ITEM}
                 }
                 button {
-                    id: "next_item",
+                    id: "next_workout",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
                     {defaults::NEXT_ITEM}

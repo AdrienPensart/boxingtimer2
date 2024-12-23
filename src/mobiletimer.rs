@@ -25,8 +25,8 @@ impl MobileTimer {
         }
     }
     pub fn left(&self) -> &std::time::Duration {
-        if let Some(item) = self.sequence.get() {
-            return item.left();
+        if let Some(workout) = self.sequence.get() {
+            return workout.left();
         }
         self.preparation.left()
     }
@@ -95,10 +95,10 @@ impl MobileTimer {
         if self.sequence.get().is_none() {
             return defaults::PREPARE_LABEL;
         }
-        let Some(item) = self.sequence.get() else {
+        let Some(workout) = self.sequence.get() else {
             return defaults::PREPARE_LABEL;
         };
-        item.name()
+        workout.item().name()
     }
     pub fn current_workout(&self) -> Option<&Workout> {
         self.sequence.get()

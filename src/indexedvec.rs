@@ -92,7 +92,7 @@ where
             None
         }
     }
-    pub fn next_item(&mut self) -> Option<&mut T> {
+    pub fn next_mut(&mut self) -> Option<&mut T> {
         if self.store.is_empty() {
             self.index = None;
             return None;
@@ -114,7 +114,7 @@ where
             None
         }
     }
-    pub fn previous_item(&mut self) -> Option<&mut T> {
+    pub fn previous_mut(&mut self) -> Option<&mut T> {
         if self.store.is_empty() {
             self.index = None;
             return None;
@@ -147,10 +147,10 @@ fn indexedvec_default_tests() {
     assert!(default.index().is_none());
     assert!(default.get().is_none());
     assert!(default.last());
-    let next = default.next_item();
+    let next = default.next_mut();
     assert!(next.is_none());
     assert!(default.index().is_none());
-    let next = default.next_item();
+    let next = default.next_mut();
     assert!(next.is_none());
     assert!(default.index().is_none());
 }
@@ -163,25 +163,25 @@ fn indexedvec_simple_tests() {
     assert!(simple.get().is_none());
     assert!(!simple.last());
 
-    let next = simple.next_item();
+    let next = simple.next_mut();
     assert_eq!(next, Some(&mut false));
     assert_eq!(simple.index(), Some(0));
     assert_eq!(simple.get(), Some(&false));
     assert!(!simple.last());
 
-    let next = simple.next_item();
+    let next = simple.next_mut();
     assert_eq!(next, Some(&mut true));
     assert_eq!(simple.index(), Some(1));
     assert_eq!(simple.get(), Some(&true));
     assert!(simple.last());
 
-    let next = simple.next_item();
+    let next = simple.next_mut();
     assert!(next.is_none());
     assert!(simple.index().is_none());
     assert!(simple.get().is_none());
 
     simple.reset();
-    assert_eq!(simple.next_item(), Some(&mut false));
+    assert_eq!(simple.next_mut(), Some(&mut false));
     assert_eq!(simple.index(), Some(0));
     assert_eq!(simple.get(), Some(&false));
     assert!(!simple.last());

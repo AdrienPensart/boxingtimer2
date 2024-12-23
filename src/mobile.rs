@@ -67,9 +67,9 @@ pub fn MobileHome() -> Element {
         &SoundSignal::none(),
     );
     rsx! {
-        ul {
+        ul { id: "sequences",
             for sequence in sequences.iter() {
-                li {
+                li { id: format!("sequence_ {}", sequence.slug()),
                     Link {
                         to: routes::Route::MobileTimer {
                             sequence: sequence.slug(),
@@ -80,6 +80,7 @@ pub fn MobileHome() -> Element {
             }
         }
         Link {
+            id: "web_home",
             class: "flex text-2xl justify-center",
             to: routes::Route::WebHome {
                 prepare: defaults::PREPARE,
@@ -115,11 +116,11 @@ pub fn MobileTimer(sequence: String) -> Element {
         }
         if !global.timer.read().sequence().is_empty() {
             ul { id: "sequence", class: "info flex-none p-2",
-                for (index , item) in global.timer.read().sequence().iter().enumerate() {
+                for (index , workout) in global.timer.read().sequence().iter().enumerate() {
                     li {
                         class: "text-nowrap",
                         class: if global.timer.read().sequence().index() == Some(index) { "text-red-600" } else { "" },
-                        span { class: "text-sm", "{item}" }
+                        span { class: "text-sm", "{workout}" }
                     }
                 }
             }
@@ -161,13 +162,13 @@ pub fn MobileControls() -> Element {
                 {defaults::RESTART_SEQUENCE}
             }
             button {
-                id: "previous_item",
+                id: "previous_workout",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
                 {defaults::PREVIOUS_ITEM}
             }
             button {
-                id: "next_item",
+                id: "next_workout",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
                 {defaults::NEXT_ITEM}

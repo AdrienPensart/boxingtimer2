@@ -68,7 +68,7 @@ impl Sequence {
         let total = std::time::Duration::from_secs(
             workouts
                 .iter()
-                .map(|workout| workout.stopwatch().duration().as_secs())
+                .map(|workout| workout.duration().as_secs())
                 .sum(),
         );
         Self {
@@ -150,7 +150,7 @@ impl Sequence {
         //     self.position = self.items.len() - 1
         // }
         #[allow(clippy::manual_inspect)]
-        self.workouts.previous_item().map(|p| {
+        self.workouts.previous_mut().map(|p| {
             p.reset();
             p
         })
@@ -160,7 +160,7 @@ impl Sequence {
         if self.workouts.is_empty() {
             info!("sequence: workouts is empty, no next");
         } else if !self.workouts.last() {
-            self.workouts.next_item();
+            self.workouts.next_mut();
             self.reset_workout();
         } else {
             self.workouts.set_index(0);
@@ -174,9 +174,9 @@ impl Sequence {
             info!("sequence: workouts is empty, no next");
             return None;
         }
-        let item = self.workouts.next_item()?;
-        item.reset();
-        Some(item)
+        let workout = self.workouts.next_mut()?;
+        workout.reset();
+        Some(workout)
     }
     pub fn stopwatch(&mut self) -> Option<&Stopwatch> {
         self.workouts.get().map(|i| i.stopwatch())
@@ -188,7 +188,7 @@ impl Sequence {
         self.workouts.get().map_or(false, |i| i.last_seconds())
     }
     pub fn reset_workout(&mut self) {
-        info!("sequence: reset current item");
+        info!("sequence: reset current workout");
         if let Some(i) = self.workouts.get_mut() {
             i.reset();
         }
@@ -206,22 +206,18 @@ impl Sequence {
     pub fn total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
-                .map(|workout| workout.stopwatch().duration().as_secs())
+                .map(|workout| workout.duration().as_secs())
                 .sum(),
         )
     }
     pub fn left_total(&self) -> std::time::Duration {
-        std::time::Duration::from_secs(
-            self.iter()
-                .map(|workout| workout.stopwatch().left().as_secs())
-                .sum(),
-        )
+        std::time::Duration::from_secs(self.iter().map(|workout| workout.left().as_secs()).sum())
     }
     pub fn workout_total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
             self.iter()
                 .filter(|workout| !workout.is_rest())
-                .map(|workout| workout.stopwatch().duration().as_secs())
+                .map(|workout| workout.duration().as_secs())
                 .sum(),
         )
     }
@@ -229,7 +225,7 @@ impl Sequence {
         std::time::Duration::from_secs(
             self.iter()
                 .filter(|workout| workout.is_rest())
-                .map(|workout| workout.stopwatch().duration().as_secs())
+                .map(|workout| workout.duration().as_secs())
                 .sum(),
         )
     }
@@ -237,7 +233,7 @@ impl Sequence {
         self.workouts
             .iter()
             .filter(|workout| !workout.is_rest())
-            .flat_map(|workout| workout.tags().clone())
+            .flat_map(|workout| workout.item().tags().clone())
             .unique()
             .collect_vec()
     }
