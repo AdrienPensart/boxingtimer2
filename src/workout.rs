@@ -1,9 +1,10 @@
+use crate::defaults::REST;
+use crate::duration::DurationExt;
 use crate::item::Item;
 use crate::sequence::Sequence;
 use crate::sound::Sound;
 use crate::stopwatch::Stopwatch;
 use crate::tag::Difficulty;
-use crate::{duration::DurationExt, tag::Tag};
 use bon::Builder;
 use derive_more::{Deref, DerefMut};
 use serde::{Deserialize, Serialize};
@@ -25,6 +26,9 @@ pub struct Workout {
 
 impl std::fmt::Display for Workout {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(difficulty) = self.difficulty {
+            write!(f, "{} ", difficulty.icon())?;
+        }
         write!(
             f,
             "{} : {}",
@@ -32,14 +36,19 @@ impl std::fmt::Display for Workout {
             self.stopwatch.duration().to_string()
         )?;
 
-        if let Some(joined_tags) = self.item.joined_tags() {
-            write!(f, " ({joined_tags})")?;
+        if !self.is_rest() {
+            if let Some(joined_tags) = self.item.joined_tags() {
+                write!(f, " ({joined_tags})")?;
+            }
         }
         Ok(())
     }
 }
 
 impl Workout {
+    pub fn register(&self) {
+        self.item.clone().register();
+    }
     pub fn sequence(&self, sound: &Sound) -> Sequence {
         Sequence::builder()
             .name(format!(
@@ -47,17 +56,14 @@ impl Workout {
                 self.item.name(),
                 self.stopwatch.duration().to_string()
             ))
+            .icon(self.item.icon().unwrap_or_default())
             .description(self.item.description().clone().unwrap_or_default())
             .sound(sound.clone())
             .workouts(vec![self.clone()])
             .build()
     }
     pub fn rest(duration: std::time::Duration) -> Self {
-        Item::builder()
-            .name("Rest")
-            .tags(bon::vec![Tag::Rest])
-            .build()
-            .workout(duration)
+        REST.workout(duration)
     }
     pub fn stopwatch(&self) -> &Stopwatch {
         &self.stopwatch

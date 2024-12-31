@@ -6,12 +6,10 @@ use slug::slugify;
 #[serde(rename_all = "snake_case")]
 pub enum Tag {
     Rest,
+    Drink,
     HiiT,
     WarmUp,
     Boxing,
-    #[from]
-    #[serde(untagged)]
-    Difficulty(Difficulty),
     #[from]
     #[serde(untagged)]
     Body(Body),
@@ -30,18 +28,16 @@ pub enum Tag {
 }
 
 impl Tag {
-    pub fn icon(&self) -> String {
+    pub fn icon(&self) -> Option<char> {
         match self {
-            Self::Rest => "💤".to_owned(),
-            Self::Squat(squat) => squat.to_string(),
-            Self::Difficulty(difficulty) => difficulty.icon(),
-            Self::Body(body) => body.to_string(),
-            Self::Equipment(equipment) => equipment.to_string(),
-            Self::Mouvement(mouvement) => mouvement.icon(),
-            Self::HiiT => "🧨".to_owned(),
-            Self::WarmUp => "🔥".to_owned(),
-            Self::Boxing => "🥊".to_owned(),
-            Self::Plank(plank) => plank.to_string(),
+            Self::Drink => Some('🍹'),
+            Self::Rest => Some('💤'),
+            Self::Mouvement(mouvement) => Some(mouvement.icon()),
+            Self::Plank(_) => Some('🚪'),
+            Self::HiiT => Some('🧨'),
+            Self::WarmUp => Some('🔥'),
+            Self::Boxing => Some('🥊'),
+            _ => None,
         }
     }
     pub fn slug(&self) -> String {
@@ -77,12 +73,12 @@ pub enum Difficulty {
 }
 
 impl Difficulty {
-    pub fn icon(&self) -> String {
+    pub fn icon(&self) -> char {
         match self {
-            Self::Easy => "🟩".to_owned(),
-            Self::Medium => "🟨".to_owned(),
-            Self::Hard => "🟧".to_owned(),
-            Self::Elite => "🟥".to_owned(),
+            Self::Easy => '🟩',
+            Self::Medium => '🟨',
+            Self::Hard => '🟧',
+            Self::Elite => '🟥',
         }
     }
 }
@@ -114,7 +110,6 @@ pub enum Equipment {
     None,
     Dumbbell,
     Kettlebell,
-    Barbell,
     MedicineBall,
     ResistanceBand,
     JumpRope,
@@ -140,6 +135,8 @@ pub enum Body {
     Pectorals,
     Legs,
     Hip,
+    Shoulder,
+    Buttocks,
 }
 
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -149,7 +146,7 @@ pub enum Mouvement {
     Balance,
     Rotation,
     Stamina,
-    Strengthening,
+    Strength,
     Stationary,
     Stretching,
     Dynamic,
@@ -157,17 +154,17 @@ pub enum Mouvement {
 }
 
 impl Mouvement {
-    pub fn icon(&self) -> String {
+    pub fn icon(&self) -> char {
         match self {
-            Self::Balance => "🛹".to_owned(),
-            Self::Coordination => "🤹🏼".to_owned(),
-            Self::Rotation => "💫".to_owned(),
-            Self::Stamina => "💓".to_owned(),
-            Self::Strengthening => "🏋".to_owned(),
-            Self::Stationary => "🤸🏼".to_owned(),
-            Self::Stretching => "🪢".to_owned(),
-            Self::Dynamic => "🏃".to_owned(),
-            Self::Footwork => "👣".to_owned(),
+            Self::Balance => '🛹',
+            Self::Coordination => '🤹',
+            Self::Rotation => '💫',
+            Self::Stamina => '💓',
+            Self::Strength => '💪',
+            Self::Stationary => '🙌',
+            Self::Stretching => '🪢',
+            Self::Dynamic => '🏃',
+            Self::Footwork => '👣',
         }
     }
 }

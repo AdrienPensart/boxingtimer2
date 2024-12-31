@@ -6,7 +6,7 @@ use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
 use bon::{bon, Builder};
-use derive_more::{Deref, DerefMut, IntoIterator};
+use derive_more::{Deref, DerefMut, Display};
 use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
@@ -34,8 +34,20 @@ pub fn all_sequences() -> Vec<Sequence> {
 }
 
 #[derive(
-    Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut, Builder, Serialize, Deserialize, Hash,
+    Display,
+    Debug,
+    Default,
+    PartialEq,
+    Eq,
+    Clone,
+    Deref,
+    DerefMut,
+    Builder,
+    Serialize,
+    Deserialize,
+    Hash,
 )]
+#[display("{}{name}", icon.unwrap_or('‎'))]
 pub struct Sequence {
     #[builder(into)]
     name: String,
@@ -70,6 +82,9 @@ impl Sequence {
             serde_json::to_string(&self).unwrap()
         );
         SEQUENCES.write().unwrap().insert(self.clone());
+        for workout in self.workouts.iter() {
+            workout.register();
+        }
         self
     }
 
@@ -191,11 +206,6 @@ impl Sequence {
             return None;
         }
 
-        // if let Some(position) = self.position.checked_sub(1) {
-        //     self.position = position
-        // } else {
-        //     self.position = self.items.len() - 1
-        // }
         #[allow(clippy::manual_inspect)]
         self.workouts.previous_mut().map(|p| {
             p.reset();
@@ -302,18 +312,6 @@ impl Sequence {
     }
     pub fn shufflable(&self) -> bool {
         self.shuffleable
-    }
-}
-
-impl std::fmt::Display for Sequence {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let tags = self.tags().into_iter().join(",");
-        let name = self.name();
-        if name.contains(&tags) {
-            write!(f, "{name}")
-        } else {
-            write!(f, "{name} ({tags})")
-        }
     }
 }
 

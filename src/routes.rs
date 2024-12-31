@@ -93,6 +93,7 @@ pub fn ItemsHome(tag: String) -> Element {
             .collect_vec()
     };
     rsx! {
+        span { {format!("Items: {}", items.len())} }
         ul { id: "items",
             for item in items.iter() {
                 li { id: format!("item_{}", item.slug()),
