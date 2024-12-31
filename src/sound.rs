@@ -1,12 +1,15 @@
 use crate::errors::TimerErrorKind;
 use derive_more::Display;
 use dioxus::logger::tracing::info;
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 use web_sys::wasm_bindgen::JsCast;
 
-#[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
+#[derive(Debug, Display, Default, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
+#[serde(rename_all = "snake_case")]
 pub enum Sound {
-    Silent,
     #[default]
+    Silent,
     Bell,
     Beep,
 }
@@ -49,7 +52,7 @@ impl Sound {
     }
     pub fn play(&self) -> Result<(), TimerErrorKind> {
         if self.is_silent() {
-            gloo::dialogs::alert("Sequence is silent");
+            gloo::dialogs::alert("sequence is silent");
             return Ok(());
         }
         let promise = self.audio()?.play()?;
@@ -60,5 +63,25 @@ impl Sound {
             }
         });
         Ok(())
+    }
+}
+
+#[component]
+pub fn Sounds() -> Element {
+    rsx! {
+        div { id: "sounds",
+            audio {
+                id: Sound::Bell.to_string(),
+                src: asset!("/assets/Bell.mp3"),
+                preload: "auto",
+                autoplay: false,
+            }
+            audio {
+                id: Sound::Beep.to_string(),
+                src: asset!("/assets/Beep.mp3"),
+                preload: "auto",
+                autoplay: false,
+            }
+        }
     }
 }

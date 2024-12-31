@@ -1,8 +1,13 @@
 use derive_more::{Deref, IntoIterator};
 use rand::seq::SliceRandom;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, Clone, Debug, Hash, Deref, IntoIterator, Default)]
-pub struct IndexedVec<T> {
+#[derive(
+    PartialEq, Eq, Clone, Debug, Hash, Deref, IntoIterator, Default, Serialize, Deserialize,
+)]
+#[serde(transparent)]
+pub struct IndexedVec<T: Clone + PartialEq> {
+    #[serde(skip)]
     index: Option<usize>,
     #[deref]
     #[into_iterator(ref)]
@@ -37,6 +42,9 @@ impl<T> IndexedVec<T>
 where
     T: std::clone::Clone + std::cmp::PartialEq,
 {
+    pub fn store(&self) -> &Vec<T> {
+        &self.store
+    }
     pub fn apply<F: FnMut(&mut T)>(&mut self, f: F) {
         self.store.iter_mut().for_each(f)
     }
@@ -69,13 +77,11 @@ where
         self.index = None;
     }
     pub fn shuffle(&mut self) {
-        let mut rng = rand::thread_rng();
-        self.store.shuffle(&mut rng);
+        self.store.shuffle(&mut rand::thread_rng())
     }
     pub fn shuffled(&mut self) -> Vec<T> {
-        let mut rng = rand::thread_rng();
         let mut store = self.store.clone();
-        store.shuffle(&mut rng);
+        store.shuffle(&mut rand::thread_rng());
         store
     }
     pub fn get(&self) -> Option<&T> {

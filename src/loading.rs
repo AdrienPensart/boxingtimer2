@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[component]
-pub(crate) fn ChildrenOrLoading(children: Element) -> Element {
+pub fn ChildrenOrLoading(children: Element) -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("/assets/loading.css") }
         SuspenseBoundary {

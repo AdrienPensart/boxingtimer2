@@ -1,11 +1,10 @@
+use std::{cell::RefCell, rc::Rc};
 use crate::sound::Sound;
 use derive_more::Display;
 use dioxus::logger::tracing::info;
-use dioxus::prelude::*;
-use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
-pub enum TimerState {
+pub enum SoundState {
     #[default]
     #[display("🔊")]
     Enabled,
@@ -13,9 +12,10 @@ pub enum TimerState {
     Disabled,
 }
 
-impl TimerState {
+impl SoundState {
     pub fn toggle(&mut self) {
-        *self = self.next()
+        *self = self.next();
+        info!("signal {self}");
     }
     pub fn next(&self) -> Self {
         match self {
@@ -31,38 +31,46 @@ impl TimerState {
     }
 }
 
-#[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
-#[display("{sound}")]
+pub type SharedSoundState = Rc<RefCell<SoundState>>;
+
+#[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct SoundSignal {
-    sound: Sound,
-    state: Rc<RefCell<TimerState>>,
+    state: SharedSoundState,
 }
 
 impl SoundSignal {
-    pub fn none() -> Self {
-        Self::new(Sound::Silent, Rc::new(RefCell::new(TimerState::Disabled)))
+    pub fn from_muted(muted: bool) -> Self {
+        let state = if muted {
+            SoundState::Disabled
+        } else {
+            SoundState::Enabled
+        };
+        Self::new(Rc::new(RefCell::new(state)))
     }
-    pub fn new(sound: Sound, state: Rc<RefCell<TimerState>>) -> Self {
-        Self { sound, state }
+    pub fn new(state: SharedSoundState) -> Self {
+        Self { state }
     }
     pub fn toggle(&mut self) {
         self.state.borrow_mut().toggle();
     }
-    pub fn ring(&self) {
+    pub fn ring(&self, sound: &Sound) {
         if self.enabled() {
-            info!("signal {} ring", self.sound);
-            if let Err(error) = self.sound.play() {
-                info!("unable to play {} : {error}", self.sound);
+            info!("signal {sound} ring");
+            if let Err(error) = sound.play() {
+                info!("unable to play {sound} : {error}");
             }
         }
     }
-    pub fn always_ring(&self) {
-        info!("signal {} ring (always)", self.sound);
-        if let Err(error) = self.sound.play() {
-            info!("unable to play {} (always): {error}", self.sound);
+    pub fn always_ring(&self, sound: &Sound) {
+        info!("signal {sound} ring (always)");
+        if let Err(error) = sound.play() {
+            info!("unable to play {sound} (always): {error}");
         }
     }
-    pub fn next(&self) -> TimerState {
+    pub fn state(&self) -> SoundState {
+        self.state.borrow().clone()
+    }
+    pub fn next(&self) -> SoundState {
         self.state.borrow().next()
     }
     pub fn enabled(&self) -> bool {
@@ -70,28 +78,5 @@ impl SoundSignal {
     }
     pub fn disabled(&self) -> bool {
         !self.enabled()
-    }
-    pub fn sound(&self) -> &Sound {
-        &self.sound
-    }
-}
-
-#[component]
-pub fn Sounds(bell: SoundSignal, beep: SoundSignal) -> Element {
-    rsx! {
-        div { id: "sounds",
-            audio {
-                id: bell.to_string(),
-                src: asset!("/assets/Bell.mp3"),
-                preload: "auto",
-                autoplay: false,
-            }
-            audio {
-                id: beep.to_string(),
-                src: asset!("/assets/Beep.mp3"),
-                preload: "auto",
-                autoplay: false,
-            }
-        }
     }
 }

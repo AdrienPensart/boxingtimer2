@@ -1,0 +1,2068 @@
+[
+  {
+    "name": "Warm-up (9:00 total)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Head Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Shoulder Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Arms Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Elbows Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Wrists Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Hips Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Knees Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Feet Rotation",
+          "tags": ["warm_up", "rotation"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Heels Raises",
+          "tags": ["warm_up"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Leg Swings",
+          "tags": ["warm_up"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Side Leg Swings",
+          "tags": ["warm_up"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Single Leg Touch Toes",
+          "tags": ["warm_up", "stretching"]
+        },
+        "duration": 20,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Butt Kicks",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "High Knees",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Mountain Climber",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Squat",
+          "tags": ["dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "medium"
+      },
+      {
+        "item": {
+          "name": "Push Up",
+          "tags": ["dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "medium"
+      },
+      {
+        "item": {
+          "name": "Speed Step",
+          "tags": ["dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Alternate Step",
+          "tags": ["dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Lunge",
+          "tags": ["dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "medium"
+      },
+      {
+        "item": {
+          "name": "Burpee",
+          "tags": ["dynamic"]
+        },
+        "duration": 30,
+        "difficulty": "medium"
+      }
+    ],
+    "sound": "silent",
+    "icon": "🔥"
+  },
+  {
+    "name": "Warm-up (6:00 total)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "High Knees",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Butt Kicks",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Alternate Step",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Mountain Climber",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Squat",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Lunge",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jump Squat",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Lunge",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "medium"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumps",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Push Up",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Commando Plank",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      },
+      {
+        "item": {
+          "name": "Burpee",
+          "tags": ["dynamic"]
+        },
+        "duration": 15,
+        "difficulty": "easy"
+      }
+    ],
+    "sound": "beep",
+    "icon": "💓"
+  },
+  {
+    "name": "1m/5x Workout (30s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      }
+    ],
+    "sound": "beep",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "1m/10x Workout (30s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      }
+    ],
+    "sound": "beep",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "1m/15x Workout (30s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      }
+    ],
+    "sound": "beep",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "3x2m (30s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "easy",
+    "icon": "🥊"
+  },
+  {
+    "name": "3x3m (60s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "easy",
+    "icon": "🥊"
+  },
+  {
+    "name": "6x2m (30s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 120
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "6x3m (60s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 180
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 180
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 180
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 180
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 180
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Boxing Round",
+          "tags": ["boxing"],
+          "icon": "🥊"
+        },
+        "duration": 180
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "hard"
+  },
+  {
+    "name": "Stamina 30s 1-2-3 (60s rest)",
+    "description": "1 | 2 | 1-2 | 1-2-3",
+    "workouts": [
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Cross (2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Cross (2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Cross (2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Cross (2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "Stamina 30s 1-1-2-2 (60s rest)",
+    "description": "1 | 1-1 | 1-1-2 | 1-1-2-2",
+    "workouts": [
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab (1-1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross (1-1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab (1-1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross (1-1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab (1-1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross (1-1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab (1-1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross (1-1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Double Jab | Cross | Cross"
+        },
+        "duration": 30
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "Stamina 30s 1-2-3-2 (60s rest)",
+    "description": "1 | 1-2 | 1-2-3 | 1-2-3-2",
+    "workouts": [
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | Cross (1-2-3-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | Cross (1-2-3-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | Cross (1-2-3-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab (1)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross (1-2)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook (1-2-3)"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | Cross (1-2-3-2)"
+        },
+        "duration": 30
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "medium",
+    "icon": "🥊"
+  },
+  {
+    "name": "Stamina 30s 1-2-3-ROLL-3-2 (60s rest)",
+    "description": "1-2-3 | 1-2-3-ROLL | 1-2-3-ROLL-3 | 1-2-3-ROLL-3-2",
+    "workouts": [
+      {
+        "item": {
+          "name": "Jab | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | Hook | ROLL | Hook | Cross"
+        },
+        "duration": 30
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "hard",
+    "icon": "🥊"
+  },
+  {
+    "name": "Stamina 30s 1-2-ROLL-2-3-2 (60s rest)",
+    "description": "1-2-ROLL | 1-2-ROLL-2 | 1-2-ROLL-2-3 | 1-2-ROLL-2-3-2",
+    "workouts": [
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 60
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook"
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jab | Cross | ROLL | Cross | Hook | Cross"
+        },
+        "duration": 30
+      }
+    ],
+    "sound": "bell",
+    "difficulty": "hard",
+    "icon": "🥊"
+  },
+  {
+    "name": "Half-Tabata 20s (4x) (10s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      }
+    ],
+    "sound": "beep",
+    "difficulty": "medium",
+    "icon": "🧨"
+  },
+  {
+    "name": "Tabata 20s (8x) (10s rest)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 10
+      },
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 20
+      }
+    ],
+    "sound": "beep",
+    "difficulty": "hard",
+    "icon": "🧨"
+  },
+  {
+    "name": "Random training (30s)",
+    "workouts": [
+      {
+        "item": {
+          "name": "Crunches",
+          "tags": ["abs"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jump Squat",
+          "tags": ["dynamic"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Pull Up",
+          "tags": ["dynamic"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Lunge",
+          "tags": ["dynamic"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Jumping Jack",
+          "tags": ["warm_up", "dynamic"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Push Up",
+          "tags": ["dynamic"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Side Plank",
+          "tags": ["stationary"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Plank",
+          "tags": ["stationary", "core"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Rest",
+          "tags": ["rest"]
+        },
+        "duration": 30
+      },
+      {
+        "item": {
+          "name": "Burpee",
+          "tags": ["dynamic"]
+        },
+        "duration": 30
+      }
+    ],
+    "sound": "beep",
+    "rest": {
+      "secs": 30,
+      "nanos": 0
+    },
+    "shuffleable": true,
+    "icon": "🎲"
+  },
+  {
+    "name": "Workout (60s)",
+    "description": "Generic workout",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 60
+      }
+    ],
+    "sound": "bell"
+  },
+  {
+    "name": "Workout (2:00)",
+    "description": "Generic workout",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 120
+      }
+    ],
+    "sound": "bell"
+  },
+  {
+    "name": "Workout (3:00)",
+    "description": "Generic workout",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 180
+      }
+    ],
+    "sound": "bell"
+  },
+  {
+    "name": "Workout (5:00)",
+    "description": "Generic workout",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 300
+      }
+    ],
+    "sound": "bell"
+  },
+  {
+    "name": "Workout (10:00)",
+    "description": "Generic workout",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 600
+      }
+    ],
+    "sound": "bell"
+  },
+  {
+    "name": "Workout (15:00)",
+    "description": "Generic workout",
+    "workouts": [
+      {
+        "item": {
+          "name": "Workout",
+          "description": "Generic workout",
+          "icon": "🎯"
+        },
+        "duration": 900
+      }
+    ],
+    "sound": "bell"
+  }
+]

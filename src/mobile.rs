@@ -2,43 +2,33 @@ use crate::defaults;
 use crate::duration::DurationExt;
 use crate::mobiletimer;
 use crate::routes;
-use crate::signal;
-use crate::signal::{SoundSignal, TimerState};
-use crate::sound::Sound;
-use defaults::default_sequences;
+use crate::sequence::all_sequences;
+use crate::signal::SoundSignal;
+use crate::sound;
 use dioxus::prelude::*;
-use std::{cell::RefCell, rc::Rc};
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct Global {
     pub timer: dioxus::signals::Signal<mobiletimer::MobileTimer>,
-    pub state: dioxus::signals::Signal<Rc<RefCell<TimerState>>>,
-    pub bell: SoundSignal,
-    pub beep: SoundSignal,
+    pub sound_signal: dioxus::signals::Signal<SoundSignal>,
 }
 
 impl Global {
     pub fn new(muted: bool, prepare: u64, sequence: String) -> Option<Self> {
-        let state = if muted {
-            TimerState::Disabled
-        } else {
-            TimerState::Enabled
-        };
         let prepare = if prepare == 0 {
             defaults::PREPARE
         } else {
             prepare
         };
-        let state = Rc::new(RefCell::new(state));
-
-        let silent = SoundSignal::new(Sound::Silent, state.clone());
-        let bell = SoundSignal::new(Sound::Bell, state.clone());
-        let beep = SoundSignal::new(Sound::Beep, state.clone());
-        let sequences = &defaults::default_sequences(&bell, &beep, &silent);
+        let sequences = all_sequences();
         let sequence = sequences.iter().find(|s| s.slug() == sequence)?;
-
+        let sound_signal = SoundSignal::from_muted(muted);
         let mut timer = use_signal(|| {
-            mobiletimer::MobileTimer::new(std::time::Duration::from_secs(prepare), sequence)
+            mobiletimer::MobileTimer::new(
+                std::time::Duration::from_secs(prepare),
+                sequence,
+                &sound_signal,
+            )
         });
 
         let _tick = use_resource(move || async move {
@@ -51,9 +41,7 @@ impl Global {
         });
 
         Some(Self {
-            state: use_signal(|| state.clone()),
-            bell,
-            beep,
+            sound_signal: use_signal(|| sound_signal),
             timer,
         })
     }
@@ -61,15 +49,11 @@ impl Global {
 
 #[component]
 pub fn MobileHome() -> Element {
-    let sequences = default_sequences(
-        &SoundSignal::none(),
-        &SoundSignal::none(),
-        &SoundSignal::none(),
-    );
+    let sequences = all_sequences();
     rsx! {
         ul { id: "sequences",
             for sequence in sequences.iter() {
-                li { id: format!("sequence_ {}", sequence.slug()),
+                li { id: format!("sequence_{}", sequence.slug()),
                     Link {
                         to: routes::Route::MobileTimer {
                             sequence: sequence.slug(),
@@ -87,7 +71,7 @@ pub fn MobileHome() -> Element {
                 muted: false,
                 sequence: "".to_string(),
             },
-            {"Home"}
+            {"Web Home"}
         }
     }
 }
@@ -103,7 +87,7 @@ pub fn MobileTimer(sequence: String) -> Element {
     let mut global = use_context_provider(|| global);
 
     rsx! {
-        signal::Sounds { bell: global.bell, beep: global.beep }
+        sound::Sounds {}
         MobileControls {}
         div { id: "timer", class: "flex justify-evenly text-3xl p-2",
             button {
@@ -181,12 +165,12 @@ pub fn MobileControls() -> Element {
                     {defaults::RANDOMIZE}
                 }
             }
-            if !global.timer.read().sequence().signal().sound().is_silent() {
+            if !global.timer.read().sequence().sound().is_silent() {
                 button {
                     id: "toggle_signal",
                     class: "text-3xl",
-                    onclick: move |_| global.state.with_mut(|s| s.borrow_mut().toggle()),
-                    {global.state.read().borrow().next().to_string()}
+                    onclick: move |_| global.sound_signal.with_mut(|s| s.toggle()),
+                    {global.sound_signal.read().next().to_string()}
                 }
                 button {
                     id: "emit_signal",

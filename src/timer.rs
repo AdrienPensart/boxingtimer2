@@ -2,28 +2,37 @@ use crate::defaults;
 use crate::duration::DurationExt;
 use crate::indexedvec::IndexedVec;
 use crate::sequence::Sequence;
+use crate::signal::SoundSignal;
 use crate::status::Status;
 use crate::stopwatch::Stopwatch;
 use dioxus::logger::tracing::info;
 
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct Timer {
     status: Status,
     sequences: IndexedVec<Sequence>,
     preparation: Stopwatch,
     elapsed: std::time::Duration,
     changed: bool,
+    sound_signal: SoundSignal,
 }
 
 impl Timer {
-    pub fn from_sequence(sequence: Sequence) -> Self {
-        Self::new(defaults::PREPARE_DURATION, &[sequence])
+    pub fn from_sequence(sequence: Sequence, sound_signal: &SoundSignal) -> Self {
+        Self::new(defaults::PREPARE_DURATION, &[sequence], sound_signal)
     }
-    pub fn new(preparation: std::time::Duration, sequences: &[Sequence]) -> Self {
+    pub fn new(
+        preparation: std::time::Duration,
+        sequences: &[Sequence],
+        sound_signal: &SoundSignal,
+    ) -> Self {
         Self {
             preparation: Stopwatch::from(preparation),
             sequences: sequences.into(),
-            ..Default::default()
+            changed: false,
+            sound_signal: sound_signal.clone(),
+            status: Status::default(),
+            elapsed: std::time::Duration::default(),
         }
     }
     pub fn left(&self) -> &std::time::Duration {
@@ -39,7 +48,7 @@ impl Timer {
     }
     pub fn always_ring(&self) {
         if let Some(sequence) = self.sequences.get() {
-            sequence.signal().always_ring();
+            let _ = sequence.sound().play();
         }
     }
     pub fn set_sequence_by_slug(&mut self, slug: &str) {
@@ -95,22 +104,22 @@ impl Timer {
         };
 
         if sequence.get().is_none() && self.preparation.decrement() {
-            if sequence.signal().sound().is_beep() && self.preparation.last_seconds() {
-                sequence.signal().ring();
+            if sequence.sound().is_beep() && self.preparation.last_seconds() {
+                self.sound_signal.ring(sequence.sound());
             }
             return false;
         }
         self.preparation.reset();
 
         if sequence.decrement() {
-            if sequence.signal().sound().is_beep() && sequence.last_seconds() {
-                sequence.signal().ring();
+            if sequence.sound().is_beep() && sequence.last_seconds() {
+                self.sound_signal.ring(sequence.sound());
             }
             return false;
         }
 
-        if !sequence.is_empty() && sequence.signal().sound().is_bell() {
-            sequence.signal().ring();
+        if !sequence.is_empty() && sequence.sound().is_bell() {
+            self.sound_signal.ring(sequence.sound());
         }
         info!("goto next");
         if sequence.auto_next().is_some() {
@@ -181,25 +190,25 @@ impl Timer {
 #[test]
 fn timer_tests() {
     use crate::duration::SECOND;
-    use crate::item;
-    use crate::signal::SoundSignal;
-    let none = SoundSignal::none();
+    use crate::item::Item;
+    use crate::sound::Sound;
     let preparation = std::time::Duration::from_secs(5);
-    let warm_up = item::WARM_UP.workout(3 * SECOND);
+    let warm_up = Item::builder().name("test").build().workout(3 * SECOND);
     let first_sequence = Sequence::simple()
         .name("first sequence")
         .workouts(&[warm_up.clone()])
-        .signal(&none)
+        .sound(&Sound::Silent)
         .call();
 
     let second_sequence = Sequence::simple()
         .name("double sequence")
         .workouts(&[warm_up.clone()])
-        .signal(&none)
+        .sound(&Sound::Silent)
         .call();
     let mut timer = Timer::new(
         preparation,
         &[first_sequence.clone(), second_sequence.clone()],
+        &SoundSignal::default(),
     );
 
     assert_eq!(timer.sequences.get(), None);

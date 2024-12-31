@@ -1,27 +1,35 @@
 use crate::defaults;
 use crate::sequence::Sequence;
+use crate::signal::SoundSignal;
 use crate::status::Status;
 use crate::stopwatch::Stopwatch;
 use crate::workout::Workout;
 use dioxus::logger::tracing::info;
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct MobileTimer {
     status: Status,
     sequence: Sequence,
     preparation: Stopwatch,
     changed: bool,
+    sound_signal: SoundSignal,
 }
 
 impl MobileTimer {
-    pub fn from_sequence(sequence: &Sequence) -> Self {
-        Self::new(defaults::PREPARE_DURATION, sequence)
+    pub fn from_sequence(sequence: &Sequence, sound_signal: &SoundSignal) -> Self {
+        Self::new(defaults::PREPARE_DURATION, sequence, sound_signal)
     }
-    pub fn new(preparation: std::time::Duration, sequence: &Sequence) -> Self {
+    pub fn new(
+        preparation: std::time::Duration,
+        sequence: &Sequence,
+        sound_signal: &SoundSignal,
+    ) -> Self {
         Self {
             preparation: Stopwatch::from(preparation),
             sequence: sequence.clone(),
-            ..Default::default()
+            changed: false,
+            sound_signal: sound_signal.clone(),
+            status: Status::default(),
         }
     }
     pub fn left(&self) -> &std::time::Duration {
@@ -34,7 +42,7 @@ impl MobileTimer {
         &self.sequence
     }
     pub fn always_ring(&self) {
-        self.sequence.signal().always_ring();
+        let _ = self.sequence.sound().play();
     }
     pub fn restart_sequence(&mut self) {
         self.preparation.reset();
@@ -55,22 +63,22 @@ impl MobileTimer {
         }
 
         if self.sequence.get().is_none() && self.preparation.decrement() {
-            if self.sequence.signal().sound().is_beep() && self.preparation.last_seconds() {
-                self.sequence.signal().ring();
+            if self.sequence.sound().is_beep() && self.preparation.last_seconds() {
+                self.sound_signal.ring(self.sequence.sound());
             }
             return false;
         }
         self.preparation.reset();
 
         if self.sequence.decrement() {
-            if self.sequence.signal().sound().is_beep() && self.sequence.last_seconds() {
-                self.sequence.signal().ring();
+            if self.sequence.sound().is_beep() && self.sequence.last_seconds() {
+                self.sound_signal.ring(self.sequence.sound());
             }
             return false;
         }
 
-        if !self.sequence.is_empty() && self.sequence.signal().sound().is_bell() {
-            self.sequence.signal().ring();
+        if !self.sequence.is_empty() && self.sequence.sound().is_bell() {
+            self.sound_signal.ring(self.sequence.sound());
         }
         info!("goto next");
         if self.sequence.auto_next().is_some() {

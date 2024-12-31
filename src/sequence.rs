@@ -1,7 +1,7 @@
 use crate::duration::DurationExt;
 use crate::exercises::Exercises;
 use crate::indexedvec::IndexedVec;
-use crate::signal::SoundSignal;
+use crate::sound::Sound;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
@@ -10,23 +10,53 @@ use derive_more::{Deref, DerefMut, IntoIterator};
 use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
+use serde::{Deserialize, Serialize};
 use slug::slugify;
+use std::collections::HashSet;
+use std::ops::Not;
+use std::sync::{LazyLock, RwLock};
 
-#[derive(Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut, Builder)]
+pub static SEQUENCES: LazyLock<RwLock<HashSet<Sequence>>> =
+    LazyLock::new(|| RwLock::new(HashSet::new()));
+
+// pub fn all_sequences() -> Vec<Sequence> {
+//     SEQUENCES
+//         .read()
+//         .unwrap()
+//         .iter()
+//         .cloned()
+//         .sorted_by(|a, b| a.to_string().cmp(&b.to_string()))
+//         .collect_vec()
+// }
+
+pub fn all_sequences() -> Vec<Sequence> {
+    crate::defaults::default_sequences()
+}
+
+#[derive(
+    Debug, Default, PartialEq, Eq, Clone, Deref, DerefMut, Builder, Serialize, Deserialize, Hash,
+)]
 pub struct Sequence {
     #[builder(into)]
     name: String,
     #[builder(into)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     description: Option<String>,
     #[deref]
     #[deref_mut]
     #[builder(into)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     workouts: IndexedVec<Workout>,
-    signal: SoundSignal,
+    sound: Sound,
+    #[serde(skip_serializing_if = "Option::is_none")]
     rest: Option<std::time::Duration>,
     #[builder(default)]
-    shufflable: bool,
+    #[serde(default, skip_serializing_if = "<&bool>::not")]
+    shuffleable: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     difficulty: Option<Difficulty>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    icon: Option<char>,
 }
 
 type Rounds = usize;
@@ -34,14 +64,24 @@ pub static ROUNDS: Rounds = 1;
 
 #[bon]
 impl Sequence {
+    pub fn register(self) -> Self {
+        info!(
+            "registering sequence: {}",
+            serde_json::to_string(&self).unwrap()
+        );
+        SEQUENCES.write().unwrap().insert(self.clone());
+        self
+    }
+
     #[builder]
     pub fn random(
         name: &str,
         description: Option<&str>,
         workouts: &[Workout],
         rest: std::time::Duration,
-        signal: &SoundSignal,
+        sound: &Sound,
         difficulty: Option<Difficulty>,
+        icon: Option<char>,
     ) -> Self {
         let mut workouts = workouts.to_vec();
         workouts.shuffle(&mut rand::thread_rng());
@@ -51,10 +91,11 @@ impl Sequence {
             name: name.into(),
             description: description.map(str::to_string),
             workouts: workouts.into(),
-            signal: signal.clone(),
+            sound: sound.clone(),
             rest: Some(rest),
-            shufflable: true,
+            shuffleable: true,
             difficulty,
+            icon,
         }
     }
     #[builder]
@@ -62,8 +103,9 @@ impl Sequence {
         name: &str,
         description: Option<&str>,
         workouts: &[Workout],
-        signal: &SoundSignal,
+        sound: &Sound,
         difficulty: Option<Difficulty>,
+        icon: Option<char>,
     ) -> Self {
         let total = std::time::Duration::from_secs(
             workouts
@@ -75,10 +117,11 @@ impl Sequence {
             name: format!("{name} ({} total)", total.to_string()),
             description: description.map(str::to_string),
             workouts: IndexedVec::from(workouts),
-            signal: signal.clone(),
+            sound: sound.clone(),
             rest: None,
-            shufflable: false,
+            shuffleable: false,
             difficulty,
+            icon,
         }
     }
     #[builder]
@@ -90,8 +133,9 @@ impl Sequence {
         workout: std::time::Duration,
         rounds: Rounds,
         rest: std::time::Duration,
-        signal: &SoundSignal,
+        sound: &Sound,
         difficulty: Option<Difficulty>,
+        icon: Option<char>,
     ) -> Self {
         #[allow(unstable_name_collisions)]
         let workouts = std::iter::repeat(exercises.workouts(workout))
@@ -103,10 +147,11 @@ impl Sequence {
             name: format!("{name} ({}s rest)", rest.as_secs()),
             description: description.map(str::to_string),
             workouts: workouts.into(),
-            signal: signal.clone(),
+            sound: sound.clone(),
             rest: None,
-            shufflable: false,
+            shuffleable: false,
             difficulty,
+            icon,
         }
     }
     #[builder]
@@ -116,8 +161,9 @@ impl Sequence {
         rounds: Rounds,
         workout: Workout,
         rest: std::time::Duration,
-        signal: &SoundSignal,
+        sound: &Sound,
         difficulty: Option<Difficulty>,
+        icon: Option<char>,
     ) -> Self {
         #[allow(unstable_name_collisions)]
         let workouts = std::iter::repeat(workout)
@@ -128,10 +174,11 @@ impl Sequence {
             name: format!("{name} ({}s rest)", rest.as_secs()),
             description: description.map(str::to_string),
             workouts: workouts.into(),
-            signal: signal.clone(),
+            sound: sound.clone(),
             rest: None,
-            shufflable: false,
+            shuffleable: false,
             difficulty,
+            icon,
         }
     }
     pub fn slug(&self) -> String {
@@ -237,12 +284,12 @@ impl Sequence {
             .unique()
             .collect_vec()
     }
-    pub fn signal(&self) -> &SoundSignal {
-        &self.signal
+    pub fn sound(&self) -> &Sound {
+        &self.sound
     }
     pub fn shuffle(&mut self) {
-        if self.shufflable {
-            // it was interspersed with rest, rebuild sequence
+        if self.shuffleable {
+            // if it was interspersed with rest, rebuild sequence
             if let Some(rest) = self.rest {
                 let rest = Workout::rest(rest);
                 self.workouts.retain(&rest);
@@ -254,7 +301,7 @@ impl Sequence {
         }
     }
     pub fn shufflable(&self) -> bool {
-        self.shufflable
+        self.shuffleable
     }
 }
 
@@ -273,15 +320,13 @@ impl std::fmt::Display for Sequence {
 #[test]
 fn sequence_simple_tests() {
     use crate::duration::SECOND;
-    use crate::item::{HEAD_ROTATION, WORKOUT};
-    use crate::signal::SoundSignal;
-    let none = SoundSignal::none();
-    let warm_up = HEAD_ROTATION.workout(3 * SECOND);
-    let workout = WORKOUT.workout(6 * SECOND);
+    use crate::item::Item;
+    let warm_up = Item::builder().name("warm up").build().workout(3 * SECOND);
+    let workout = Item::builder().name("workout").build().workout(6 * SECOND);
     let mut simple = Sequence::simple()
         .name("simple sequence")
         .workouts(&[warm_up.clone(), workout.clone()])
-        .signal(&none)
+        .sound(&Sound::Silent)
         .call();
 
     assert!(simple.auto_next().is_some());

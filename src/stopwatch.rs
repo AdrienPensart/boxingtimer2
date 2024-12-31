@@ -1,17 +1,22 @@
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
+use serde_with::DurationSeconds;
+
 use crate::duration::DurationExt;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Hash)]
+#[serde_as]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct Stopwatch {
+    #[serde_as(as = "DurationSeconds<u64>")]
     duration: std::time::Duration,
+    #[serde(skip)]
     left: std::time::Duration,
+    #[serde(skip)]
     elapsed: std::time::Duration,
 }
 
 impl Stopwatch {
-    pub fn set(&mut self, duration: std::time::Duration) {
-        self.duration = duration;
-        self.left = duration;
-    }
     pub fn reset(&mut self) -> &mut Self {
         self.left = self.duration;
         self
