@@ -1,11 +1,12 @@
-use crate::defaults;
-use crate::duration::DurationExt;
-use crate::indexedvec::IndexedVec;
-use crate::sequence::Sequence;
+use crate::audio;
 use crate::signal::SoundSignal;
 use crate::status::Status;
-use crate::stopwatch::Stopwatch;
 use dioxus::logger::tracing::info;
+use sport::defaults;
+use sport::duration::DurationExt;
+use sport::indexedvec::IndexedVec;
+use sport::sequence::Sequence;
+use sport::stopwatch::Stopwatch;
 
 #[derive(Clone)]
 pub struct Timer {
@@ -48,7 +49,7 @@ impl Timer {
     }
     pub fn always_ring(&self) {
         if let Some(sequence) = self.sequences.get() {
-            let _ = sequence.sound().play();
+            let _ = audio::play(sequence.sound());
         }
     }
     pub fn set_sequence_by_slug(&mut self, slug: &str) {
@@ -189,9 +190,9 @@ impl Timer {
 
 #[test]
 fn timer_tests() {
-    use crate::duration::SECOND;
-    use crate::item::Item;
-    use crate::sound::Sound;
+    use sport::duration::SECOND;
+    use sport::item::Item;
+    use sport::sound::Sound;
     let preparation = std::time::Duration::from_secs(5);
     let warm_up = Item::builder().name("test").build().workout(3 * SECOND);
     let first_sequence = Sequence::simple()

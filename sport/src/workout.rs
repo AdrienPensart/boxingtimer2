@@ -1,6 +1,6 @@
-use crate::defaults::REST;
 use crate::duration::DurationExt;
 use crate::item::Item;
+use crate::item_list::ItemList;
 use crate::sequence::Sequence;
 use crate::sound::Sound;
 use crate::stopwatch::Stopwatch;
@@ -46,9 +46,6 @@ impl std::fmt::Display for Workout {
 }
 
 impl Workout {
-    pub fn register(&self) {
-        self.item.clone().register();
-    }
     pub fn sequence(&self, sound: &Sound) -> Sequence {
         Sequence::builder()
             .name(format!(
@@ -63,7 +60,7 @@ impl Workout {
             .build()
     }
     pub fn rest(duration: std::time::Duration) -> Self {
-        REST.workout(duration)
+        ItemList::Rest.workout(duration)
     }
     pub fn stopwatch(&self) -> &Stopwatch {
         &self.stopwatch

@@ -1,23 +1,14 @@
 #![allow(non_snake_case)]
-pub mod defaults;
-pub mod duration;
+pub mod audio;
 pub mod errors;
-pub mod exercises;
-pub mod indexedvec;
-pub mod item;
 pub mod loading;
 pub mod mobile;
 pub mod mobiletimer;
 pub mod routes;
-pub mod sequence;
 pub mod signal;
-pub mod sound;
 pub mod status;
-pub mod stopwatch;
-pub mod tag;
 pub mod timer;
 pub mod web;
-pub mod workout;
 
 use dioxus::logger::tracing::Level;
 use dioxus::prelude::*;

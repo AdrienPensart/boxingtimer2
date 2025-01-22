@@ -1,10 +1,11 @@
-use crate::defaults;
-use crate::sequence::Sequence;
+use crate::audio;
 use crate::signal::SoundSignal;
 use crate::status::Status;
-use crate::stopwatch::Stopwatch;
-use crate::workout::Workout;
 use dioxus::logger::tracing::info;
+use sport::defaults;
+use sport::sequence::Sequence;
+use sport::stopwatch::Stopwatch;
+use sport::workout::Workout;
 
 #[derive(Debug)]
 pub struct MobileTimer {
@@ -42,7 +43,7 @@ impl MobileTimer {
         &self.sequence
     }
     pub fn always_ring(&self) {
-        let _ = self.sequence.sound().play();
+        let _ = audio::play(self.sequence.sound());
     }
     pub fn restart_sequence(&mut self) {
         self.preparation.reset();

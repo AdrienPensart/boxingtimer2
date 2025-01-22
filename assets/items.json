@@ -1,8 +1,448 @@
 [
   {
-    "name": "Warm Up",
-    "description": "Generic warm-up",
-    "icon": "🔥"
+    "name": "Alternate Step",
+    "tags": [
+      "dynamic",
+      "footwork"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Arms Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Box Jump",
+    "tags": [
+      "abs",
+      "core",
+      "box"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Boxing Round",
+    "tags": [
+      "round",
+      "stamina",
+      "full"
+    ],
+    "icon": "🥊"
+  },
+  {
+    "name": "Burpee",
+    "tags": [
+      "dynamic",
+      "full",
+      "stamina"
+    ],
+    "difficulty": "medium",
+    "icon": "💓"
+  },
+  {
+    "name": "Burpee Navy Seal",
+    "tags": [
+      "dynamic",
+      "full",
+      "stamina"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Burpee Push Up",
+    "tags": [
+      "dynamic",
+      "full",
+      "stamina"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Butt Kicks",
+    "tags": [
+      "warm_up",
+      "dynamic"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Commando Plank",
+    "tags": [
+      "dynamic"
+    ],
+    "icon": "🚪"
+  },
+  {
+    "name": "Crunches",
+    "tags": [
+      "abs",
+      "core"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Elbows Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Feet Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Head Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Heels Raises",
+    "tags": [
+      "warm_up",
+      "stationary"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "High Knees",
+    "tags": [
+      "warm_up",
+      "dynamic"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Hip Thrust",
+    "tags": [
+      "hip",
+      "core",
+      "buttocks"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Hips Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Inchworm",
+    "tags": [
+      "warm_up",
+      "stretching"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Jump Rope",
+    "tags": [
+      "dynamic",
+      "coordination",
+      "jump_rope"
+    ],
+    "icon": "🪱"
+  },
+  {
+    "name": "Jump Rope Criss Cross",
+    "tags": [
+      "dynamic",
+      "coordination",
+      "jump_rope"
+    ],
+    "difficulty": "medium",
+    "icon": "🪱"
+  },
+  {
+    "name": "Jump Rope Double Unders",
+    "tags": [
+      "dynamic",
+      "coordination",
+      "jump_rope"
+    ],
+    "difficulty": "medium",
+    "icon": "🪱"
+  },
+  {
+    "name": "Jump Rope High Knees",
+    "tags": [
+      "dynamic",
+      "coordination",
+      "jump_rope"
+    ],
+    "difficulty": "medium",
+    "icon": "🪱"
+  },
+  {
+    "name": "Jumping Jack",
+    "tags": [
+      "warm_up",
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Jumps",
+    "tags": [
+      "dynamic",
+      "stamina"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Jumps Forward",
+    "tags": [
+      "dynamic",
+      "stamina",
+      "balance"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Knees Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Leg Swings Front",
+    "tags": [
+      "warm_up"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Leg Swings Side",
+    "tags": [
+      "warm_up"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Lunge",
+    "tags": [
+      "dynamic",
+      "balance",
+      "strength"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Lunge Jump",
+    "tags": [
+      "dynamic",
+      "balance",
+      "strength"
+    ],
+    "difficulty": "medium",
+    "icon": "💓"
+  },
+  {
+    "name": "Lunge Reverse",
+    "tags": [
+      "dynamic",
+      "balance",
+      "strength"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Lunge Walking",
+    "tags": [
+      "dynamic",
+      "balance",
+      "strength"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Mountain Climber",
+    "tags": [
+      "warm_up",
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Plank",
+    "tags": [
+      "stationary",
+      "core",
+      "shoulder"
+    ],
+    "icon": "🚪"
+  },
+  {
+    "name": "Plank Shoulder Tap",
+    "tags": [
+      "dynamic",
+      "core",
+      "shoulder"
+    ],
+    "icon": "🚪"
+  },
+  {
+    "name": "Pull Up",
+    "tags": [
+      "dynamic",
+      "strength"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Push Up",
+    "tags": [
+      "dynamic",
+      "strength"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Rest",
+    "tags": [
+      "rest"
+    ],
+    "icon": "💤"
+  },
+  {
+    "name": "Run",
+    "tags": [
+      "footwork"
+    ],
+    "difficulty": "medium",
+    "icon": "🏃"
+  },
+  {
+    "name": "Scissor Kick",
+    "tags": [
+      "abs",
+      "hip",
+      "core"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Shoulder Rotation",
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Side Plank",
+    "tags": [
+      "stationary",
+      "obliques"
+    ],
+    "icon": "🚪"
+  },
+  {
+    "name": "Side Steps",
+    "tags": [
+      "footwork"
+    ],
+    "icon": "👯"
+  },
+  {
+    "name": "Single Leg Touch Toes",
+    "tags": [
+      "warm_up",
+      "stretching"
+    ],
+    "icon": "⚙"
+  },
+  {
+    "name": "Skating Step",
+    "tags": [
+      "dynamic",
+      "footwork"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Speed Step",
+    "tags": [
+      "dynamic",
+      "footwork"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Sprint",
+    "tags": [
+      "footwork"
+    ],
+    "difficulty": "hard",
+    "icon": "🏃"
+  },
+  {
+    "name": "Squat",
+    "tags": [
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Squat Bulgarian",
+    "tags": [
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Squat Jump",
+    "tags": [
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Squat Single Leg",
+    "tags": [
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Squat Sumo",
+    "tags": [
+      "dynamic"
+    ],
+    "icon": "💓"
+  },
+  {
+    "name": "Walk",
+    "tags": [
+      "footwork"
+    ],
+    "difficulty": "easy",
+    "icon": "🧍"
+  },
+  {
+    "name": "Windmill",
+    "tags": [
+      "warm_up",
+      "stretching"
+    ],
+    "icon": "⚙"
   },
   {
     "name": "Workout",
@@ -10,177 +450,26 @@
     "icon": "🎯"
   },
   {
-    "name": "Rest",
-    "tags": ["rest"],
-    "icon": "💤"
-  },
-  {
-    "name": "Walk",
-    "tags": ["footwork"]
-  },
-  {
-    "name": "Run",
-    "tags": ["footwork", "dynamic"]
-  },
-  {
-    "name": "Side Steps",
-    "tags": ["footwork", "dynamic"]
-  },
-  {
-    "name": "Crossed Steps",
-    "tags": ["footwork", "dynamic"]
-  },
-  {
-    "name": "Plank",
-    "tags": ["plank", "stationary", "core"]
-  },
-  {
-    "name": "Plank Jack",
-    "tags": ["plank", "jack", "dynamic", "core"]
-  },
-  {
-    "name": "Plank Shoulder Tap",
-    "tags": ["plank", "shoulder_tap", "dynamic", "core"]
-  },
-  {
-    "name": "Plank Spiderman",
-    "tags": ["plank", "spiderman", "dynamic", "core"]
-  },
-  {
-    "name": "Side Plank",
-    "tags": ["plank", "side", "stationary", "core"]
-  },
-  {
-    "name": "Commando Plank",
-    "tags": ["plank", "commando", "dynamic", "core"]
-  },
-  {
-    "name": "Head Rotation",
-    "tags": ["warm_up", "rotation"]
-  },
-  {
-    "name": "Shoulder Rotation",
-    "tags": ["warm_up", "rotation"]
-  },
-  {
-    "name": "Arms Rotation",
-    "tags": ["warm_up", "rotation"]
-  },
-  {
-    "name": "Elbows Rotation",
-    "tags": ["warm_up", "rotation"]
+    "name": "Workout",
+    "tags": [
+      "hii_t"
+    ],
+    "description": "Generic workout",
+    "icon": "🧨"
   },
   {
     "name": "Wrists Rotation",
-    "tags": ["warm_up", "rotation"]
+    "tags": [
+      "warm_up",
+      "rotation"
+    ],
+    "icon": "⚙"
   },
   {
-    "name": "Hips Rotation",
-    "tags": ["warm_up", "rotation"]
-  },
-  {
-    "name": "Knees Rotation",
-    "tags": ["warm_up", "rotation"]
-  },
-  {
-    "name": "Feet Rotation",
-    "tags": ["warm_up", "rotation"]
-  },
-  {
-    "name": "Heels Raises",
-    "tags": ["warm_up"]
-  },
-  {
-    "name": "Inchworm",
-    "tags": ["warm_up", "stretching"]
-  },
-  {
-    "name": "Leg Swings",
-    "tags": ["warm_up"]
-  },
-  {
-    "name": "Side Leg Swings",
-    "tags": ["warm_up"]
-  },
-  {
-    "name": "Single Leg Touch Toes",
-    "tags": ["warm_up", "stretching"]
-  },
-  {
-    "name": "Windmill",
-    "tags": ["warm_up", "stretching"]
-  },
-  {
-    "name": "Butt Kicks",
-    "tags": ["warm_up", "dynamic"]
-  },
-  {
-    "name": "High Knees",
-    "tags": ["warm_up", "dynamic"]
-  },
-  {
-    "name": "Jumping Jack",
-    "tags": ["warm_up", "dynamic"]
-  },
-  {
-    "name": "Mountain Climber",
-    "tags": ["warm_up", "dynamic"]
-  },
-  {
-    "name": "Squat",
-    "tags": ["dynamic"]
-  },
-  {
-    "name": "Jump Squat",
-    "tags": ["dynamic"]
-  },
-  {
-    "name": "Push Up",
-    "tags": ["dynamic"]
-  },
-  {
-    "name": "Pull Up",
-    "tags": ["pull_up_bar", "dynamic"]
-  },
-  {
-    "name": "Speed Step",
-    "tags": ["dynamic", "footwork"]
-  },
-  {
-    "name": "Alternate Step",
-    "tags": ["dynamic", "footwork"]
-  },
-  {
-    "name": "Lunge",
-    "tags": ["dynamic", "balance"]
-  },
-  {
-    "name": "Burpee",
-    "tags": ["dynamic", "core"]
-  },
-  {
-    "name": "Jumps",
-    "tags": ["dynamic", "stamina"]
-  },
-  {
-    "name": "Crunches",
-    "tags": ["abs", "core"]
-  },
-  {
-    "name": "Scissor Kick",
-    "tags": ["abs", "hip", "core"]
-  },
-  {
-    "name": "Hip Thrust",
-    "tags": ["hip", "core"]
-  },
-  {
-    "name": "Boxing Round",
-    "tags": ["boxing", "stamina", "coordination"],
-    "icon": "🥊"
-  },
-  {
-    "name": "Jumping Rope",
-    "tags": ["jump_rope", "dynamic", "coordination"]
+    "name": "🔥Warm Up",
+    "tags": [
+      "warm_up"
+    ],
+    "description": "Generic warm-up"
   }
 ]

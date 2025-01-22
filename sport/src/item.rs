@@ -2,37 +2,9 @@ use crate::tag::{Difficulty, Tag, Tags};
 use crate::workout::Workout;
 use bon::Builder;
 use derive_more::Display;
-use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use slug::slugify;
-use std::collections::{HashMap, HashSet};
-use std::sync::{LazyLock, RwLock};
-
-pub static ITEMS: LazyLock<RwLock<HashSet<Item>>> = LazyLock::new(|| RwLock::new(HashSet::new()));
-
-pub fn all_items() -> Vec<Item> {
-    ITEMS
-        .read()
-        .unwrap()
-        .iter()
-        .cloned()
-        .sorted_by(|a, b| a.to_string().cmp(&b.to_string()))
-        .collect_vec()
-}
-
-pub static TAG_TO_ITEMS: LazyLock<RwLock<HashMap<Tag, HashSet<Item>>>> =
-    LazyLock::new(|| RwLock::new(HashMap::new()));
-
-pub fn all_tags() -> Vec<Tag> {
-    TAG_TO_ITEMS
-        .read()
-        .unwrap()
-        .keys()
-        .cloned()
-        .sorted_by(|a, b| a.to_string().cmp(&b.to_string()))
-        .collect_vec()
-}
 
 #[derive(Default, Display, Clone, Debug, Eq, PartialEq, Hash, Builder, Serialize, Deserialize)]
 #[display("{}{name}", icon.unwrap_or('‎'))]
@@ -55,22 +27,6 @@ pub struct Item {
 impl Item {
     pub fn name(&self) -> &str {
         &self.name
-    }
-    pub fn register(self) -> Self {
-        info!(
-            "registering item: {}",
-            serde_json::to_string(&self).unwrap()
-        );
-        for tag in self.tags.iter() {
-            TAG_TO_ITEMS
-                .write()
-                .unwrap()
-                .entry(*tag)
-                .or_default()
-                .insert(self.clone());
-        }
-        ITEMS.write().unwrap().insert(self.clone());
-        self
     }
     pub fn icon(&self) -> Option<char> {
         self.icon

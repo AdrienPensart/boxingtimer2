@@ -1,7 +1,8 @@
-use std::{cell::RefCell, rc::Rc};
-use crate::sound::Sound;
+use crate::audio;
 use derive_more::Display;
 use dioxus::logger::tracing::info;
+use sport::sound::Sound;
+use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
 pub enum SoundState {
@@ -56,14 +57,14 @@ impl SoundSignal {
     pub fn ring(&self, sound: &Sound) {
         if self.enabled() {
             info!("signal {sound} ring");
-            if let Err(error) = sound.play() {
+            if let Err(error) = audio::play(sound) {
                 info!("unable to play {sound} : {error}");
             }
         }
     }
     pub fn always_ring(&self, sound: &Sound) {
         info!("signal {sound} ring (always)");
-        if let Err(error) = sound.play() {
+        if let Err(error) = audio::play(sound) {
             info!("unable to play {sound} (always): {error}");
         }
     }

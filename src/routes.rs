@@ -1,9 +1,9 @@
-use crate::item::{all_items, all_tags, TAG_TO_ITEMS};
 use crate::mobile::{MobileHome, MobileTimer};
-use crate::sequence::all_sequences;
 use crate::web::WebHome;
 use dioxus::prelude::*;
 use itertools::Itertools;
+use sport::defaults::SEQUENCES;
+use sport::item_list::ItemList;
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 pub enum Route {
@@ -33,11 +33,10 @@ pub enum Route {
 
 #[component]
 pub fn SequencesHome() -> Element {
-    let sequences = all_sequences();
     rsx! {
-        span { {format!("Sequences: {}", sequences.len())} }
+        span { {format!("Sequences: {}", SEQUENCES.len())} }
         ul { id: "sequences",
-            for sequence in sequences {
+            for sequence in SEQUENCES.iter() {
                 li { id: format!("sequence_{}", sequence.slug()),
                     Link {
                         to: Route::SequenceHome {
@@ -53,15 +52,14 @@ pub fn SequencesHome() -> Element {
 
 #[component]
 pub fn SequencesJson() -> Element {
-    let sequences = all_sequences();
     rsx! {
-        pre { {serde_json::to_string_pretty(&sequences).unwrap()} }
+        pre { {serde_json::to_string_pretty(SEQUENCES.as_slice()).unwrap()} }
     }
 }
 
 #[component]
 pub fn TagsHome() -> Element {
-    let tags = all_tags();
+    let tags = ItemList::tags();
     rsx! {
         span { {format!("Tags: {}", tags.len())} }
         ul { id: "tags",
@@ -82,11 +80,9 @@ pub fn TagsHome() -> Element {
 #[component]
 pub fn ItemsHome(tag: String) -> Element {
     let items = if tag.is_empty() {
-        all_items()
+        ItemList::items()
     } else {
-        TAG_TO_ITEMS
-            .read()
-            .unwrap()
+        ItemList::tag_to_items()
             .iter()
             .filter(|(t, _)| t.slug() == tag)
             .flat_map(|(_, items)| items.iter().cloned().collect_vec())

@@ -7,31 +7,12 @@ use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
 use bon::{bon, Builder};
 use derive_more::{Deref, DerefMut, Display};
-use dioxus::logger::tracing::info;
+// use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use slug::slugify;
-use std::collections::HashSet;
 use std::ops::Not;
-use std::sync::{LazyLock, RwLock};
-
-pub static SEQUENCES: LazyLock<RwLock<HashSet<Sequence>>> =
-    LazyLock::new(|| RwLock::new(HashSet::new()));
-
-// pub fn all_sequences() -> Vec<Sequence> {
-//     SEQUENCES
-//         .read()
-//         .unwrap()
-//         .iter()
-//         .cloned()
-//         .sorted_by(|a, b| a.to_string().cmp(&b.to_string()))
-//         .collect_vec()
-// }
-
-pub fn all_sequences() -> Vec<Sequence> {
-    crate::defaults::default_sequences()
-}
 
 #[derive(
     Display,
@@ -76,32 +57,18 @@ pub static ROUNDS: Rounds = 1;
 
 #[bon]
 impl Sequence {
-    pub fn register(self) -> Self {
-        info!(
-            "registering sequence: {}",
-            serde_json::to_string(&self).unwrap()
-        );
-        SEQUENCES.write().unwrap().insert(self.clone());
-        for workout in self.workouts.iter() {
-            workout.register();
-        }
-        self
-    }
-
     #[builder]
     pub fn random(
         name: &str,
         description: Option<&str>,
-        workouts: &[Workout],
+        mut workouts: Vec<Workout>,
         rest: std::time::Duration,
         sound: &Sound,
         difficulty: Option<Difficulty>,
         icon: Option<char>,
     ) -> Self {
-        let mut workouts = workouts.to_vec();
         workouts.shuffle(&mut rand::thread_rng());
-
-        let workouts = itertools::intersperse(workouts, Workout::rest(rest)).collect_vec();
+        workouts = itertools::intersperse(workouts, Workout::rest(rest)).collect_vec();
         Self {
             name: name.into(),
             description: description.map(str::to_string),
@@ -200,9 +167,9 @@ impl Sequence {
         slugify(&self.name)
     }
     pub fn goto_previous(&mut self) -> Option<&mut Workout> {
-        info!("sequence: goto previous");
+        // info!("sequence: goto previous");
         if self.workouts.is_empty() {
-            info!("sequence: workouts is empty, no previous");
+            // info!("sequence: workouts is empty, no previous");
             return None;
         }
 
@@ -213,9 +180,9 @@ impl Sequence {
         })
     }
     pub fn manual_next(&mut self) -> Option<&mut Workout> {
-        info!("sequence: manual next");
+        // info!("sequence: manual next");
         if self.workouts.is_empty() {
-            info!("sequence: workouts is empty, no next");
+            // info!("sequence: workouts is empty, no next");
         } else if !self.workouts.last() {
             self.workouts.next_mut();
             self.reset_workout();
@@ -226,9 +193,9 @@ impl Sequence {
         self.get_mut()
     }
     pub fn auto_next(&mut self) -> Option<&mut Workout> {
-        info!("sequence: auto next");
+        // info!("sequence: auto next");
         if self.workouts.is_empty() {
-            info!("sequence: workouts is empty, no next");
+            // info!("sequence: workouts is empty, no next");
             return None;
         }
         let workout = self.workouts.next_mut()?;
@@ -239,19 +206,19 @@ impl Sequence {
         self.workouts.get().map(|i| i.stopwatch())
     }
     pub fn decrement(&mut self) -> bool {
-        self.workouts.get_mut().map_or(false, |i| i.decrement())
+        self.workouts.get_mut().is_some_and(|i| i.decrement())
     }
     pub fn last_seconds(&self) -> bool {
-        self.workouts.get().map_or(false, |i| i.last_seconds())
+        self.workouts.get().is_some_and(|i| i.last_seconds())
     }
     pub fn reset_workout(&mut self) {
-        info!("sequence: reset current workout");
+        // info!("sequence: reset current workout");
         if let Some(i) = self.workouts.get_mut() {
             i.reset();
         }
     }
     pub fn reset(&mut self) {
-        info!("sequence: reset all workouts");
+        // info!("sequence: reset all workouts");
         self.workouts.reset();
         self.workouts.apply(|workout| {
             workout.reset();

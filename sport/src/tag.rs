@@ -1,6 +1,7 @@
 use derive_more::{Deref, DerefMut, Display, From, IntoIterator};
 use serde::{Deserialize, Serialize};
 use slug::slugify;
+use strum_macros::VariantArray;
 
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash, From, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -9,7 +10,9 @@ pub enum Tag {
     Drink,
     HiiT,
     WarmUp,
-    Boxing,
+    #[from]
+    #[serde(untagged)]
+    Boxing(Boxing),
     #[from]
     #[serde(untagged)]
     Body(Body),
@@ -34,9 +37,10 @@ impl Tag {
             Self::Rest => Some('💤'),
             Self::Mouvement(mouvement) => Some(mouvement.icon()),
             Self::Plank(_) => Some('🚪'),
+            Self::Squat(_) => Some('🏋'),
             Self::HiiT => Some('🧨'),
             Self::WarmUp => Some('🔥'),
-            Self::Boxing => Some('🥊'),
+            Self::Boxing(_) => Some('🥊'),
             _ => None,
         }
     }
@@ -85,6 +89,15 @@ impl Difficulty {
 
 #[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+pub enum Boxing {
+    Round,
+    Punch,
+    Roll,
+    Slip,
+}
+
+#[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Plank {
     Plank,
     Side,
@@ -120,26 +133,30 @@ pub enum Equipment {
     Chair,
     PullUpBar,
     Rings,
-    TRX,
-    Bosu,
     SwissBall,
-    FoamRoller,
+    AbsWheel,
 }
 
-#[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(
+    Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize, VariantArray,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum Body {
     Full,
     Core,
     Abs,
     Pectorals,
+    Obliques,
+    Triceps,
     Legs,
     Hip,
     Shoulder,
     Buttocks,
 }
 
-#[derive(Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(
+    Display, Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize, VariantArray,
+)]
 #[serde(rename_all = "snake_case")]
 pub enum Mouvement {
     Coordination,

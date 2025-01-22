@@ -30,5 +30,5 @@ impl DurationExt for std::time::Duration {
     }
 }
 
-pub static SECOND: std::time::Duration = std::time::Duration::from_secs(1);
-pub static MINUTE: std::time::Duration = std::time::Duration::from_secs(60);
+pub const SECOND: std::time::Duration = std::time::Duration::from_secs(1);
+pub const MINUTE: std::time::Duration = std::time::Duration::from_secs(60);

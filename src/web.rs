@@ -1,17 +1,16 @@
-use crate::duration::DurationExt;
+use crate::audio::Sounds;
 use crate::routes::Route;
-use crate::sequence::all_sequences;
-use crate::sequence::Sequence;
 use crate::signal::SoundSignal;
 use crate::timer::Timer;
-use crate::{defaults, sound};
 use dioxus::prelude::*;
+use sport::defaults;
+use sport::defaults::SEQUENCES;
+use sport::duration::DurationExt;
 
 #[derive(Clone)]
 pub struct WebGlobal {
     pub timer: dioxus::signals::Signal<Timer>,
     pub sound_signal: dioxus::signals::Signal<SoundSignal>,
-    pub sequences: Vec<Sequence>,
 }
 
 impl WebGlobal {
@@ -21,12 +20,11 @@ impl WebGlobal {
         } else {
             prepare
         };
-        let sequences = all_sequences();
         let sound_signal = SoundSignal::from_muted(muted);
         let mut timer = use_signal(|| {
             let mut timer = Timer::new(
                 std::time::Duration::from_secs(prepare),
-                &sequences,
+                SEQUENCES.as_slice(),
                 &sound_signal,
             );
             if let Some(sequence) = sequence {
@@ -46,7 +44,6 @@ impl WebGlobal {
 
         Self {
             sound_signal: use_signal(|| sound_signal),
-            sequences,
             timer,
         }
     }
@@ -154,7 +151,7 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                 div { class: "flex justify-center text-2xl",
                     Link { id: "mobile_home", to: Route::MobileHome {}, "Mobile Home" }
                 }
-                sound::Sounds {}
+                Sounds {}
             }
             div {
                 id: "timer",

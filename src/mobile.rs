@@ -1,11 +1,13 @@
-use crate::defaults;
-use crate::duration::DurationExt;
+use crate::audio::Sounds;
 use crate::mobiletimer;
 use crate::routes;
-use crate::sequence::all_sequences;
 use crate::signal::SoundSignal;
-use crate::sound;
 use dioxus::prelude::*;
+use sport::defaults::{
+    DEFAULT_INTERVAL, NEXT_ITEM, PREPARE, PREVIOUS_ITEM, RANDOMIZE, RESTART_SEQUENCE, SEQUENCES,
+    SIGNAL,
+};
+use sport::duration::DurationExt;
 
 #[derive(Clone)]
 pub struct Global {
@@ -15,13 +17,8 @@ pub struct Global {
 
 impl Global {
     pub fn new(muted: bool, prepare: u64, sequence: String) -> Option<Self> {
-        let prepare = if prepare == 0 {
-            defaults::PREPARE
-        } else {
-            prepare
-        };
-        let sequences = all_sequences();
-        let sequence = sequences.iter().find(|s| s.slug() == sequence)?;
+        let prepare = if prepare == 0 { PREPARE } else { prepare };
+        let sequence = SEQUENCES.iter().find(|s| s.slug() == sequence)?;
         let sound_signal = SoundSignal::from_muted(muted);
         let mut timer = use_signal(|| {
             mobiletimer::MobileTimer::new(
@@ -33,9 +30,9 @@ impl Global {
 
         let _tick = use_resource(move || async move {
             loop {
-                gloo::timers::future::TimeoutFuture::new(defaults::DEFAULT_INTERVAL).await;
+                gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
                 if timer.write().tick() {
-                    gloo::timers::future::TimeoutFuture::new(defaults::DEFAULT_INTERVAL).await;
+                    gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
                 }
             }
         });
@@ -49,7 +46,7 @@ impl Global {
 
 #[component]
 pub fn MobileHome() -> Element {
-    let sequences = all_sequences();
+    let sequences = SEQUENCES.as_slice();
     rsx! {
         ul { id: "sequences",
             for sequence in sequences.iter() {
@@ -67,7 +64,7 @@ pub fn MobileHome() -> Element {
             id: "web_home",
             class: "flex text-2xl justify-center",
             to: routes::Route::WebHome {
-                prepare: defaults::PREPARE,
+                prepare: PREPARE,
                 muted: false,
                 sequence: "".to_string(),
             },
@@ -87,7 +84,7 @@ pub fn MobileTimer(sequence: String) -> Element {
     let mut global = use_context_provider(|| global);
 
     rsx! {
-        sound::Sounds {}
+        Sounds {}
         MobileControls {}
         div { id: "timer", class: "flex justify-evenly text-3xl p-2",
             button {
@@ -119,7 +116,7 @@ pub fn MobileTimer(sequence: String) -> Element {
             id: "web_home",
             class: "flex text-2xl justify-center",
             to: routes::Route::WebHome {
-                prepare: defaults::PREPARE,
+                prepare: PREPARE,
                 muted: false,
                 sequence: "".to_string(),
             },
@@ -143,26 +140,26 @@ pub fn MobileControls() -> Element {
                 id: "restart_sequence",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.restart_sequence()),
-                {defaults::RESTART_SEQUENCE}
+                {RESTART_SEQUENCE}
             }
             button {
                 id: "previous_workout",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
-                {defaults::PREVIOUS_ITEM}
+                {PREVIOUS_ITEM}
             }
             button {
                 id: "next_workout",
                 class: "rounded-full text-3xl",
                 onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
-                {defaults::NEXT_ITEM}
+                {NEXT_ITEM}
             }
             if global.timer.read().sequence().shufflable() {
                 button {
                     id: "randomize",
                     class: "rounded-full text-3xl",
                     onclick: move |_| global.timer.with_mut(|t| t.shuffle()),
-                    {defaults::RANDOMIZE}
+                    {RANDOMIZE}
                 }
             }
             if !global.timer.read().sequence().sound().is_silent() {
@@ -176,7 +173,7 @@ pub fn MobileControls() -> Element {
                     id: "emit_signal",
                     class: "text-3xl",
                     onclick: move |_| { global.timer.with(|t| { t.always_ring() }) },
-                    {defaults::SIGNAL}
+                    {SIGNAL}
                 }
             }
         }

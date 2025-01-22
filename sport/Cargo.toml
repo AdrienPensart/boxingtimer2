@@ -1,0 +1,18 @@
+[package]
+name = "sport"
+version = "0.1.0"
+authors = ["Adrien Pensart <crunchengine@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+itertools = "0.14.0"
+strum = "0.26.3"
+strum_macros = "0.26.4"
+derive_more = { version = "1.0", features = ["full"] }
+serde = "1.0.217"
+serde_json = "1.0.135"
+serde_with = { version = "3.12.0", features = ["chrono"] }
+bon = "3.3.0"
+test-log = "0.2.16"
+slug = "0.1.6"
+rand = "0.8"
