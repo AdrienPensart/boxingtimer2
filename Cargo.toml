@@ -2,7 +2,7 @@
 name = "boxingtimer2"
 version = "0.1.0"
 authors = ["Adrien Pensart <crunchengine@gmail.com>"]
-edition = "2021"
+edition = "2024"
 
 [workspace]
 members = ["sport"]
@@ -10,30 +10,31 @@ members = ["sport"]
 [build-dependencies]
 dioxus-daisyui = "0.8.0"
 sport = { path = "./sport" }
-serde_json = "1.0.135"
+serde_json = "1.0.139"
 
 [dependencies]
 sport = { path = "./sport" }
-dioxus = { version = "0.6", features = ["router"] }
+dioxus = { version = "0.6.3", features = ["router"] }
 gloo = { version = "0.11.0", features = ["futures", "dialogs"] }
 console_error_panic_hook = "0.1.7"
-derive_more = { version = "1.0", features = ["full"] }
+derive_more = { version = "2.0", features = ["full"] }
 js-sys = "0.3.76"
 web-sys = { version = "0.3.76", features = ["HtmlAudioElement"] }
 duration-string = { version = "0.5.2", features = ["serde"] }
 itertools = "0.14.0"
 thiserror = "2.0"
-rand = "0.8"
+rand = "0.9"
 bon = "3.3.0"
 wasm-bindgen = "0.2.100"
 wasm-bindgen-futures = "0.4.50"
 slug = "0.1.6"
-serde = "1.0.217"
+serde = "1.0.218"
 serde_json = "1.0.135"
 serde_with = { version = "3.12.0", features = ["chrono"] }
-strum = "0.26.3"
-strum_macros = "0.26.4"
+strum = "0.27.1"
+strum_macros = "0.27.1"
 test-log = "0.2.17"
+getrandom = { version = "0.3", features = ["wasm_js"] }
 
 [features]
 default = ["web"]

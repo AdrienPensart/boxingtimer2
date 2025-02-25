@@ -67,7 +67,7 @@ impl Sequence {
         difficulty: Option<Difficulty>,
         icon: Option<char>,
     ) -> Self {
-        workouts.shuffle(&mut rand::thread_rng());
+        workouts.shuffle(&mut rand::rng());
         workouts = itertools::intersperse(workouts, Workout::rest(rest)).collect_vec();
         Self {
             name: name.into(),

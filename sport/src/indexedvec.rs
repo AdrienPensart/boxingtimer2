@@ -77,11 +77,11 @@ where
         self.index = None;
     }
     pub fn shuffle(&mut self) {
-        self.store.shuffle(&mut rand::thread_rng())
+        self.store.shuffle(&mut rand::rng())
     }
     pub fn shuffled(&mut self) -> Vec<T> {
         let mut store = self.store.clone();
-        store.shuffle(&mut rand::thread_rng());
+        store.shuffle(&mut rand::rng());
         store
     }
     pub fn get(&self) -> Option<&T> {

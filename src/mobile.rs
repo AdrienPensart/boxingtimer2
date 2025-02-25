@@ -82,7 +82,7 @@ pub fn MobileTimer(sequence: String) -> Element {
         return rsx! { "Empty sequence" };
     }
     let mut global = use_context_provider(|| global);
-
+    let timer = global.timer.read();
     rsx! {
         Sounds {}
         MobileControls {}
@@ -90,7 +90,7 @@ pub fn MobileTimer(sequence: String) -> Element {
             button {
                 id: "current_workout",
                 onclick: move |_| global.timer.with_mut(|t| t.restart_workout()),
-                {global.timer.read().label()}
+                {timer.label()}
                 "(♻)"
             }
             label { id: "counter", {global.timer.read().left().to_string()} }

@@ -53,6 +53,7 @@ impl WebGlobal {
 pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
     let global = WebGlobal::new(muted, prepare, Some(sequence));
     let mut global = use_context_provider(|| global);
+    let timer = global.timer.read();
     rsx! {
         div { class: "flex flex-row space-x-1 m-1 ",
             div { id: "left_panel", class: "space-y-1.5",
@@ -157,7 +158,7 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                 id: "timer",
                 class: "bg-blue-600 flex w-full items-center justify-center h-screen rounded-xl",
                 div { class: "flex flex-col items-center justify-center",
-                    div { id: "workout", class: "text-9xl", {global.timer.read().label()} }
+                    div { id: "workout", class: "text-9xl", {timer.label()} }
                     div { id: "counter", class: "text-9xl",
                         {global.timer.read().left().to_string()}
                     }
