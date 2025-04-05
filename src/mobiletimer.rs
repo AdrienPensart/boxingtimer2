@@ -17,9 +17,11 @@ pub struct MobileTimer {
 }
 
 impl MobileTimer {
+    #[must_use]
     pub fn from_sequence(sequence: &Sequence, sound_signal: &SoundSignal) -> Self {
         Self::new(defaults::PREPARE_DURATION, sequence, sound_signal)
     }
+    #[must_use]
     pub fn new(
         preparation: std::time::Duration,
         sequence: &Sequence,
@@ -33,12 +35,14 @@ impl MobileTimer {
             status: Status::default(),
         }
     }
+    #[must_use]
     pub fn left(&self) -> &std::time::Duration {
         if let Some(workout) = self.sequence.get() {
             return workout.left();
         }
         self.preparation.left()
     }
+    #[must_use]
     pub fn sequence(&self) -> &Sequence {
         &self.sequence
     }
@@ -100,6 +104,7 @@ impl MobileTimer {
         }
         self.sequence.goto_previous();
     }
+    #[must_use]
     pub fn label(&self) -> &str {
         if self.sequence.get().is_none() {
             return defaults::PREPARE_LABEL;
@@ -109,14 +114,16 @@ impl MobileTimer {
         };
         workout.item().name()
     }
+    #[must_use]
     pub fn current_workout(&self) -> Option<&Workout> {
         self.sequence.get()
     }
+    #[must_use]
     pub fn status(&self) -> &Status {
         &self.status
     }
     pub fn shuffle(&mut self) {
-        self.sequence.shuffle()
+        self.sequence.shuffle();
     }
     pub fn toggle(&mut self) {
         info!("toggle");
@@ -125,12 +132,15 @@ impl MobileTimer {
             self.changed = true;
         }
     }
+    #[must_use]
     pub fn next_status(&self) -> &Status {
         self.status.next()
     }
+    #[must_use]
     pub fn paused(&self) -> bool {
         self.status.paused()
     }
+    #[must_use]
     pub fn running(&self) -> bool {
         self.status.running()
     }

@@ -18,15 +18,18 @@ impl SoundState {
         *self = self.next();
         info!("signal {self}");
     }
+    #[must_use]
     pub fn next(&self) -> Self {
         match self {
             Self::Disabled => Self::Enabled,
             Self::Enabled => Self::Disabled,
         }
     }
+    #[must_use]
     pub fn enabled(&self) -> bool {
         matches!(self, Self::Enabled)
     }
+    #[must_use]
     pub fn disabled(&self) -> bool {
         matches!(self, Self::Disabled)
     }
@@ -40,6 +43,7 @@ pub struct SoundSignal {
 }
 
 impl SoundSignal {
+    #[must_use]
     pub fn from_muted(muted: bool) -> Self {
         let state = if muted {
             SoundState::Disabled
@@ -68,15 +72,19 @@ impl SoundSignal {
             info!("unable to play {sound} (always): {error}");
         }
     }
+    #[must_use]
     pub fn state(&self) -> SoundState {
         self.state.borrow().clone()
     }
+    #[must_use]
     pub fn next(&self) -> SoundState {
         self.state.borrow().next()
     }
+    #[must_use]
     pub fn enabled(&self) -> bool {
         self.state.borrow().enabled()
     }
+    #[must_use]
     pub fn disabled(&self) -> bool {
         !self.enabled()
     }

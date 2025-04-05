@@ -16,7 +16,7 @@ pub struct Global {
 }
 
 impl Global {
-    pub fn new(muted: bool, prepare: u64, sequence: String) -> Option<Self> {
+    pub fn new(muted: bool, prepare: u64, sequence: &str) -> Option<Self> {
         let prepare = if prepare == 0 { PREPARE } else { prepare };
         let sequence = SEQUENCES.iter().find(|s| s.slug() == sequence)?;
         let sound_signal = SoundSignal::from_muted(muted);
@@ -66,7 +66,7 @@ pub fn MobileHome() -> Element {
             to: routes::Route::WebHome {
                 prepare: PREPARE,
                 muted: false,
-                sequence: "".to_string(),
+                sequence: String::new(),
             },
             {"Web Home"}
         }
@@ -75,7 +75,7 @@ pub fn MobileHome() -> Element {
 
 #[component]
 pub fn MobileTimer(sequence: String) -> Element {
-    let Some(global) = Global::new(false, 10, sequence) else {
+    let Some(global) = Global::new(false, 10, &sequence) else {
         return rsx! { "Unknown sequence" };
     };
     if global.timer.read().sequence().is_empty() {
@@ -89,7 +89,7 @@ pub fn MobileTimer(sequence: String) -> Element {
         div { id: "timer", class: "flex justify-evenly text-3xl p-2",
             button {
                 id: "current_workout",
-                onclick: move |_| global.timer.with_mut(|t| t.restart_workout()),
+                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_workout),
                 {timer.label()}
                 "(♻)"
             }
@@ -118,7 +118,7 @@ pub fn MobileTimer(sequence: String) -> Element {
             to: routes::Route::WebHome {
                 prepare: PREPARE,
                 muted: false,
-                sequence: "".to_string(),
+                sequence: String::new(),
             },
             {"Web Home"}
         }
@@ -133,32 +133,32 @@ pub fn MobileControls() -> Element {
             button {
                 id: "toggle_timer",
                 class: "rounded-full text-3xl",
-                onclick: move |_| global.timer.with_mut(|t| t.toggle()),
+                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::toggle),
                 {global.timer.read().next_status().to_string()}
             }
             button {
                 id: "restart_sequence",
                 class: "rounded-full text-3xl",
-                onclick: move |_| global.timer.with_mut(|t| t.restart_sequence()),
+                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_sequence),
                 {RESTART_SEQUENCE}
             }
             button {
                 id: "previous_workout",
                 class: "rounded-full text-3xl",
-                onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
+                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::manual_previous),
                 {PREVIOUS_ITEM}
             }
             button {
                 id: "next_workout",
                 class: "rounded-full text-3xl",
-                onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
+                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::manual_next),
                 {NEXT_ITEM}
             }
             if global.timer.read().sequence().shufflable() {
                 button {
                     id: "randomize",
                     class: "rounded-full text-3xl",
-                    onclick: move |_| global.timer.with_mut(|t| t.shuffle()),
+                    onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::shuffle),
                     {RANDOMIZE}
                 }
             }
@@ -166,7 +166,7 @@ pub fn MobileControls() -> Element {
                 button {
                     id: "toggle_signal",
                     class: "text-3xl",
-                    onclick: move |_| global.sound_signal.with_mut(|s| s.toggle()),
+                    onclick: move |_| global.sound_signal.with_mut(super::signal::SoundSignal::toggle),
                     {global.sound_signal.read().next().to_string()}
                 }
                 button {

@@ -5,7 +5,7 @@ use crate::sound::Sound;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
-use bon::{bon, Builder};
+use bon::{Builder, bon};
 use derive_more::{Deref, DerefMut, Display};
 // use dioxus::logger::tracing::info;
 use itertools::Itertools;
@@ -120,8 +120,7 @@ impl Sequence {
         icon: Option<char>,
     ) -> Self {
         #[allow(unstable_name_collisions)]
-        let workouts = std::iter::repeat(exercises.workouts(workout))
-            .take(rounds)
+        let workouts = std::iter::repeat_n(exercises.workouts(workout), rounds)
             .intersperse(vec![Workout::rest(rest)])
             .flatten()
             .collect_vec();
@@ -148,8 +147,7 @@ impl Sequence {
         icon: Option<char>,
     ) -> Self {
         #[allow(unstable_name_collisions)]
-        let workouts = std::iter::repeat(workout)
-            .take(rounds)
+        let workouts = std::iter::repeat_n(workout, rounds)
             .intersperse(Workout::rest(rest))
             .collect_vec();
         Self {

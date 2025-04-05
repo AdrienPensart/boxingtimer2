@@ -19,9 +19,11 @@ pub struct Timer {
 }
 
 impl Timer {
+    #[must_use]
     pub fn from_sequence(sequence: Sequence, sound_signal: &SoundSignal) -> Self {
         Self::new(defaults::PREPARE_DURATION, &[sequence], sound_signal)
     }
+    #[must_use]
     pub fn new(
         preparation: std::time::Duration,
         sequences: &[Sequence],
@@ -36,6 +38,7 @@ impl Timer {
             elapsed: std::time::Duration::default(),
         }
     }
+    #[must_use]
     pub fn left(&self) -> &std::time::Duration {
         if let Some(sequence) = self.sequences.get() {
             if let Some(workout) = sequence.get() {
@@ -44,6 +47,7 @@ impl Timer {
         }
         self.preparation.left()
     }
+    #[must_use]
     pub fn sequences(&self) -> &IndexedVec<Sequence> {
         &self.sequences
     }
@@ -86,7 +90,7 @@ impl Timer {
                 self.preparation.reset();
             } else {
                 self.changed = true;
-                sequence.reset_workout()
+                sequence.reset_workout();
             }
         }
     }
@@ -145,6 +149,7 @@ impl Timer {
             sequence.goto_previous();
         }
     }
+    #[must_use]
     pub fn label(&self) -> &str {
         let Some(sequence) = self.sequences.get() else {
             return defaults::PREPARE_LABEL;
@@ -154,12 +159,13 @@ impl Timer {
         };
         workout.item().name()
     }
+    #[must_use]
     pub fn status(&self) -> &Status {
         &self.status
     }
     pub fn shuffle(&mut self) {
         if let Some(sequence) = self.sequences.get_mut() {
-            sequence.shuffle()
+            sequence.shuffle();
         }
     }
     pub fn toggle(&mut self) {
@@ -174,15 +180,19 @@ impl Timer {
             self.changed = true;
         }
     }
+    #[must_use]
     pub fn next_status(&self) -> &Status {
         self.status.next()
     }
+    #[must_use]
     pub fn paused(&self) -> bool {
         self.status.paused()
     }
+    #[must_use]
     pub fn running(&self) -> bool {
         self.status.running()
     }
+    #[must_use]
     pub fn elapsed(&self) -> &std::time::Duration {
         &self.elapsed
     }

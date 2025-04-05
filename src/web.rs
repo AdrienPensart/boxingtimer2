@@ -14,6 +14,7 @@ pub struct WebGlobal {
 }
 
 impl WebGlobal {
+    #[must_use]
     pub fn new(muted: bool, prepare: u64, sequence: Option<String>) -> Self {
         let prepare = if prepare == 0 {
             defaults::PREPARE
@@ -28,7 +29,7 @@ impl WebGlobal {
                 &sound_signal,
             );
             if let Some(sequence) = sequence {
-                timer.set_sequence_by_slug(&sequence)
+                timer.set_sequence_by_slug(&sequence);
             }
             timer
         });
@@ -144,7 +145,7 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                     Link {
                         id: "items",
                         to: Route::ItemsHome {
-                            tag: "".to_string(),
+                            tag: String::new(),
                         },
                         "Items"
                     }
@@ -165,7 +166,7 @@ pub fn WebHome(muted: bool, prepare: u64, sequence: String) -> Element {
                     button {
                         id: "restart_workout",
                         class: "text-3xl",
-                        onclick: move |_| global.timer.with_mut(|t| t.restart_workout()),
+                        onclick: move |_| global.timer.with_mut(super::timer::Timer::restart_workout),
                         "♻"
                     }
                 }
@@ -183,32 +184,32 @@ pub fn WebControls() -> Element {
                 button {
                     id: "toggle_timer",
                     class: "rounded-full text-3xl",
-                    onclick: move |_| global.timer.with_mut(|t| t.toggle()),
+                    onclick: move |_| global.timer.with_mut(super::timer::Timer::toggle),
                     {global.timer.read().next_status().to_string()}
                 }
                 button {
                     id: "restart_sequence",
                     class: "rounded-full text-3xl",
-                    onclick: move |_| global.timer.with_mut(|t| t.restart_sequence()),
+                    onclick: move |_| global.timer.with_mut(super::timer::Timer::restart_sequence),
                     {defaults::RESTART_SEQUENCE}
                 }
                 button {
                     id: "previous_workout",
                     class: "rounded-full text-3xl",
-                    onclick: move |_| global.timer.with_mut(|t| t.manual_previous()),
+                    onclick: move |_| global.timer.with_mut(super::timer::Timer::manual_previous),
                     {defaults::PREVIOUS_ITEM}
                 }
                 button {
                     id: "next_workout",
                     class: "rounded-full text-3xl",
-                    onclick: move |_| global.timer.with_mut(|t| t.manual_next()),
+                    onclick: move |_| global.timer.with_mut(super::timer::Timer::manual_next),
                     {defaults::NEXT_ITEM}
                 }
                 if sequence.shufflable() {
                     button {
                         id: "randomize",
                         class: "rounded-full text-3xl",
-                        onclick: move |_| global.timer.with_mut(|t| t.shuffle()),
+                        onclick: move |_| global.timer.with_mut(super::timer::Timer::shuffle),
                         {defaults::RANDOMIZE}
                     }
                 }
@@ -216,7 +217,7 @@ pub fn WebControls() -> Element {
                     button {
                         id: "toggle_signal",
                         class: "text-3xl",
-                        onclick: move |_| global.sound_signal.with_mut(|s| s.toggle()),
+                        onclick: move |_| global.sound_signal.with_mut(super::signal::SoundSignal::toggle),
                         {global.sound_signal.read().next().to_string()}
                     }
                     button {

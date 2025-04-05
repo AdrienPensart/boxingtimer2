@@ -4,14 +4,15 @@ use dioxus::prelude::*;
 use sport::sound::Sound;
 use web_sys::wasm_bindgen::JsCast;
 
+#[must_use]
 pub fn muted(sound: &Sound) -> Option<Result<bool, TimerErrorKind>> {
-    if !sound.is_silent() {
+    if sound.is_silent() {
+        None
+    } else {
         match audio(sound) {
             Ok(audio) => Some(Ok(audio.muted())),
             Err(err) => Some(Err(err)),
         }
-    } else {
-        None
     }
 }
 
@@ -42,7 +43,7 @@ pub fn play(sound: &Sound) -> Result<(), TimerErrorKind> {
     wasm_bindgen_futures::spawn_local(async move {
         let future = wasm_bindgen_futures::JsFuture::from(promise);
         if let Err(err) = future.await {
-            info!("failed to await future: {:?}", err)
+            info!("failed to await future: {:?}", err);
         }
     });
     Ok(())
