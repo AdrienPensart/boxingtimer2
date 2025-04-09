@@ -42,11 +42,14 @@ impl<T> IndexedVec<T>
 where
     T: std::clone::Clone + std::cmp::PartialEq,
 {
-    pub fn store(&self) -> &Vec<T> {
-        &self.store
-    }
     pub fn apply<F: FnMut(&mut T)>(&mut self, f: F) {
         self.store.iter_mut().for_each(f)
+    }
+    pub fn push(&mut self, item: &T) {
+        self.store.push(item.clone())
+    }
+    pub fn extend(&mut self, items: &[T]) {
+        self.store.extend_from_slice(items)
     }
     pub fn reset(&mut self) {
         self.index = None

@@ -1,10 +1,11 @@
 use crate::duration::{MINUTE, SECOND};
 use crate::exercises::Exercises;
 use crate::item_list::ItemList;
-use crate::sequence::{Sequence, ROUNDS};
+use crate::sequence::{ROUNDS, Sequence};
 use crate::sound::Sound;
 use crate::tag::{Body, Difficulty, Tag};
 use itertools::Itertools;
+use natural_sort_rs::Natural;
 use strum::VariantArray;
 
 pub const DEFAULT_ICON: char = '🎯';
@@ -279,7 +280,7 @@ pub static SEQUENCES: std::sync::LazyLock<Vec<Sequence>> = std::sync::LazyLock::
         .call();
 
     let hiit_4x = Sequence::rounds()
-        .name("Half-Tabata 20s (4x)")
+        .name("Tabata 4x20s")
         .rounds(4 * ROUNDS)
         .workout(ItemList::Tabata.workout(20 * SECOND))
         .difficulty(Difficulty::Medium)
@@ -289,7 +290,7 @@ pub static SEQUENCES: std::sync::LazyLock<Vec<Sequence>> = std::sync::LazyLock::
         .call();
 
     let hiit_8x = Sequence::rounds()
-        .name("Tabata 20s (8x)")
+        .name("Tabata 8x20s")
         .rounds(8 * ROUNDS)
         .workout(ItemList::Tabata.workout(20 * SECOND))
         .difficulty(Difficulty::Hard)
@@ -297,6 +298,17 @@ pub static SEQUENCES: std::sync::LazyLock<Vec<Sequence>> = std::sync::LazyLock::
         .rest(10 * SECOND)
         .sound(&Sound::Beep)
         .call();
+
+    let _4x_hiit_8x = Sequence::rounds()
+        .name("Tabata 8x20s (4x)")
+        .rounds(8 * ROUNDS)
+        .workout(ItemList::Tabata.workout(20 * SECOND))
+        .difficulty(Difficulty::Hard)
+        .icon('🧨')
+        .rest(10 * SECOND)
+        .sound(&Sound::Beep)
+        .call()
+        .cycle(4, MINUTE);
 
     let _1mn = ItemList::Workout.workout(1 * MINUTE).sequence(&Sound::Bell);
     let _2mn = ItemList::Workout.workout(2 * MINUTE).sequence(&Sound::Bell);
@@ -344,6 +356,7 @@ pub static SEQUENCES: std::sync::LazyLock<Vec<Sequence>> = std::sync::LazyLock::
         stamina_roll_right,
         hiit_4x,
         hiit_8x,
+        _4x_hiit_8x,
         _1mn,
         _2mn,
         _3mn,
@@ -351,6 +364,7 @@ pub static SEQUENCES: std::sync::LazyLock<Vec<Sequence>> = std::sync::LazyLock::
         _10mn,
         _15mn,
     ];
-    sequences.sort_by_key(|s| s.name().to_string());
+
+    sequences.sort_by_key(|s| Natural::str(s.name().to_string()));
     sequences
 });

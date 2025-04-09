@@ -164,13 +164,20 @@ impl Sequence {
     pub fn slug(&self) -> String {
         slugify(&self.name)
     }
+    pub fn cycle(mut self, times: usize, rest: std::time::Duration) -> Self {
+        let workouts = self.workouts.clone();
+        for _ in 0..times {
+            self.workouts.push(&Workout::rest(rest));
+            self.workouts.extend(&workouts);
+        }
+        self
+    }
     pub fn goto_previous(&mut self) -> Option<&mut Workout> {
         // info!("sequence: goto previous");
         if self.workouts.is_empty() {
             // info!("sequence: workouts is empty, no previous");
             return None;
         }
-
         #[allow(clippy::manual_inspect)]
         self.workouts.previous_mut().map(|p| {
             p.reset();
