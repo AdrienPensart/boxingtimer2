@@ -1,71 +1,16 @@
 use crate::audio::Sounds;
-use crate::timer;
+use crate::global::Global;
 use crate::routes;
-use crate::signal::SoundSignal;
+use crate::routes::Route;
 use dioxus::prelude::*;
-use sport::defaults::{
-    DEFAULT_INTERVAL, NEXT_ITEM, PREPARE, PREVIOUS_ITEM, RANDOMIZE, RESTART_SEQUENCE, SEQUENCES,
-    SIGNAL,
-};
+use itertools::Itertools;
+use sport::defaults::SEQUENCES;
+use sport::defaults::{NEXT_ITEM, PREVIOUS_ITEM, RANDOMIZE, RESTART_SEQUENCE, SIGNAL};
 use sport::duration::DurationExt;
-
-#[derive(Clone)]
-pub struct Global {
-    pub timer: dioxus::signals::Signal<timer::Timer>,
-    pub sound_signal: dioxus::signals::Signal<SoundSignal>,
-}
-
-impl Global {
-    pub fn new(muted: bool, prepare: u64, sequence: &str) -> Option<Self> {
-        let prepare = if prepare == 0 { PREPARE } else { prepare };
-        let sequence = SEQUENCES.iter().find(|s| s.slug() == sequence)?;
-        let sound_signal = SoundSignal::from_muted(muted);
-        let mut timer = use_signal(|| {
-            timer::Timer::new(
-                std::time::Duration::from_secs(prepare),
-                sequence,
-                &sound_signal,
-            )
-        });
-
-        let _tick = use_resource(move || async move {
-            loop {
-                gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
-                if timer.write().tick() {
-                    gloo::timers::future::TimeoutFuture::new(DEFAULT_INTERVAL).await;
-                }
-            }
-        });
-
-        Some(Self {
-            sound_signal: use_signal(|| sound_signal),
-            timer,
-        })
-    }
-}
+use sport::item_list::ItemList;
 
 #[component]
-pub fn MobileHome() -> Element {
-    let sequences = SEQUENCES.as_slice();
-    rsx! {
-        ul { id: "sequences",
-            for sequence in sequences.iter() {
-                li { id: format!("sequence_{}", sequence.slug()),
-                    Link {
-                        to: routes::Route::MobileTimer {
-                            slug: sequence.slug(),
-                        },
-                        title: format!("Start timer for {}", sequence.name()),
-                        {sequence.to_string()}
-                    }
-                }
-            }
-        }
-    }
-}
-
-#[component]
-pub fn MobileTimer(slug: String) -> Element {
+pub fn SequenceTimer(slug: String) -> Element {
     let Some(global) = Global::new(false, 10, &slug) else {
         return rsx! { "unknown sequence" };
     };
@@ -77,7 +22,7 @@ pub fn MobileTimer(slug: String) -> Element {
     rsx! {
         Sounds {}
         div { id: "timer", class: "grid gap-4 grid-cols-1 text-3xl p-2",
-            MobileControls {}
+            Controls {}
             div { class: "flex items-center justify-center",
                 button {
                     id: "current_workout",
@@ -103,7 +48,7 @@ pub fn MobileTimer(slug: String) -> Element {
                 Link {
                     id: "exercises_link",
                     title: "See exercises in this sequence",
-                    to: routes::Route::SequenceHome {
+                    to: routes::Route::Workouts {
                         slug: global.timer.read().sequence().slug(),
                     },
                     {"See exercises"}
@@ -113,7 +58,7 @@ pub fn MobileTimer(slug: String) -> Element {
                 Link {
                     id: "home_link",
                     title: "Go to sequence list",
-                    to: routes::Route::SequencesHome {},
+                    to: routes::Route::Sequences {},
                     {"Home"}
                 }
             }
@@ -122,7 +67,7 @@ pub fn MobileTimer(slug: String) -> Element {
 }
 
 #[component]
-pub fn MobileControls() -> Element {
+pub fn Controls() -> Element {
     let mut global = use_context::<Global>();
     rsx! {
         div { id: "controls", class: "flex justify-evenly p-2",
@@ -183,6 +128,84 @@ pub fn MobileControls() -> Element {
                     onclick: move |_| { global.timer.with(|t| { t.ring() }) },
                     {SIGNAL}
                 }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn Sequences() -> Element {
+    rsx! {
+        ul { id: "sequences",
+            for sequence in SEQUENCES.iter() {
+                li { id: format!("sequence_{}", sequence.slug()),
+                    Link {
+                        to: Route::SequenceTimer {
+                            slug: sequence.slug(),
+                        },
+                        title: format!("Start timer for {}", sequence.name()),
+                        {sequence.to_string()}
+                    }
+                }
+            }
+        }
+    }
+    // span { {format!("Sequences: {}", SEQUENCES.len())} }
+}
+
+#[component]
+pub fn SequencesJson() -> Element {
+    rsx! {
+        pre { {serde_json::to_string_pretty(SEQUENCES.as_slice()).unwrap()} }
+    }
+}
+
+#[component]
+pub fn Tags() -> Element {
+    let tags = ItemList::tags();
+    rsx! {
+        span { {format!("Tags: {}", tags.len())} }
+        ul { id: "tags",
+            for tag in tags {
+                li { id: format!("tag_{}", tag.slug()),
+                    Link { to: Route::Items { slug: tag.slug() }, {tag.to_string()} }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn Items(slug: String) -> Element {
+    let items = if slug.is_empty() {
+        ItemList::items()
+    } else {
+        ItemList::tag_to_items()
+            .iter()
+            .filter(|(t, _)| t.slug() == slug)
+            .flat_map(|(_, items)| items.iter().cloned().collect_vec())
+            .collect_vec()
+    };
+    rsx! {
+        span { {format!("Items: {}", items.len())} }
+        ul { id: "items",
+            for item in items.iter() {
+                li { id: format!("item_{}", item.slug()), {item.to_string()} }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn Workouts(slug: String) -> Element {
+    let Some(sequence) = SEQUENCES.iter().find(|s| s.slug() == slug) else {
+        return rsx! { "unknown sequence" };
+    };
+
+    rsx! {
+        ul { id: "workouts",
+            for item in sequence.unique_items().iter() {
+                li { id: format!("item_{}", item.slug()), {item.name()} }
             }
         }
     }

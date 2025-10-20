@@ -1,7 +1,8 @@
 #![allow(non_snake_case)]
 pub mod audio;
+pub mod components;
 pub mod errors;
-pub mod mobile;
+pub mod global;
 pub mod routes;
 pub mod signal;
 pub mod status;
