@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
-use serde_with::DurationSeconds;
-
 use crate::duration::DurationExt;
+use serde::{Deserialize, Serialize};
+use serde_with::DurationSeconds;
+use serde_with::serde_as;
+use time::ext::NumericalStdDuration;
 
 #[serde_as]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -21,9 +21,9 @@ impl Stopwatch {
         self.left = self.duration;
         self
     }
-    pub fn increment(&mut self) {
-        self.left.increment();
-    }
+    // pub fn increment(&mut self) {
+    //     self.left.increment();
+    // }
     pub fn decrement(&mut self) -> bool {
         let success = self.left.decrement();
         if success {
@@ -32,7 +32,7 @@ impl Stopwatch {
         success
     }
     pub fn last_seconds(&self) -> bool {
-        self.left.as_secs() < 3
+        self.left < 3.std_seconds()
     }
     pub fn duration(&self) -> &std::time::Duration {
         &self.duration

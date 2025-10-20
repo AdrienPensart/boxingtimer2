@@ -108,7 +108,7 @@ where
 
         let index = match self.index {
             None => {
-                return self.store.get(0);
+                return self.store.first();
             }
             Some(index) => index,
         };

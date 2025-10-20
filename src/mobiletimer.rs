@@ -44,6 +44,7 @@ impl MobileTimer {
     pub fn sequence(&self) -> &Sequence {
         &self.sequence
     }
+    #[must_use]
     pub fn sound_signal(&self) -> &SoundSignal {
         &self.sound_signal
     }

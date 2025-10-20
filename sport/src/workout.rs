@@ -36,10 +36,10 @@ impl std::fmt::Display for Workout {
             self.stopwatch.duration().to_string()
         )?;
 
-        if !self.is_rest() {
-            if let Some(joined_tags) = self.item.joined_tags() {
-                write!(f, " ({joined_tags})")?;
-            }
+        if !self.is_rest()
+            && let Some(joined_tags) = self.item.joined_tags()
+        {
+            write!(f, " ({joined_tags})")?;
         }
         Ok(())
     }
@@ -72,6 +72,6 @@ impl Workout {
         &self.item
     }
     pub fn description(&self) -> &Option<String> {
-        &self.item.description()
+        self.item.description()
     }
 }

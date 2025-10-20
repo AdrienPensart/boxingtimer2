@@ -94,6 +94,8 @@ pub fn MobileTimer(slug: String) -> Element {
                         {next_workout.item().name()}
                     }
                 }
+            } else {
+                span { class: "flex items-center justify-center", "END" }
             }
             div { class: "flex items-center justify-center",
                 Link {
