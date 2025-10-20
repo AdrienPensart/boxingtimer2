@@ -1,18 +1,14 @@
 #![allow(non_snake_case)]
 pub mod audio;
 pub mod errors;
-pub mod loading;
 pub mod mobile;
-pub mod mobiletimer;
 pub mod routes;
 pub mod signal;
 pub mod status;
 pub mod timer;
-pub mod web;
 
 use dioxus::logger::tracing::Level;
 use dioxus::prelude::*;
-// use loading::ChildrenOrLoading;
 
 fn main() {
     dioxus::logger::init(Level::INFO).expect("failed to init logger");
@@ -36,7 +32,6 @@ fn main() {
 }
 
 fn App() -> Element {
-    // div { class: "min-h-screen", Router::<routes::Route> {} }
     rsx! {
         document::Link { rel: "icon", href: asset!("/assets/favicon.png") }
         document::Stylesheet { href: asset!("/assets/tailwind.css") }

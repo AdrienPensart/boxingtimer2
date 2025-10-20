@@ -1,5 +1,5 @@
 use crate::audio::Sounds;
-use crate::mobiletimer;
+use crate::timer;
 use crate::routes;
 use crate::signal::SoundSignal;
 use dioxus::prelude::*;
@@ -11,7 +11,7 @@ use sport::duration::DurationExt;
 
 #[derive(Clone)]
 pub struct Global {
-    pub timer: dioxus::signals::Signal<mobiletimer::MobileTimer>,
+    pub timer: dioxus::signals::Signal<timer::Timer>,
     pub sound_signal: dioxus::signals::Signal<SoundSignal>,
 }
 
@@ -21,7 +21,7 @@ impl Global {
         let sequence = SEQUENCES.iter().find(|s| s.slug() == sequence)?;
         let sound_signal = SoundSignal::from_muted(muted);
         let mut timer = use_signal(|| {
-            mobiletimer::MobileTimer::new(
+            timer::Timer::new(
                 std::time::Duration::from_secs(prepare),
                 sequence,
                 &sound_signal,
@@ -55,6 +55,7 @@ pub fn MobileHome() -> Element {
                         to: routes::Route::MobileTimer {
                             slug: sequence.slug(),
                         },
+                        title: format!("Start timer for {}", sequence.name()),
                         {sequence.to_string()}
                     }
                 }
@@ -66,10 +67,10 @@ pub fn MobileHome() -> Element {
 #[component]
 pub fn MobileTimer(slug: String) -> Element {
     let Some(global) = Global::new(false, 10, &slug) else {
-        return rsx! { "Unknown sequence" };
+        return rsx! { "unknown sequence" };
     };
     if global.timer.read().sequence().is_empty() {
-        return rsx! { "Empty sequence" };
+        return rsx! { "empty sequence" };
     }
     let mut global = use_context_provider(|| global);
     let timer = global.timer.read();
@@ -80,12 +81,13 @@ pub fn MobileTimer(slug: String) -> Element {
             div { class: "flex items-center justify-center",
                 button {
                     id: "current_workout",
-                    onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_workout),
+                    title: "Restart workout",
+                    onclick: move |_| global.timer.with_mut(super::timer::Timer::restart_workout),
                     {timer.label()}
                 }
             }
             div { class: "flex items-center justify-center",
-                span { id: "counter", {global.timer.read().left().to_string()} }
+                span { id: "counter", title: "Time left", {global.timer.read().left().to_string()} }
             }
             if let Some(next_workout) = global.timer.read().sequence().next_workout() {
                 div { class: "flex items-center justify-center",
@@ -100,6 +102,7 @@ pub fn MobileTimer(slug: String) -> Element {
             div { class: "flex items-center justify-center",
                 Link {
                     id: "exercises_link",
+                    title: "See exercises in this sequence",
                     to: routes::Route::SequenceHome {
                         slug: global.timer.read().sequence().slug(),
                     },
@@ -107,7 +110,12 @@ pub fn MobileTimer(slug: String) -> Element {
                 }
             }
             div { class: "flex items-center justify-center",
-                Link { id: "home_link", to: routes::Route::SequencesHome {}, {"Home"} }
+                Link {
+                    id: "home_link",
+                    title: "Go to sequence list",
+                    to: routes::Route::SequencesHome {},
+                    {"Home"}
+                }
             }
         }
     }
@@ -121,29 +129,29 @@ pub fn MobileControls() -> Element {
             button {
                 id: "toggle_timer",
                 class: "rounded-full text-3xl",
-                title: global.timer.read().next_status_title(),
-                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::toggle),
-                {global.timer.read().next_status().to_string()}
+                title: global.timer.read().status().next_title(),
+                onclick: move |_| global.timer.with_mut(super::timer::Timer::toggle),
+                {global.timer.read().status().next().to_string()}
             }
             button {
                 id: "restart_sequence",
                 class: "rounded-full text-3xl",
                 title: "Restart sequence",
-                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_sequence),
+                onclick: move |_| global.timer.with_mut(super::timer::Timer::restart_sequence),
                 {RESTART_SEQUENCE}
             }
             button {
                 id: "previous_workout",
                 class: "rounded-full text-3xl",
                 title: "Previous workout",
-                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::manual_previous),
+                onclick: move |_| global.timer.with_mut(super::timer::Timer::manual_previous),
                 {PREVIOUS_ITEM}
             }
             button {
                 id: "next_workout",
                 class: "rounded-full text-3xl",
                 title: "Next workout",
-                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::manual_next),
+                onclick: move |_| global.timer.with_mut(super::timer::Timer::manual_next),
                 {NEXT_ITEM}
             }
             if global.timer.read().sequence().shufflable() {
@@ -151,7 +159,7 @@ pub fn MobileControls() -> Element {
                     id: "randomize",
                     class: "rounded-full text-3xl",
                     title: "Shuffle sequence",
-                    onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::shuffle),
+                    onclick: move |_| global.timer.with_mut(super::timer::Timer::shuffle),
                     {RANDOMIZE}
                 }
             }
