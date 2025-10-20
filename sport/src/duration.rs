@@ -29,6 +29,3 @@ impl DurationExt for std::time::Duration {
         format!("{minutes}:{seconds_left:02}")
     }
 }
-
-pub const SECOND: std::time::Duration = std::time::Duration::from_secs(1);
-pub const MINUTE: std::time::Duration = std::time::Duration::from_secs(60);

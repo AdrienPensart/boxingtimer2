@@ -87,21 +87,39 @@ where
         store.shuffle(&mut rand::rng());
         store
     }
-    pub fn get(&self) -> Option<&T> {
+    pub fn current(&self) -> Option<&T> {
         if let Some(index) = self.index {
             self.store.get(index)
         } else {
             None
         }
     }
-    pub fn get_mut(&mut self) -> Option<&mut T> {
+    pub fn current_mut(&mut self) -> Option<&mut T> {
         if let Some(index) = self.index {
             self.store.get_mut(index)
         } else {
             None
         }
     }
-    pub fn next_mut(&mut self) -> Option<&mut T> {
+    pub fn next(&self) -> Option<&T> {
+        if self.store.is_empty() {
+            return None;
+        }
+
+        let index = match self.index {
+            None => {
+                return self.store.get(0);
+            }
+            Some(index) => index,
+        };
+
+        if index < self.store.len() - 1 {
+            self.store.get(index + 1)
+        } else {
+            None
+        }
+    }
+    pub fn go_next_mut(&mut self) -> Option<&mut T> {
         if self.store.is_empty() {
             self.index = None;
             return None;
@@ -123,7 +141,7 @@ where
             None
         }
     }
-    pub fn previous_mut(&mut self) -> Option<&mut T> {
+    pub fn go_previous_mut(&mut self) -> Option<&mut T> {
         if self.store.is_empty() {
             self.index = None;
             return None;
@@ -154,12 +172,12 @@ fn indexedvec_default_tests() {
     let mut default = IndexedVec::<bool>::default();
     assert!(default.is_empty());
     assert!(default.index().is_none());
-    assert!(default.get().is_none());
+    assert!(default.current().is_none());
     assert!(default.last());
-    let next = default.next_mut();
+    let next = default.go_next_mut();
     assert!(next.is_none());
     assert!(default.index().is_none());
-    let next = default.next_mut();
+    let next = default.go_next_mut();
     assert!(next.is_none());
     assert!(default.index().is_none());
 }
@@ -169,29 +187,29 @@ fn indexedvec_simple_tests() {
     let mut simple = IndexedVec::from(vec![false, true]);
     assert!(!simple.is_empty());
     assert!(simple.index().is_none());
-    assert!(simple.get().is_none());
+    assert!(simple.current().is_none());
     assert!(!simple.last());
 
-    let next = simple.next_mut();
+    let next = simple.go_next_mut();
     assert_eq!(next, Some(&mut false));
     assert_eq!(simple.index(), Some(0));
-    assert_eq!(simple.get(), Some(&false));
+    assert_eq!(simple.current(), Some(&false));
     assert!(!simple.last());
 
-    let next = simple.next_mut();
+    let next = simple.go_next_mut();
     assert_eq!(next, Some(&mut true));
     assert_eq!(simple.index(), Some(1));
-    assert_eq!(simple.get(), Some(&true));
+    assert_eq!(simple.current(), Some(&true));
     assert!(simple.last());
 
-    let next = simple.next_mut();
+    let next = simple.go_next_mut();
     assert!(next.is_none());
     assert!(simple.index().is_none());
-    assert!(simple.get().is_none());
+    assert!(simple.current().is_none());
 
     simple.reset();
-    assert_eq!(simple.next_mut(), Some(&mut false));
+    assert_eq!(simple.go_next_mut(), Some(&mut false));
     assert_eq!(simple.index(), Some(0));
-    assert_eq!(simple.get(), Some(&false));
+    assert_eq!(simple.current(), Some(&false));
     assert!(!simple.last());
 }

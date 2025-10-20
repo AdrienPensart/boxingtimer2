@@ -1,5 +1,4 @@
-use crate::mobile::{MobileHome, MobileTimer};
-use crate::web::WebHome;
+use crate::mobile::MobileTimer;
 use dioxus::prelude::*;
 use itertools::Itertools;
 use sport::defaults::SEQUENCES;
@@ -7,40 +6,29 @@ use sport::item_list::ItemList;
 
 #[derive(Clone, Routable, Debug, PartialEq)]
 pub enum Route {
-    #[route("/?:muted&:prepare&:sequence")]
-    WebHome {
-        muted: bool,
-        prepare: u64,
-        sequence: String,
-    },
-    #[route("/sequences")]
+    #[route("/")]
     SequencesHome {},
     #[route("/sequences.json")]
     SequencesJson {},
-    #[route("/sequence?:name")]
-    SequenceHome { name: String },
+    #[route("/sequence?:slug")]
+    SequenceHome { slug: String },
     #[route("/tags")]
     TagsHome {},
-    #[route("/items?:tag")]
-    ItemsHome { tag: String },
-    #[route("/item?:name")]
-    ItemHome { name: String },
-    #[route("/mobile")]
-    MobileHome {},
-    #[route("/timer?:sequence")]
-    MobileTimer { sequence: String },
+    #[route("/items?:slug")]
+    ItemsHome { slug: String },
+    #[route("/timer?:slug")]
+    MobileTimer { slug: String },
 }
 
 #[component]
 pub fn SequencesHome() -> Element {
     rsx! {
-        span { {format!("Sequences: {}", SEQUENCES.len())} }
         ul { id: "sequences",
             for sequence in SEQUENCES.iter() {
                 li { id: format!("sequence_{}", sequence.slug()),
                     Link {
-                        to: Route::SequenceHome {
-                            name: sequence.slug(),
+                        to: Route::MobileTimer {
+                            slug: sequence.slug(),
                         },
                         {sequence.to_string()}
                     }
@@ -48,6 +36,7 @@ pub fn SequencesHome() -> Element {
             }
         }
     }
+    // span { {format!("Sequences: {}", SEQUENCES.len())} }
 }
 
 #[component]
@@ -67,7 +56,7 @@ pub fn TagsHome() -> Element {
                 li { id: format!("tag_{}", tag.slug()),
                     Link {
                         to: Route::ItemsHome {
-                            tag: tag.slug(),
+                            slug: tag.slug(),
                         },
                         {tag.to_string()}
                     }
@@ -78,13 +67,13 @@ pub fn TagsHome() -> Element {
 }
 
 #[component]
-pub fn ItemsHome(tag: String) -> Element {
-    let items = if tag.is_empty() {
+pub fn ItemsHome(slug: String) -> Element {
+    let items = if slug.is_empty() {
         ItemList::items()
     } else {
         ItemList::tag_to_items()
             .iter()
-            .filter(|(t, _)| t.slug() == tag)
+            .filter(|(t, _)| t.slug() == slug)
             .flat_map(|(_, items)| items.iter().cloned().collect_vec())
             .collect_vec()
     };
@@ -92,25 +81,23 @@ pub fn ItemsHome(tag: String) -> Element {
         span { {format!("Items: {}", items.len())} }
         ul { id: "items",
             for item in items.iter() {
-                li { id: format!("item_{}", item.slug()),
-                    Link {
-                        to: Route::ItemHome {
-                            name: item.slug(),
-                        },
-                        {item.to_string()}
-                    }
-                }
+                li { id: format!("item_{}", item.slug()), {item.to_string()} }
             }
         }
     }
 }
 
 #[component]
-pub fn ItemHome(name: String) -> Element {
-    rsx! { "unimplemented" }
-}
+pub fn SequenceHome(slug: String) -> Element {
+    let Some(sequence) = SEQUENCES.iter().find(|s| s.slug() == slug) else {
+        return rsx! { "unknown sequence" };
+    };
 
-#[component]
-pub fn SequenceHome(name: String) -> Element {
-    rsx! { "unimplemented" }
+    rsx! {
+        ul { id: "workouts",
+            for item in sequence.unique_items().iter() {
+                li { id: format!("item_{}", item.slug()), {item.name()} }
+            }
+        }
+    }
 }

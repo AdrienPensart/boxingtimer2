@@ -71,4 +71,7 @@ impl Workout {
     pub fn item(&self) -> &Item {
         &self.item
     }
+    pub fn description(&self) -> &Option<String> {
+        &self.item.description()
+    }
 }

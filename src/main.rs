@@ -12,7 +12,7 @@ pub mod web;
 
 use dioxus::logger::tracing::Level;
 use dioxus::prelude::*;
-use loading::ChildrenOrLoading;
+// use loading::ChildrenOrLoading;
 
 fn main() {
     dioxus::logger::init(Level::INFO).expect("failed to init logger");
@@ -36,9 +36,10 @@ fn main() {
 }
 
 fn App() -> Element {
+    // div { class: "min-h-screen", Router::<routes::Route> {} }
     rsx! {
         document::Link { rel: "icon", href: asset!("/assets/favicon.png") }
         document::Stylesheet { href: asset!("/assets/tailwind.css") }
-        ChildrenOrLoading { Router::<routes::Route> {} }
+        Router::<routes::Route> {}
     }
 }

@@ -1,6 +1,7 @@
 use crate::duration::DurationExt;
 use crate::exercises::Exercises;
 use crate::indexedvec::IndexedVec;
+use crate::item::Item;
 use crate::sound::Sound;
 use crate::stopwatch::Stopwatch;
 use crate::tag::{Difficulty, Tag};
@@ -179,7 +180,7 @@ impl Sequence {
             return None;
         }
         #[allow(clippy::manual_inspect)]
-        self.workouts.previous_mut().map(|p| {
+        self.workouts.go_previous_mut().map(|p| {
             p.reset();
             p
         })
@@ -189,13 +190,13 @@ impl Sequence {
         if self.workouts.is_empty() {
             // info!("sequence: workouts is empty, no next");
         } else if !self.workouts.last() {
-            self.workouts.next_mut();
+            self.workouts.go_next_mut();
             self.reset_workout();
         } else {
             self.workouts.set_index(0);
             self.reset_workout();
         }
-        self.get_mut()
+        self.current_mut()
     }
     pub fn auto_next(&mut self) -> Option<&mut Workout> {
         // info!("sequence: auto next");
@@ -203,22 +204,25 @@ impl Sequence {
             // info!("sequence: workouts is empty, no next");
             return None;
         }
-        let workout = self.workouts.next_mut()?;
+        let workout = self.workouts.go_next_mut()?;
         workout.reset();
         Some(workout)
     }
+    pub fn next_workout(&self) -> Option<&Workout> {
+        self.workouts.next()
+    }
     pub fn stopwatch(&mut self) -> Option<&Stopwatch> {
-        self.workouts.get().map(|i| i.stopwatch())
+        self.workouts.current().map(|i| i.stopwatch())
     }
     pub fn decrement(&mut self) -> bool {
-        self.workouts.get_mut().is_some_and(|i| i.decrement())
+        self.workouts.current_mut().is_some_and(|i| i.decrement())
     }
     pub fn last_seconds(&self) -> bool {
-        self.workouts.get().is_some_and(|i| i.last_seconds())
+        self.workouts.current().is_some_and(|i| i.last_seconds())
     }
     pub fn reset_workout(&mut self) {
         // info!("sequence: reset current workout");
-        if let Some(i) = self.workouts.get_mut() {
+        if let Some(i) = self.workouts.current_mut() {
             i.reset();
         }
     }
@@ -231,6 +235,9 @@ impl Sequence {
     }
     pub fn name(&self) -> &str {
         &self.name
+    }
+    pub fn description(&self) -> &Option<String> {
+        &self.description
     }
     pub fn total(&self) -> std::time::Duration {
         std::time::Duration::from_secs(
@@ -285,14 +292,28 @@ impl Sequence {
     pub fn shufflable(&self) -> bool {
         self.shuffleable
     }
+    pub fn unique_items(&self) -> Vec<&Item> {
+        self.workouts
+            .iter()
+            .filter(|workout| !workout.is_rest())
+            .map(|workout| workout.item())
+            .unique()
+            .collect_vec()
+    }
 }
 
 #[test]
 fn sequence_simple_tests() {
-    use crate::duration::SECOND;
     use crate::item::Item;
-    let warm_up = Item::builder().name("warm up").build().workout(3 * SECOND);
-    let workout = Item::builder().name("workout").build().workout(6 * SECOND);
+    use time::ext::NumericalStdDuration;
+    let warm_up = Item::builder()
+        .name("warm up")
+        .build()
+        .workout(3.std_seconds());
+    let workout = Item::builder()
+        .name("workout")
+        .build()
+        .workout(6.std_seconds());
     let mut simple = Sequence::simple()
         .name("simple sequence")
         .workouts(&[warm_up.clone(), workout.clone()])
@@ -300,26 +321,26 @@ fn sequence_simple_tests() {
         .call();
 
     assert!(simple.auto_next().is_some());
-    assert_eq!(simple.get(), Some(&warm_up));
+    assert_eq!(simple.current(), Some(&warm_up));
 
     assert!(simple.auto_next().is_some());
-    assert_eq!(simple.get(), Some(&workout));
+    assert_eq!(simple.current(), Some(&workout));
 
     assert!(simple.auto_next().is_none());
-    assert_eq!(simple.get(), None);
+    assert_eq!(simple.current(), None);
 
     simple.manual_next();
-    assert_eq!(simple.get(), Some(&warm_up));
+    assert_eq!(simple.current(), Some(&warm_up));
 
     simple.manual_next();
-    assert_eq!(simple.get(), Some(&workout));
+    assert_eq!(simple.current(), Some(&workout));
 
     assert!(simple.auto_next().is_none());
-    assert_eq!(simple.get(), None);
+    assert_eq!(simple.current(), None);
 
     simple.manual_next();
-    assert_eq!(simple.get(), Some(&warm_up));
+    assert_eq!(simple.current(), Some(&warm_up));
 
     simple.reset();
-    assert_eq!(simple.get(), None);
+    assert_eq!(simple.current(), None);
 }

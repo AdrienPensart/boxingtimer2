@@ -27,6 +27,13 @@ impl Status {
         }
     }
     #[must_use]
+    pub fn next_title(&self) -> String {
+        match self.next() {
+            Self::Paused => "Pause timer".to_string(),
+            Self::Running => "Start timer".to_string(),
+        }
+    }
+    #[must_use]
     pub fn paused(&self) -> bool {
         matches!(self, Self::Paused)
     }

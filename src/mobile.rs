@@ -53,29 +53,19 @@ pub fn MobileHome() -> Element {
                 li { id: format!("sequence_{}", sequence.slug()),
                     Link {
                         to: routes::Route::MobileTimer {
-                            sequence: sequence.slug(),
+                            slug: sequence.slug(),
                         },
                         {sequence.to_string()}
                     }
                 }
             }
         }
-        Link {
-            id: "web_home",
-            class: "flex text-2xl justify-center",
-            to: routes::Route::WebHome {
-                prepare: PREPARE,
-                muted: false,
-                sequence: String::new(),
-            },
-            {"Web Home"}
-        }
     }
 }
 
 #[component]
-pub fn MobileTimer(sequence: String) -> Element {
-    let Some(global) = Global::new(false, 10, &sequence) else {
+pub fn MobileTimer(slug: String) -> Element {
+    let Some(global) = Global::new(false, 10, &slug) else {
         return rsx! { "Unknown sequence" };
     };
     if global.timer.read().sequence().is_empty() {
@@ -85,42 +75,38 @@ pub fn MobileTimer(sequence: String) -> Element {
     let timer = global.timer.read();
     rsx! {
         Sounds {}
-        MobileControls {}
-        div { id: "timer", class: "flex justify-evenly text-3xl p-2",
-            button {
-                id: "current_workout",
-                onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_workout),
-                {timer.label()}
-                "(♻)"
+        div { id: "timer", class: "grid gap-4 grid-cols-1 text-3xl p-2",
+            MobileControls {}
+            div { class: "flex items-center justify-center",
+                button {
+                    id: "current_workout",
+                    onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_workout),
+                    {timer.label()}
+                }
             }
-            label { id: "counter", {global.timer.read().left().to_string()} }
-        }
-        if !global.timer.read().sequence().is_empty() {
-            ul { id: "sequence", class: "info flex-none p-2",
-                for (index , workout) in global.timer.read().sequence().iter().enumerate() {
-                    li {
-                        class: "text-nowrap",
-                        class: if global.timer.read().sequence().index() == Some(index) { "text-red-600" } else { "" },
-                        span { class: "text-sm", "{workout}" }
+            div { class: "flex items-center justify-center",
+                span { id: "counter", {global.timer.read().left().to_string()} }
+            }
+            if let Some(next_workout) = global.timer.read().sequence().next_workout() {
+                div { class: "flex items-center justify-center",
+                    span { id: "next_exercise",
+                        {"Next: "}
+                        {next_workout.item().name()}
                     }
                 }
             }
-        }
-        Link {
-            id: "mobile_home",
-            class: "flex text-2xl justify-center",
-            to: routes::Route::MobileHome {},
-            {"Mobile Home"}
-        }
-        Link {
-            id: "web_home",
-            class: "flex text-2xl justify-center",
-            to: routes::Route::WebHome {
-                prepare: PREPARE,
-                muted: false,
-                sequence: String::new(),
-            },
-            {"Web Home"}
+            div { class: "flex items-center justify-center",
+                Link {
+                    id: "exercises_link",
+                    to: routes::Route::SequenceHome {
+                        slug: global.timer.read().sequence().slug(),
+                    },
+                    {"See exercises"}
+                }
+            }
+            div { class: "flex items-center justify-center",
+                Link { id: "home_link", to: routes::Route::SequencesHome {}, {"Home"} }
+            }
         }
     }
 }
@@ -133,24 +119,28 @@ pub fn MobileControls() -> Element {
             button {
                 id: "toggle_timer",
                 class: "rounded-full text-3xl",
+                title: global.timer.read().next_status_title(),
                 onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::toggle),
                 {global.timer.read().next_status().to_string()}
             }
             button {
                 id: "restart_sequence",
                 class: "rounded-full text-3xl",
+                title: "Restart sequence",
                 onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::restart_sequence),
                 {RESTART_SEQUENCE}
             }
             button {
                 id: "previous_workout",
                 class: "rounded-full text-3xl",
+                title: "Previous workout",
                 onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::manual_previous),
                 {PREVIOUS_ITEM}
             }
             button {
                 id: "next_workout",
                 class: "rounded-full text-3xl",
+                title: "Next workout",
                 onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::manual_next),
                 {NEXT_ITEM}
             }
@@ -158,6 +148,7 @@ pub fn MobileControls() -> Element {
                 button {
                     id: "randomize",
                     class: "rounded-full text-3xl",
+                    title: "Shuffle sequence",
                     onclick: move |_| global.timer.with_mut(super::mobiletimer::MobileTimer::shuffle),
                     {RANDOMIZE}
                 }
@@ -166,13 +157,20 @@ pub fn MobileControls() -> Element {
                 button {
                     id: "toggle_signal",
                     class: "text-3xl",
+                    title: global.sound_signal.read().state().next_title(),
                     onclick: move |_| global.sound_signal.with_mut(super::signal::SoundSignal::toggle),
+                    input {
+                        r#type: "checkbox",
+                        checked: global.sound_signal.read().enabled(),
+                        id: "mute_or_unmute",
+                    }
                     {global.sound_signal.read().next().to_string()}
                 }
                 button {
                     id: "emit_signal",
                     class: "text-3xl",
-                    onclick: move |_| { global.timer.with(|t| { t.always_ring() }) },
+                    title: "Emit signal sound",
+                    onclick: move |_| { global.timer.with(|t| { t.ring() }) },
                     {SIGNAL}
                 }
             }

@@ -1,11 +1,9 @@
-use crate::audio;
 use crate::signal::SoundSignal;
 use crate::status::Status;
 use dioxus::logger::tracing::info;
 use sport::defaults;
 use sport::sequence::Sequence;
 use sport::stopwatch::Stopwatch;
-use sport::workout::Workout;
 
 #[derive(Debug)]
 pub struct MobileTimer {
@@ -37,7 +35,7 @@ impl MobileTimer {
     }
     #[must_use]
     pub fn left(&self) -> &std::time::Duration {
-        if let Some(workout) = self.sequence.get() {
+        if let Some(workout) = self.sequence.current() {
             return workout.left();
         }
         self.preparation.left()
@@ -46,8 +44,11 @@ impl MobileTimer {
     pub fn sequence(&self) -> &Sequence {
         &self.sequence
     }
-    pub fn always_ring(&self) {
-        let _ = audio::play(self.sequence.sound());
+    pub fn sound_signal(&self) -> &SoundSignal {
+        &self.sound_signal
+    }
+    pub fn ring(&self) {
+        self.sound_signal.ring(self.sequence.sound());
     }
     pub fn restart_sequence(&mut self) {
         self.preparation.reset();
@@ -67,7 +68,7 @@ impl MobileTimer {
             return false;
         }
 
-        if self.sequence.get().is_none() && self.preparation.decrement() {
+        if self.sequence.current().is_none() && self.preparation.decrement() {
             if self.sequence.sound().is_beep() && self.preparation.last_seconds() {
                 self.sound_signal.ring(self.sequence.sound());
             }
@@ -106,17 +107,13 @@ impl MobileTimer {
     }
     #[must_use]
     pub fn label(&self) -> &str {
-        if self.sequence.get().is_none() {
+        if self.sequence.current().is_none() {
             return defaults::PREPARE_LABEL;
         }
-        let Some(workout) = self.sequence.get() else {
+        let Some(workout) = self.sequence.current() else {
             return defaults::PREPARE_LABEL;
         };
         workout.item().name()
-    }
-    #[must_use]
-    pub fn current_workout(&self) -> Option<&Workout> {
-        self.sequence.get()
     }
     #[must_use]
     pub fn status(&self) -> &Status {
@@ -135,6 +132,10 @@ impl MobileTimer {
     #[must_use]
     pub fn next_status(&self) -> &Status {
         self.status.next()
+    }
+    #[must_use]
+    pub fn next_status_title(&self) -> String {
+        self.status.next_title()
     }
     #[must_use]
     pub fn paused(&self) -> bool {

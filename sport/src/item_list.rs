@@ -84,7 +84,9 @@ impl ItemList {
         tags2items
     }
     pub fn tags() -> Vec<Tag> {
-        Self::tag_to_items().keys().cloned().collect_vec()
+        let mut tags = Self::tag_to_items().keys().cloned().collect_vec();
+        tags.sort_by_key(|t| t.slug());
+        tags
     }
     pub fn items() -> Vec<Item> {
         let mut items: Vec<_> = Self::VARIANTS

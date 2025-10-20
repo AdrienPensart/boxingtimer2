@@ -26,6 +26,13 @@ impl SoundState {
         }
     }
     #[must_use]
+    pub fn next_title(&self) -> String {
+        match self.next() {
+            Self::Disabled => "Disable sound".to_string(),
+            Self::Enabled => "Enable sound".to_string(),
+        }
+    }
+    #[must_use]
     pub fn enabled(&self) -> bool {
         matches!(self, Self::Enabled)
     }
