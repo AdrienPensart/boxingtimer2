@@ -8,6 +8,7 @@ use sport::defaults::SEQUENCES;
 use sport::defaults::{NEXT_ITEM, PREVIOUS_ITEM, RANDOMIZE, RESTART_SEQUENCE, SIGNAL};
 use sport::duration::DurationExt;
 use sport::item_list::ItemList;
+use sport::timer::Timer;
 
 #[component]
 pub fn SequenceTimer(slug: String) -> Element {
@@ -27,7 +28,7 @@ pub fn SequenceTimer(slug: String) -> Element {
                 button {
                     id: "current_workout",
                     title: "Restart workout",
-                    onclick: move |_| global.timer.with_mut(super::timer::Timer::restart_workout),
+                    onclick: move |_| global.timer.with_mut(Timer::restart_workout),
                     {timer.label()}
                 }
             }
@@ -66,6 +67,44 @@ pub fn SequenceTimer(slug: String) -> Element {
     }
 }
 
+// #[component]
+// pub fn SequenceTimer2(slug: String) -> Element {
+//     let Some(global) = Global::new(false, 10, &slug) else {
+//         return rsx! { "unknown sequence" };
+//     };
+//     if global.timer.read().sequence().is_empty() {
+//         return rsx! { "empty sequence" };
+//     }
+//     let mut global = use_context_provider(|| global);
+//     let timer = global.timer.read();
+//     rsx! {
+//         div { class: "container",
+//             div { class: "controls",
+//                 div { class: "start_stop" }
+//                 div { class: "restart_sequence" }
+//                 div { class: "previous" }
+//                 div { class: "next" }
+//                 div { class: "mute" }
+//                 div { class: "ring" }
+//             }
+//             div { class: "timer",
+//                 div { class: "current_items",
+//                     div { class: "previous_item" }
+//                     div { class: "current_item" }
+//                     div { class: "next_item" }
+//                 }
+//                 div { class: "counter" }
+//                 div { class: "sequence_items" }
+//             }
+//             div { class: "links",
+//                 div { class: "sequences" }
+//                 div { class: "tags" }
+//                 div { class: "items" }
+//             }
+//         }
+//     }
+// }
+
 #[component]
 pub fn Controls() -> Element {
     let mut global = use_context::<Global>();
@@ -75,28 +114,28 @@ pub fn Controls() -> Element {
                 id: "toggle_timer",
                 class: "rounded-full text-3xl",
                 title: global.timer.read().status().next_title(),
-                onclick: move |_| global.timer.with_mut(super::timer::Timer::toggle),
+                onclick: move |_| global.timer.with_mut(Timer::toggle),
                 {global.timer.read().status().next().to_string()}
             }
             button {
                 id: "restart_sequence",
                 class: "rounded-full text-3xl",
                 title: "Restart sequence",
-                onclick: move |_| global.timer.with_mut(super::timer::Timer::restart_sequence),
+                onclick: move |_| global.timer.with_mut(Timer::restart_sequence),
                 {RESTART_SEQUENCE}
             }
             button {
                 id: "previous_workout",
                 class: "rounded-full text-3xl",
                 title: "Previous workout",
-                onclick: move |_| global.timer.with_mut(super::timer::Timer::manual_previous),
+                onclick: move |_| global.timer.with_mut(Timer::manual_previous),
                 {PREVIOUS_ITEM}
             }
             button {
                 id: "next_workout",
                 class: "rounded-full text-3xl",
                 title: "Next workout",
-                onclick: move |_| global.timer.with_mut(super::timer::Timer::manual_next),
+                onclick: move |_| global.timer.with_mut(Timer::manual_next),
                 {NEXT_ITEM}
             }
             if global.timer.read().sequence().shufflable() {
@@ -104,7 +143,7 @@ pub fn Controls() -> Element {
                     id: "randomize",
                     class: "rounded-full text-3xl",
                     title: "Shuffle sequence",
-                    onclick: move |_| global.timer.with_mut(super::timer::Timer::shuffle),
+                    onclick: move |_| global.timer.with_mut(Timer::shuffle),
                     {RANDOMIZE}
                 }
             }
@@ -113,7 +152,7 @@ pub fn Controls() -> Element {
                     id: "toggle_signal",
                     class: "text-3xl",
                     title: global.sound_signal.read().state().next_title(),
-                    onclick: move |_| global.sound_signal.with_mut(super::signal::SoundSignal::toggle),
+                    onclick: move |_| global.sound_signal.with_mut(sport::signal::SoundSignal::toggle),
                     input {
                         r#type: "checkbox",
                         checked: global.sound_signal.read().enabled(),

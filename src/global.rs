@@ -1,7 +1,7 @@
-use crate::signal::SoundSignal;
-use crate::timer;
 use dioxus::prelude::*;
 use sport::defaults::{DEFAULT_INTERVAL, PREPARE, SEQUENCES};
+use sport::signal::SoundSignal;
+use sport::timer;
 
 #[derive(Clone)]
 pub struct Global {
@@ -19,6 +19,7 @@ impl Global {
                 std::time::Duration::from_secs(prepare),
                 sequence,
                 &sound_signal,
+                Box::new(crate::audio::AudioPlayer),
             )
         });
 

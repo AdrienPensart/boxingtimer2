@@ -1,12 +1,8 @@
 #![allow(non_snake_case)]
 pub mod audio;
 pub mod components;
-pub mod errors;
 pub mod global;
 pub mod routes;
-pub mod signal;
-pub mod status;
-pub mod timer;
 
 use dioxus::logger::tracing::Level;
 use dioxus::prelude::*;
@@ -36,6 +32,7 @@ fn App() -> Element {
     rsx! {
         document::Link { rel: "icon", href: asset!("/assets/favicon.png") }
         document::Stylesheet { href: asset!("/assets/tailwind.css") }
+        document::Stylesheet { href: asset!("/assets/app.css") }
         Router::<routes::Route> {}
     }
 }

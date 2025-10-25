@@ -8,7 +8,6 @@ use crate::tag::{Difficulty, Tag};
 use crate::workout::Workout;
 use bon::{Builder, bon};
 use derive_more::{Deref, DerefMut, Display};
-// use dioxus::logger::tracing::info;
 use itertools::Itertools;
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
@@ -174,9 +173,7 @@ impl Sequence {
         self
     }
     pub fn goto_previous(&mut self) -> Option<&mut Workout> {
-        // info!("sequence: goto previous");
         if self.workouts.is_empty() {
-            // info!("sequence: workouts is empty, no previous");
             return None;
         }
         #[allow(clippy::manual_inspect)]
@@ -186,9 +183,8 @@ impl Sequence {
         })
     }
     pub fn manual_next(&mut self) -> Option<&mut Workout> {
-        // info!("sequence: manual next");
         if self.workouts.is_empty() {
-            // info!("sequence: workouts is empty, no next");
+            // sequence: workouts is empty, no next
         } else if !self.workouts.last() {
             self.workouts.go_next_mut();
             self.reset_workout();
@@ -199,9 +195,7 @@ impl Sequence {
         self.current_mut()
     }
     pub fn auto_next(&mut self) -> Option<&mut Workout> {
-        // info!("sequence: auto next");
         if self.workouts.is_empty() {
-            // info!("sequence: workouts is empty, no next");
             return None;
         }
         let workout = self.workouts.go_next_mut()?;
@@ -221,13 +215,11 @@ impl Sequence {
         self.workouts.current().is_some_and(|i| i.last_seconds())
     }
     pub fn reset_workout(&mut self) {
-        // info!("sequence: reset current workout");
         if let Some(i) = self.workouts.current_mut() {
             i.reset();
         }
     }
     pub fn reset(&mut self) {
-        // info!("sequence: reset all workouts");
         self.workouts.reset();
         self.workouts.apply(|workout| {
             workout.reset();

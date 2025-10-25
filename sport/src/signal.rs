@@ -1,7 +1,6 @@
-use crate::audio;
+use crate::player::Player;
+use crate::sound::Sound;
 use derive_more::Display;
-use dioxus::logger::tracing::info;
-use sport::sound::Sound;
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug, Display, Default, Clone, Eq, PartialEq)]
@@ -16,7 +15,6 @@ pub enum SoundState {
 impl SoundState {
     pub fn toggle(&mut self) {
         *self = self.next();
-        info!("signal {self}");
     }
     #[must_use]
     pub fn next(&self) -> Self {
@@ -65,19 +63,13 @@ impl SoundSignal {
     pub fn toggle(&mut self) {
         self.state.borrow_mut().toggle();
     }
-    pub fn ring(&self, sound: &Sound) {
+    pub fn ring(&self, sound: &Sound, player: &dyn Player) {
         if self.enabled() {
-            info!("signal {sound} ring");
-            if let Err(error) = audio::play(sound) {
-                info!("unable to play {sound} : {error}");
-            }
+            if let Err(_error) = player.play(sound) {}
         }
     }
-    pub fn always_ring(&self, sound: &Sound) {
-        info!("signal {sound} ring (always)");
-        if let Err(error) = audio::play(sound) {
-            info!("unable to play {sound} (always): {error}");
-        }
+    pub fn always_ring(&self, sound: &Sound, player: &dyn Player) {
+        if let Err(_error) = player.play(sound) {}
     }
     #[must_use]
     pub fn state(&self) -> SoundState {

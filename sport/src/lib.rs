@@ -1,11 +1,16 @@
 pub mod defaults;
 pub mod duration;
+pub mod errors;
 pub mod exercises;
 pub mod indexedvec;
 pub mod item;
 pub mod item_list;
+pub mod player;
 pub mod sequence;
+pub mod signal;
 pub mod sound;
+pub mod status;
 pub mod stopwatch;
 pub mod tag;
+pub mod timer;
 pub mod workout;

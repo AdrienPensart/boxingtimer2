@@ -1,0 +1,80 @@
+.container {  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.2fr 2.5fr 0.3fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "controls"
+    "timer"
+    "links";
+}
+
+.controls {  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "start_stop restart_sequence previous next mute ring";
+  grid-area: controls;
+}
+
+.start_stop { grid-area: start_stop; }
+
+.restart_sequence { grid-area: restart_sequence; }
+
+.previous { grid-area: previous; }
+
+.next { grid-area: next; }
+
+.mute { grid-area: mute; }
+
+.ring { grid-area: ring; }
+
+.timer {  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.7fr 1.7fr 0.6fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "current_items"
+    "counter"
+    "sequence_items";
+  grid-area: timer;
+}
+
+.current_items {  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "previous_item current_item next_item";
+  grid-area: current_items;
+}
+
+.previous_item { grid-area: previous_item; }
+
+.current_item { grid-area: current_item; }
+
+.next_item { grid-area: next_item; }
+
+.counter { grid-area: counter; }
+
+.sequence_items { grid-area: sequence_items; }
+
+.links {  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "sequences tags items";
+  grid-area: links;
+}
+
+.sequences { grid-area: sequences; }
+
+.tags { grid-area: tags; }
+
+.items { grid-area: items; }

@@ -1,9 +1,9 @@
+use crate::defaults;
+use crate::player::Player;
+use crate::sequence::Sequence;
 use crate::signal::SoundSignal;
 use crate::status::Status;
-use dioxus::logger::tracing::info;
-use sport::defaults;
-use sport::sequence::Sequence;
-use sport::stopwatch::Stopwatch;
+use crate::stopwatch::Stopwatch;
 
 #[derive(Debug)]
 pub struct Timer {
@@ -12,18 +12,24 @@ pub struct Timer {
     preparation: Stopwatch,
     changed: bool,
     sound_signal: SoundSignal,
+    player: Box<dyn Player>,
 }
 
 impl Timer {
     #[must_use]
-    pub fn from_sequence(sequence: &Sequence, sound_signal: &SoundSignal) -> Self {
-        Self::new(defaults::PREPARE_DURATION, sequence, sound_signal)
+    pub fn from_sequence(
+        sequence: &Sequence,
+        sound_signal: &SoundSignal,
+        player: Box<dyn Player>,
+    ) -> Self {
+        Self::new(defaults::PREPARE_DURATION, sequence, sound_signal, player)
     }
     #[must_use]
     pub fn new(
         preparation: std::time::Duration,
         sequence: &Sequence,
         sound_signal: &SoundSignal,
+        player: Box<dyn Player>,
     ) -> Self {
         Self {
             preparation: Stopwatch::from(preparation),
@@ -31,6 +37,7 @@ impl Timer {
             changed: false,
             sound_signal: sound_signal.clone(),
             status: Status::default(),
+            player,
         }
     }
     #[must_use]
@@ -49,7 +56,7 @@ impl Timer {
         &self.sound_signal
     }
     pub fn ring(&self) {
-        self.sound_signal.ring(self.sequence.sound());
+        self.sound_signal.ring(self.sequence.sound(), &*self.player);
     }
     pub fn restart_sequence(&mut self) {
         self.preparation.reset();
@@ -71,7 +78,7 @@ impl Timer {
 
         if self.sequence.current().is_none() && self.preparation.decrement() {
             if self.sequence.sound().is_beep() && self.preparation.last_seconds() {
-                self.sound_signal.ring(self.sequence.sound());
+                self.sound_signal.ring(self.sequence.sound(), &*self.player);
             }
             return false;
         }
@@ -79,15 +86,14 @@ impl Timer {
 
         if self.sequence.decrement() {
             if self.sequence.sound().is_beep() && self.sequence.last_seconds() {
-                self.sound_signal.ring(self.sequence.sound());
+                self.sound_signal.ring(self.sequence.sound(), &*self.player);
             }
             return false;
         }
 
         if !self.sequence.is_empty() && self.sequence.sound().is_bell() {
-            self.sound_signal.ring(self.sequence.sound());
+            self.sound_signal.ring(self.sequence.sound(), &*self.player);
         }
-        info!("goto next");
         if self.sequence.auto_next().is_some() {
             return true;
         }
@@ -124,7 +130,6 @@ impl Timer {
         self.sequence.shuffle();
     }
     pub fn toggle(&mut self) {
-        info!("toggle");
         self.status = self.status().next().clone();
         if self.status().running() {
             self.changed = true;
